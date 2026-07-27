@@ -1,0 +1,35 @@
+---
+tags: [workflow, process, sprints, code-review, testing]
+aliases: [Development Workflow, Sprint Gates]
+---
+# Development & Sprint Execution Workflow
+
+**Purpose** — Outlines the mandatory sprint breakdown, multi-agent peer review, dedicated testing subagent creation, and explicit execution approval gates for all feature development.
+
+**Key files** —
+- [.agents/AGENTS.md](../.agents/AGENTS.md) — Section 6 defines the workspace rules for sprint planning and gates.
+- [.agents/skills/review-pr/SKILL.md](../.agents/skills/review-pr/SKILL.md) — Peer review skill used by review subagents.
+
+**Dependencies** — Applies across all feature modules including [[catalog|Catalog Module]] and [[core|Core Infrastructure]].
+
+**Flow** —
+```mermaid
+sequenceDiagram
+    autonumber
+    User->>Agent: Request new feature
+    Agent->>User: Propose plan with Sprints (ask user for sprint count preference)
+    User-->>Agent: Approve plan & sprint count
+    loop For each Sprint
+        Agent->>Agent: Implement Sprint Code
+        Agent->>TestSubagent: Delegate test authoring & execution
+        TestSubagent-->>Agent: Pass test suite & report coverage
+        Agent->>ReviewSubagent: Delegate PR / code review audit
+        ReviewSubagent-->>Agent: Pass review (or request safe fixes)
+        Agent->>User: Present completed Sprint & request permission to proceed
+        User-->>Agent: Explicit approval granted to start next Sprint
+    end
+```
+
+**Notes / gotchas** —
+> [!warning] Execution Pause Requirement
+> Under no circumstances may an agent automatically start Sprint $N+1$ immediately after completing Sprint $N$. Explicit user permission is required at every sprint boundary.
