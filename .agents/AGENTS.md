@@ -90,6 +90,7 @@ When generating or modifying code in this codebase, AI agents MUST follow these 
    - `refactor:` Code refactoring without behavioral change
    - `test:` Adding or updating tests
    - `chore:` Dependency or setup updates
+5. **Branching Policy**: NEVER develop or commit directly to the `main` branch. All development, refactoring, and sprint execution MUST occur on dedicated feature branches (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`).
 
 ---
 

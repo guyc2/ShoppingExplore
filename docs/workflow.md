@@ -33,3 +33,6 @@ sequenceDiagram
 **Notes / gotchas** —
 > [!warning] Execution Pause Requirement
 > Under no circumstances may an agent automatically start Sprint $N+1$ immediately after completing Sprint $N$. Explicit user permission is required at every sprint boundary.
+
+> [!important] Branching Policy
+> Never develop directly on the `main` branch. Every feature or sprint must be developed on an isolated feature branch (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`).
