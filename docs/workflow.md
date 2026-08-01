@@ -34,5 +34,5 @@ sequenceDiagram
 > [!warning] Execution Pause Requirement
 > Under no circumstances may an agent automatically start Sprint $N+1$ immediately after completing Sprint $N$. Explicit user permission is required at every sprint boundary.
 
-> [!important] Branching Policy
-> Never develop directly on the `main` branch. Every feature or sprint must be developed on an isolated feature branch (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`).
+> [!important] Branching & GitFlow Policy
+> Never develop directly on the `main` branch. Every feature or sprint must be developed on an isolated feature branch (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`). After tests and PR review pass, feature branches are merged into the `develop` branch. Merging `develop` into `main` is strictly reserved for the user or explicit user instruction.
