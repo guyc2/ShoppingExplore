@@ -14,6 +14,46 @@ abstract class ShoppingListLocalDataSource {
 class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource {
   final Map<String, ShoppingListDto> _cache = {};
 
+  InMemoryShoppingListLocalDataSource();
+
+  factory InMemoryShoppingListLocalDataSource.withDefaultData() {
+    final ds = InMemoryShoppingListLocalDataSource();
+    final now = DateTime.now();
+    final defaultList = ShoppingListDto(
+      id: 'default-list',
+      title: 'Weekly Groceries',
+      description: 'Smart list with checklist and complex item properties',
+      createdAt: now,
+      updatedAt: now,
+      items: [
+        ShoppingItemDto(
+          id: 'item-1',
+          title: 'Organic Honeycrisp Apples',
+          quantity: 4.0,
+          priorityIndex: 2, // High priority
+          notes: 'Check for local orchard display',
+          imageUrls: const ['https://example.com/apple.jpg'],
+          linkUrls: const ['https://example.com/apples-info'],
+          attributes: const {'organic': 'true', 'origin': 'local'},
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: now,
+        ),
+        ShoppingItemDto(
+          id: 'item-2',
+          title: 'Almond Milk (Unsweetened)',
+          quantity: 2.0,
+          priorityIndex: 1, // Medium priority
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ],
+    );
+    ds._cache[defaultList.id] = defaultList;
+    return ds;
+  }
+
   @override
   Future<List<ShoppingListDto>> getShoppingLists() async {
     return _cache.values.toList();
