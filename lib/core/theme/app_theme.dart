@@ -37,10 +37,10 @@ abstract class AppTheme {
         centerTitle: true,
         titleTextStyle: AppTypography.textTheme(AppColors.onSurfaceLight).titleLarge,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.05),
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: AppColors.outlineLight, width: 0.5),
@@ -122,10 +122,10 @@ abstract class AppTheme {
         centerTitle: true,
         titleTextStyle: AppTypography.textTheme(AppColors.onSurfaceDark).titleLarge,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.2),
+        shadowColor: Colors.black.withValues(alpha: 0.2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: AppColors.outlineDark, width: 0.5),

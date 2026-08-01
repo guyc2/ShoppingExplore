@@ -48,7 +48,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
 
   void _openEditor(BuildContext context, String listId, ShoppingItem item) {
     AppLogger.d('Opening editor for item ${item.id}', tag: 'ShoppingListView');
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(

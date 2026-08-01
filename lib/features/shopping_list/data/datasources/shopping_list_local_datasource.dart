@@ -1,4 +1,5 @@
 import '../../../../core/error/failure.dart';
+import '../../domain/entities/shopping_item.dart';
 import '../models/shopping_item_dto.dart';
 import '../models/shopping_list_dto.dart';
 
@@ -30,7 +31,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
           id: 'item-1',
           title: 'Organic Honeycrisp Apples',
           quantity: 4.0,
-          priorityIndex: 2, // High priority
+          priority: Priority.high, // High priority
           notes: 'Check for local orchard display',
           imageUrls: const ['https://example.com/apple.jpg'],
           linkUrls: const ['https://example.com/apples-info'],
@@ -43,7 +44,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
           id: 'item-2',
           title: 'Almond Milk (Unsweetened)',
           quantity: 2.0,
-          priorityIndex: 1, // Medium priority
+          priority: Priority.medium, // Medium priority
           isCompleted: false,
           createdAt: now,
           updatedAt: now,

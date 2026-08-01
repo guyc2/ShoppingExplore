@@ -1,4 +1,3 @@
-import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
 import '../entities/shopping_item.dart';
 import '../entities/shopping_list.dart';

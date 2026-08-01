@@ -42,11 +42,11 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
   }
 
   @override
-  Future<Result<void>> saveShoppingList(ShoppingList list) async {
+  Future<Result<ShoppingList>> saveShoppingList(ShoppingList list) async {
     try {
       final dto = ShoppingListDto.fromDomain(list);
       await localDataSource.saveShoppingList(dto);
-      return const Success(null);
+      return Success(list);
     } on Failure catch (f) {
       return Error(f);
     } catch (e) {

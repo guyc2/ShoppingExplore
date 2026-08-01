@@ -17,18 +17,14 @@ void main() {
     );
 
     testWidgets('renders title and rich priority/quantity badges', (tester) async {
-      bool toggled = false;
-      bool deleted = false;
-      bool tapped = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: ShoppingItemTile(
               item: testItem,
-              onToggle: () => toggled = true,
-              onDelete: () => deleted = true,
-              onTap: () => tapped = true,
+              onToggle: () {},
+              onDelete: () {},
+              onTap: () {},
             ),
           ),
         ),
