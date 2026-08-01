@@ -112,7 +112,7 @@ For every new feature or major enhancement, the following workflow is mandatory:
    - Every feature plan MUST be broken into sequential, testable Sprints (steps).
    - Before finalizing the implementation plan, ask the user to confirm or specify the desired number of Sprints.
 2. **Dedicated Test & Review Subagents**:
-   - **Code Review**: Every Sprint implementation MUST be peer-reviewed by an independent Reviewer subagent using the `review-pr` skill.
+   - **Code Review**: Every Sprint implementation MUST be peer-reviewed by an independent Reviewer subagent using the `review-pr` skill. The Reviewer MUST always explicitly verify that centralized logging (`AppLogger`) and typed error handling (`Result`/`Failure`) are properly implemented without swallowed exceptions.
    - **Test Generation**: Tests MUST be written and verified by a dedicated Testing subagent to ensure unbiased coverage.
 3. **Strict Execution Gates**:
    - Upon finishing a Sprint (code implementation + test coverage + review verification), execution MUST STOP.

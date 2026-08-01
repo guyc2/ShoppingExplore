@@ -14,13 +14,18 @@ aliases: [Shopping List, Advanced Shopping List]
 - [shopping_list/data/models/shopping_list_dto.dart](../lib/features/shopping_list/data/models/shopping_list_dto.dart) — DTO model for shopping list JSON serialization.
 - [shopping_list/data/datasources/shopping_list_local_datasource.dart](../lib/features/shopping_list/data/datasources/shopping_list_local_datasource.dart) — Local data source interface and in-memory cache implementation.
 - [shopping_list/data/repositories/shopping_list_repository_impl.dart](../lib/features/shopping_list/data/repositories/shopping_list_repository_impl.dart) — Concrete repository implementation mapping DTOs to Domain Entities.
+- [shopping_list/domain/usecases/](../lib/features/shopping_list/domain/usecases) — Business logic actions: `GetShoppingLists`, `CreateShoppingItem`, `ToggleItemCompletion`, `UpdateItemProperties`, `DeleteShoppingItem`.
+- [shopping_list/presentation/controllers/shopping_list_controller.dart](../lib/features/shopping_list/presentation/controllers/shopping_list_controller.dart) — ViewModel managing list state (`ShoppingListState`) and operations with integrated logging.
 
-**Dependencies** — Depends on [[core|Core Infrastructure]] (`Failure`, `Result`) for error handling.
+**Dependencies** — Depends on [[core|Core Infrastructure]] (`Failure`, `Result`, `AppLogger`) for error handling and telemetry.
 
 **Flow** —
 ```mermaid
 flowchart TD
-    RepoImpl[ShoppingListRepositoryImpl] --> LocalDS[ShoppingListLocalDataSource]
+    Controller[ShoppingListController] --> UseCases[Domain UseCases]
+    UseCases --> RepoInterface[ShoppingListRepository]
+    RepoImpl[ShoppingListRepositoryImpl] -. implements .-> RepoInterface
+    RepoImpl --> LocalDS[ShoppingListLocalDataSource]
     RepoImpl --> ItemDto[ShoppingItemDto]
     ItemDto --> ItemEntity[ShoppingItem Entity]
     RepoImpl --> ListDto[ShoppingListDto]
