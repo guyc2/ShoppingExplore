@@ -10,8 +10,9 @@ aliases: [Core, Infrastructure]
 - [core/error/](../lib/core/error) — Defines standard domain failure classes and error handling models.
 - [core/network/](../lib/core/network) — Houses the HTTP REST client wrapper and request interceptors (inferred).
 - [core/theme/](../lib/core/theme) — Material 3 theme configuration, color tokens, and Google Fonts typography.
-- [core/utils/](../lib/core/utils) — Shared extensions, formatters, and utility helpers (inferred).
+- [core/utils/](../lib/core/utils) — Shared extensions, formatters, and [core/utils/logger.dart](../lib/core/utils/logger.dart) centralized logging interface.
 - [.agents/skills/review-pr/](../.agents/skills/review-pr/SKILL.md) — PR review skill for security, migration risk, and test coverage auditing.
+- [.agents/skills/logging/](../.agents/skills/logging/SKILL.md) — Centralized logging instructions and usage guidelines.
 
 **Dependencies** — Used by feature modules like [[catalog|Catalog Module]]. Requires external packages defined in [pubspec.yaml](../pubspec.yaml) such as `google_fonts` and `cupertino_icons`.
 

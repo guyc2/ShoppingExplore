@@ -1,5 +1,6 @@
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
+import '../../../../core/utils/logger.dart';
 import '../../domain/entities/shopping_item.dart';
 import '../../domain/entities/shopping_list.dart';
 import '../../domain/repositories/shopping_list_repository.dart';
@@ -14,13 +15,16 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
 
   @override
   Future<Result<List<ShoppingList>>> getShoppingLists() async {
+    AppLogger.d('getShoppingLists requested', tag: 'ShoppingListRepository');
     try {
       final dtos = await localDataSource.getShoppingLists();
       final lists = dtos.map((dto) => dto.toDomain()).toList();
       return Success(lists);
     } on Failure catch (f) {
+      AppLogger.w('getShoppingLists failure: ${f.message}', tag: 'ShoppingListRepository');
       return Error(f);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      AppLogger.e('getShoppingLists unexpected error', error: e, stackTrace: stackTrace, tag: 'ShoppingListRepository');
       return Error(CacheFailure(e.toString()));
     }
   }
