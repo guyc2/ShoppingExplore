@@ -16,13 +16,18 @@ aliases: [Shopping List, Advanced Shopping List]
 - [shopping_list/data/repositories/shopping_list_repository_impl.dart](../lib/features/shopping_list/data/repositories/shopping_list_repository_impl.dart) — Concrete repository implementation mapping DTOs to Domain Entities.
 - [shopping_list/domain/usecases/](../lib/features/shopping_list/domain/usecases) — Business logic actions: `GetShoppingLists`, `CreateShoppingItem`, `ToggleItemCompletion`, `UpdateItemProperties`, `DeleteShoppingItem`.
 - [shopping_list/presentation/controllers/shopping_list_controller.dart](../lib/features/shopping_list/presentation/controllers/shopping_list_controller.dart) — ViewModel managing list state (`ShoppingListState`) and operations with integrated logging.
+- [shopping_list/presentation/views/shopping_list_view.dart](../lib/features/shopping_list/presentation/views/shopping_list_view.dart) — Main screen displaying items, dark/light theme toggle, and quick-add checklist input.
+- [shopping_list/presentation/widgets/shopping_item_tile.dart](../lib/features/shopping_list/presentation/widgets/shopping_item_tile.dart) — Reusable item card displaying checklist checkbox and rich badges (priority, notes, links, attributes).
+- [shopping_list/presentation/widgets/shopping_item_editor_modal.dart](../lib/features/shopping_list/presentation/widgets/shopping_item_editor_modal.dart) — Modal bottom sheet for editing complex rich item properties.
+- [shopping_list/presentation/widgets/add_item_input.dart](../lib/features/shopping_list/presentation/widgets/add_item_input.dart) — Quick inline checklist entry bar.
 
-**Dependencies** — Depends on [[core|Core Infrastructure]] (`Failure`, `Result`, `AppLogger`) for error handling and telemetry.
+**Dependencies** — Depends on [[core|Core Infrastructure]] (`Failure`, `Result`, `AppLogger`, Material 3 theme tokens) for error handling, telemetry, and styling.
 
 **Flow** —
 ```mermaid
 flowchart TD
-    Controller[ShoppingListController] --> UseCases[Domain UseCases]
+    UI[ShoppingListView / ItemTile / EditorModal] --> Controller[ShoppingListController]
+    Controller --> UseCases[Domain UseCases]
     UseCases --> RepoInterface[ShoppingListRepository]
     RepoImpl[ShoppingListRepositoryImpl] -. implements .-> RepoInterface
     RepoImpl --> LocalDS[ShoppingListLocalDataSource]

@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
-import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
+import 'features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
+import 'features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
+import 'features/shopping_list/domain/usecases/create_shopping_item.dart';
+import 'features/shopping_list/domain/usecases/delete_shopping_item.dart';
+import 'features/shopping_list/domain/usecases/get_shopping_lists.dart';
+import 'features/shopping_list/domain/usecases/toggle_item_completion.dart';
+import 'features/shopping_list/domain/usecases/update_item_properties.dart';
+import 'features/shopping_list/presentation/controllers/shopping_list_controller.dart';
+import 'features/shopping_list/presentation/views/shopping_list_view.dart';
 
 /// The root application widget for ShoppingExplore.
 class ShoppingExploreApp extends StatefulWidget {
@@ -12,6 +20,27 @@ class ShoppingExploreApp extends StatefulWidget {
 
 class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
   ThemeMode _themeMode = ThemeMode.system;
+  late final ShoppingListController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final localDataSource = InMemoryShoppingListLocalDataSource.withDefaultData();
+    final repository = ShoppingListRepositoryImpl(localDataSource: localDataSource);
+    _controller = ShoppingListController(
+      getShoppingLists: GetShoppingLists(repository),
+      createShoppingItem: CreateShoppingItem(repository),
+      toggleItemCompletion: ToggleItemCompletion(repository),
+      updateItemProperties: UpdateItemProperties(repository),
+      deleteShoppingItem: DeleteShoppingItem(repository),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void _toggleTheme() {
     setState(() {
@@ -29,101 +58,10 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: _themeMode,
-      home: ShoppingExploreHome(
+      home: ShoppingListView(
+        controller: _controller,
         themeMode: _themeMode,
         onToggleTheme: _toggleTheme,
-      ),
-    );
-  }
-}
-
-/// Initial shell / home screen demonstrating responsive layout and Material 3 design tokens.
-class ShoppingExploreHome extends StatelessWidget {
-  final ThemeMode themeMode;
-  final VoidCallback onToggleTheme;
-
-  const ShoppingExploreHome({
-    super.key,
-    required this.themeMode,
-    required this.onToggleTheme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ShoppingExplore'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode,
-            ),
-            tooltip: 'Toggle Theme',
-            onPressed: onToggleTheme,
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isWide = constraints.maxWidth > 600;
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 800),
-              child: Padding(
-                padding: EdgeInsets.all(isWide ? 32.0 : 16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircleAvatar(
-                              radius: 32,
-                              backgroundColor: colorScheme.primaryContainer,
-                              child: Icon(
-                                Icons.shopping_bag_outlined,
-                                size: 36,
-                                color: colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Welcome to ShoppingExplore',
-                              style: textTheme.headlineMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Cross-platform smart shopping assistant powered by Flutter Material 3.',
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 24),
-                            ElevatedButton.icon(
-                              onPressed: () {},
-                              icon: const Icon(Icons.explore),
-                              label: const Text('Explore Shopping Lists'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
