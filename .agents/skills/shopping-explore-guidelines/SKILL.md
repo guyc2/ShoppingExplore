@@ -46,3 +46,12 @@ This skill provides guidelines and patterns for engineering features in the **Sh
 - Component Rules:
   - Buttons: Rounded corners (border radius: 12.0), min touch target height 48.0 for mobile accessibility.
   - Cards: Subtle shadow elevation (1.0 or 2.0), glassmorphism overlay options for featured items.
+
+## 5. GitFlow Branching & Sprint Execution
+
+- All feature development and sprints must follow the `gitflow-sprint-workflow` skill:
+  - Create a dedicated feature branch for each sprint (`feature/<name>`).
+  - Perform automated tests via a Testing subagent and code review audit via a Reviewer subagent (`review-pr`).
+  - Merge completed sprint feature branches into `develop`.
+  - Never develop on `main` or merge into `main` without explicit user instruction.
+  - Stop at each Sprint Gate and wait for user permission before proceeding.
