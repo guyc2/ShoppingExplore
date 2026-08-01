@@ -89,7 +89,7 @@ When generating or modifying code in this codebase, AI agents MUST follow these 
    - `docs:` Documentation updates
    - `refactor:` Code refactoring without behavioral change
    - `test:` Adding or updating tests
-   - `chore:` Dependency or setup updates
+5. **Branching & GitFlow Policy**: NEVER develop or commit directly to the `main` branch. All development, refactoring, and sprint execution MUST occur on dedicated feature branches (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`). Upon passing tests and PR code review, feature branches MUST be merged into the `develop` branch. Merging `develop` into `main` is strictly reserved for the user or explicit user instruction.
 
 ---
 
@@ -111,7 +111,7 @@ For every new feature or major enhancement, the following workflow is mandatory:
    - Every feature plan MUST be broken into sequential, testable Sprints (steps).
    - Before finalizing the implementation plan, ask the user to confirm or specify the desired number of Sprints.
 2. **Dedicated Test & Review Subagents**:
-   - **Code Review**: Every Sprint implementation MUST be peer-reviewed by an independent Reviewer subagent using the `review-pr` skill.
+   - **Code Review**: Every Sprint implementation MUST be peer-reviewed by an independent Reviewer subagent using the `review-pr` skill. The Reviewer MUST always explicitly verify that centralized logging (`AppLogger`) and typed error handling (`Result`/`Failure`) are properly implemented without swallowed exceptions.
    - **Test Generation**: Tests MUST be written and verified by a dedicated Testing subagent to ensure unbiased coverage.
 3. **Strict Execution Gates**:
    - Upon finishing a Sprint (code implementation + test coverage + review verification), execution MUST STOP.
