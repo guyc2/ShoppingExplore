@@ -35,7 +35,8 @@ graph TD
 - [[core|Core Infrastructure]] — Shared network client, theme tokens, error definitions, and utility helpers.
 - [[catalog|Catalog Module]] — Product catalog business entities, data sources, repositories, and UI view controllers.
 - [[shopping_list|Shopping List Module]] — Advanced shopping list domain entities, rich item attributes, DTOs, and repository implementations.
-- [[workflow|Development & Sprint Workflow]] — Mandatory architecture manager plan governance, sprint planning, multi-agent code reviews, testing subagent rules, and execution gates.
+- [[workflow|Development & Sprint Workflow]] — Mandatory architecture and maintenance governance, sprint planning, multi-agent code reviews, testing subagent rules, and execution gates.
+
 
 
 ## Feature Implementation Plans
