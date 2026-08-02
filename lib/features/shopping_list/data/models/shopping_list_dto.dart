@@ -7,6 +7,8 @@ class ShoppingListDto extends ShoppingList {
     required super.title,
     super.description,
     super.colorHex,
+    super.ownerId,
+    super.sharedWithEmails = const [],
     super.items = const [],
     required super.createdAt,
     required super.updatedAt,
@@ -18,6 +20,11 @@ class ShoppingListDto extends ShoppingList {
       title: json['title'] as String,
       description: json['description'] as String?,
       colorHex: json['colorHex'] as String?,
+      ownerId: json['ownerId'] as String?,
+      sharedWithEmails: (json['sharedWithEmails'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       items: (json['items'] as List<dynamic>?)
               ?.map((item) => ShoppingItemDto.fromJson(item as Map<String, dynamic>))
               .toList() ??
@@ -33,6 +40,8 @@ class ShoppingListDto extends ShoppingList {
       'title': title,
       'description': description,
       'colorHex': colorHex,
+      'ownerId': ownerId,
+      'sharedWithEmails': sharedWithEmails,
       'items': items.map((item) => ShoppingItemDto.fromDomain(item).toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
@@ -45,6 +54,8 @@ class ShoppingListDto extends ShoppingList {
       title: list.title,
       description: list.description,
       colorHex: list.colorHex,
+      ownerId: list.ownerId,
+      sharedWithEmails: list.sharedWithEmails,
       items: list.items,
       createdAt: list.createdAt,
       updatedAt: list.updatedAt,
@@ -57,6 +68,8 @@ class ShoppingListDto extends ShoppingList {
       title: title,
       description: description,
       colorHex: colorHex,
+      ownerId: ownerId,
+      sharedWithEmails: sharedWithEmails,
       items: items.map((item) => ShoppingItemDto.fromDomain(item).toDomain()).toList(),
       createdAt: createdAt,
       updatedAt: updatedAt,

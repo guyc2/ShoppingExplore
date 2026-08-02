@@ -4,6 +4,7 @@ import '../../domain/entities/shopping_item.dart';
 import '../../domain/usecases/create_shopping_item.dart';
 import '../../domain/usecases/delete_shopping_item.dart';
 import '../../domain/usecases/get_shopping_lists.dart';
+import '../../domain/usecases/share_shopping_list.dart';
 import '../../domain/usecases/toggle_item_completion.dart';
 import '../../domain/usecases/update_item_properties.dart';
 import 'shopping_list_state.dart';
@@ -14,6 +15,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
   final ToggleItemCompletion toggleItemCompletion;
   final UpdateItemProperties updateItemProperties;
   final DeleteShoppingItem deleteShoppingItem;
+  final ShareShoppingList? shareShoppingList;
 
   ShoppingListController({
     required this.getShoppingLists,
@@ -21,6 +23,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     required this.toggleItemCompletion,
     required this.updateItemProperties,
     required this.deleteShoppingItem,
+    this.shareShoppingList,
   }) : super(const ShoppingListInitial());
 
   Future<void> loadShoppingLists() async {
@@ -81,6 +84,24 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     } else {
       AppLogger.w('Failed to delete item: ${result.error.message}', tag: 'ShoppingListController');
       value = ShoppingListError(result.error);
+    }
+  }
+
+  Future<bool> shareList(String listId, String email) async {
+    AppLogger.d('Sharing list $listId with $email', tag: 'ShoppingListController');
+    if (shareShoppingList == null) {
+      AppLogger.w('ShareShoppingList usecase not configured', tag: 'ShoppingListController');
+      return false;
+    }
+    final result = await shareShoppingList!.execute(listId, email);
+    if (result.isSuccess) {
+      AppLogger.i('List shared successfully with $email', tag: 'ShoppingListController');
+      await loadShoppingLists();
+      return true;
+    } else {
+      AppLogger.w('Failed to share list: ${result.error.message}', tag: 'ShoppingListController');
+      value = ShoppingListError(result.error);
+      return false;
     }
   }
 }

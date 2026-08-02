@@ -6,6 +6,8 @@ class ShoppingList extends Equatable {
   final String title;
   final String? description;
   final String? colorHex;
+  final String? ownerId;
+  final List<String> sharedWithEmails;
   final List<ShoppingItem> items;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -15,6 +17,8 @@ class ShoppingList extends Equatable {
     required this.title,
     this.description,
     this.colorHex,
+    this.ownerId,
+    this.sharedWithEmails = const [],
     this.items = const [],
     required this.createdAt,
     required this.updatedAt,
@@ -25,6 +29,8 @@ class ShoppingList extends Equatable {
     String? title,
     String? description,
     String? colorHex,
+    String? ownerId,
+    List<String>? sharedWithEmails,
     List<ShoppingItem>? items,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -34,6 +40,8 @@ class ShoppingList extends Equatable {
       title: title ?? this.title,
       description: description ?? this.description,
       colorHex: colorHex ?? this.colorHex,
+      ownerId: ownerId ?? this.ownerId,
+      sharedWithEmails: sharedWithEmails ?? this.sharedWithEmails,
       items: items ?? this.items,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -46,6 +54,8 @@ class ShoppingList extends Equatable {
         title,
         description,
         colorHex,
+        ownerId,
+        sharedWithEmails,
         items,
         createdAt,
         updatedAt,
