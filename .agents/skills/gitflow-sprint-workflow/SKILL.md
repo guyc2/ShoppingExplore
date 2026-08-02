@@ -26,7 +26,9 @@ For every feature sprint, execute the following strict sequence:
 ```mermaid
 sequenceDiagram
     autonumber
-    User->>Agent: Approve feature plan & sprint breakdown
+    User->>Agent: Propose feature plan & sprint breakdown
+    Agent->>ArchSubagent: Delegate plan audit (manage-architecture skill)
+    ArchSubagent-->>Agent: Approve plan & Clean Architecture boundaries
     Agent->>Agent: Create & checkout feature branch (e.g. feature/shopping-list-sprint-2)
     Agent->>Agent: Implement Sprint deliverables (code + docs)
     Agent->>TestSubagent: Delegate test suite creation & execution
@@ -38,11 +40,13 @@ sequenceDiagram
 ```
 
 ### Mandatory Subagent Rules
-1. **Testing Subagent**: Dedicated agent writes and runs unit/integration tests to guarantee unbiased test coverage.
-2. **Reviewer Subagent (`review-pr` skill)**: Independent review audit must explicitly verify:
+1. **Architecture Manager Subagent (`manage-architecture` skill)**: Audits every development plan and sprint breakdown before coding starts, validates layer boundaries (`domain/`, `data/`, `presentation/`), enforces domain purity (.NET Analogy), and oversees `/docs/` documentation synchronization.
+2. **Testing Subagent**: Dedicated agent writes and runs unit/integration tests to guarantee unbiased test coverage.
+3. **Reviewer Subagent (`review-pr` skill)**: Independent review audit must explicitly verify:
    - Clean Architecture compliance (no UI imports in domain layer).
    - Telemetry: Proper use of `AppLogger` (`d`, `i`, `w`, `e`) across repositories, data sources, and controllers.
    - Error Handling: Typed `Result<T>` and `Failure` hierarchy without swallowed exceptions.
+
 
 ## 3. Sprint Execution Gate (Strict Pause)
 
