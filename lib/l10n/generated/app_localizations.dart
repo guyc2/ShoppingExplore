@@ -295,6 +295,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add an item below to get started!'**
   String get addFirstItem;
+
+  /// No description provided for @quickDebugGuyC.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Debug Login as Guy C'**
+  String get quickDebugGuyC;
+
+  /// No description provided for @allMyLists.
+  ///
+  /// In en, this message translates to:
+  /// **'All My Lists'**
+  String get allMyLists;
+
+  /// No description provided for @newShoppingList.
+  ///
+  /// In en, this message translates to:
+  /// **'New Shopping List'**
+  String get newShoppingList;
+
+  /// No description provided for @shortDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Short Description'**
+  String get shortDescriptionLabel;
+
+  /// No description provided for @fullDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Description'**
+  String get fullDescriptionLabel;
+
+  /// No description provided for @sharedWithLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with'**
+  String get sharedWithLabel;
+
+  /// No description provided for @accountProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Account & Profile'**
+  String get accountProfile;
+
+  /// No description provided for @assignedToLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned to'**
+  String get assignedToLabel;
+
+  /// No description provided for @activeShoppingMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Shopping Mode'**
+  String get activeShoppingMode;
+
+  /// No description provided for @removedItemsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'In Cart / Removed Items'**
+  String get removedItemsSection;
+
+  /// No description provided for @completeShopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Shopping'**
+  String get completeShopping;
+
+  /// No description provided for @cancelShopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Shopping'**
+  String get cancelShopping;
 }
 
 class _AppLocalizationsDelegate

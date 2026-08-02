@@ -27,6 +27,7 @@ void main() {
       'unit': 'kg',
       'priority': 'high',
       'notes': 'Organic only',
+      'assignedToEmail': null,
       'imageUrls': ['https://example.com/apple.jpg'],
       'linkUrls': ['https://example.com/store/apple'],
       'attributes': {'store': 'WholeFoods', 'brand': 'Nature'},

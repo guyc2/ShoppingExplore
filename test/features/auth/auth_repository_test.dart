@@ -58,7 +58,7 @@ void main() {
 
       final initialUser = await getUseCase.execute();
       expect(initialUser.isSuccess, isTrue);
-      expect(initialUser.value?.email, equals('user@shoppingexplore.com'));
+      expect(initialUser.value?.email, equals('guy@shoppingexplore.com'));
 
       final logoutResult = await logoutUseCase.execute();
       expect(logoutResult.isSuccess, isTrue);

@@ -72,6 +72,13 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
+  Future<void> _debugLoginGuyC() async {
+    final success = await widget.authController.login('guy@shoppingexplore.com', 'password123');
+    if (success && mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -98,6 +105,18 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 12),
+              ActionChip(
+                avatar: const Icon(Icons.bug_report_rounded, size: 18),
+                label: Text(l10n?.quickDebugGuyC ?? 'Quick Debug Login as Guy C'),
+                backgroundColor: colorScheme.secondaryContainer,
+                labelStyle: TextStyle(
+                  color: colorScheme.onSecondaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
+                onPressed: _debugLoginGuyC,
+              ),
+              const SizedBox(height: 12),
               const SizedBox(height: 16),
               SegmentedButton<bool>(
                 segments: [

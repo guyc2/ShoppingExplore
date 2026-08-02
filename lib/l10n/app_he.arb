@@ -31,5 +31,17 @@
   "displayNameRequired": "שם תצוגה נדרש להרשמה",
   "authFailed": "האימות נכשל",
   "emptyList": "רשימת הקניות שלך ריקה",
-  "addFirstItem": "הוסף פריט למטה כדי להתחיל!"
+  "addFirstItem": "הוסף פריט למטה כדי להתחיל!",
+  "quickDebugGuyC": "התחברות מהירה כ-Guy C (מצב דיבאג)",
+  "allMyLists": "כל הרשימות שלי",
+  "newShoppingList": "רשימת קניות חדשה",
+  "shortDescriptionLabel": "תיאור קצר",
+  "fullDescriptionLabel": "תיאור מלא",
+  "sharedWithLabel": "משותף עם",
+  "accountProfile": "חשבון ופרופיל",
+  "assignedToLabel": "מוקצה ל-",
+  "activeShoppingMode": "מצב קניות פעיל",
+  "removedItemsSection": "בעגלה / פריטים שהוסרו",
+  "completeShopping": "סיום קנייה",
+  "cancelShopping": "ביטול קנייה"
 }
