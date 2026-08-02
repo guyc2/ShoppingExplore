@@ -40,7 +40,7 @@ class _AddItemInputState extends State<AddItemInput> {
         color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.08),
+            color: colorScheme.shadow.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -57,7 +57,7 @@ class _AddItemInputState extends State<AddItemInput> {
                 decoration: InputDecoration(
                   hintText: 'Add an item...',
                   filled: true,
-                  fillColor: colorScheme.surfaceVariant.withOpacity(0.5),
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
