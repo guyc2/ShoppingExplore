@@ -40,3 +40,7 @@ flowchart TD
 **Notes / gotchas** —
 > [!info] Data Source Implementation
 > Currently uses an in-memory local data source (`InMemoryShoppingListLocalDataSource`) for Sprint 1 framework scaffolding. Will be extended with local persistent storage in future iterations.
+
+> [!info] Material 3 Styling Compliance
+> Presentation components (`ShoppingListView`, `ShoppingItemTile`, `AddItemInput`, `ShoppingItemEditorModal`) strictly utilize modern Material 3 theme tokens (`surfaceContainerHighest`, `withValues(alpha: ...)`, `initialValue`) to ensure zero-deprecation compatibility across light and dark themes.
+

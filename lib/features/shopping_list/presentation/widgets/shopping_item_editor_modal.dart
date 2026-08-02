@@ -127,7 +127,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<Priority>(
-                    value: _priority,
+                    initialValue: _priority,
                     decoration: const InputDecoration(
                       labelText: 'Priority',
                       border: OutlineInputBorder(),

@@ -28,7 +28,7 @@ class ShoppingItemTile extends StatelessWidget {
         side: BorderSide(
           color: item.isCompleted
               ? colorScheme.outlineVariant
-              : colorScheme.outline.withOpacity(0.3),
+              : colorScheme.outline.withValues(alpha: 0.3),
         ),
       ),
       child: InkWell(
@@ -58,7 +58,7 @@ class ShoppingItemTile extends StatelessWidget {
                             ? TextDecoration.lineThrough
                             : null,
                         color: item.isCompleted
-                            ? colorScheme.onSurface.withOpacity(0.5)
+                            ? colorScheme.onSurface.withValues(alpha: 0.5)
                             : colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
                       ),
