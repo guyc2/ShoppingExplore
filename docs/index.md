@@ -57,4 +57,5 @@ graph TD
 
 ## Feature Implementation Plans
 - [[plans/advanced_shopping_list_plan|Advanced Shopping List Plan]] — Implementation plan for the Advanced Shopping List feature framework including Sprint 4 Collaborative Sharing & Authentication.
+- [[plans/next_phase_collaborative_shopping_plan|Next Phase Collaborative Shopping Plan]] — Roadmap for Real-Time Collaborative Shopping, Personal Profile Editing, Persistent Auth ("Remember Me"), Two-Section List Layout, and Multi-User Location Presence.
 

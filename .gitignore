@@ -44,5 +44,7 @@ build/
 **/ios/Flutter/app.flt
 **/ios/Runner.xcodeproj/project.xcworkspace
 **/ios/Runner.xcworkspace
-**/ios/Pods/
 **/ios/Podfile.lock
+
+# Obsidian related
+.obsidian/
