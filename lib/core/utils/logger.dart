@@ -17,10 +17,12 @@ class AppLogger {
       stackTrace: stackTrace,
     );
 
-    // Also write to print in debug mode for terminal output visibility
     assert(() {
+      // ignore: avoid_print
       print('${DateTime.now().toIso8601String()} $formattedMessage');
+      // ignore: avoid_print
       if (error != null) print('Error: $error');
+      // ignore: avoid_print
       if (stackTrace != null) print('StackTrace:\n$stackTrace');
       return true;
     }());

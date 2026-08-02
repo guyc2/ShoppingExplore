@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/logger.dart';
+import 'package:shopping_explore/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:shopping_explore/features/auth/presentation/widgets/auth_user_button.dart';
 import '../../domain/entities/shopping_item.dart';
 import '../../domain/entities/shopping_list.dart';
 import '../controllers/shopping_list_controller.dart';
@@ -7,15 +9,18 @@ import '../controllers/shopping_list_state.dart';
 import '../widgets/add_item_input.dart';
 import '../widgets/shopping_item_editor_modal.dart';
 import '../widgets/shopping_item_tile.dart';
+import '../widgets/shopping_list_share_modal.dart';
 
 class ShoppingListView extends StatefulWidget {
   final ShoppingListController controller;
+  final AuthController? authController;
   final ThemeMode? themeMode;
   final VoidCallback? onToggleTheme;
 
   const ShoppingListView({
     super.key,
     required this.controller,
+    this.authController,
     this.themeMode,
     this.onToggleTheme,
   });
@@ -31,6 +36,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     AppLogger.i('Initializing ShoppingListView...', tag: 'ShoppingListView');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.controller.loadShoppingLists();
+      widget.authController?.checkAuthStatus();
     });
   }
 
@@ -63,6 +69,17 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     );
   }
 
+  void _openShareModal(BuildContext context, ShoppingList list) {
+    AppLogger.d('Opening share modal for list ${list.id}', tag: 'ShoppingListView');
+    showDialog<void>(
+      context: context,
+      builder: (_) => ShoppingListShareModal(
+        shoppingList: list,
+        controller: widget.controller,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -76,6 +93,8 @@ class _ShoppingListViewState extends State<ShoppingListView> {
         centerTitle: true,
         elevation: 0,
         actions: [
+          if (widget.authController != null)
+            AuthUserButton(authController: widget.authController!),
           if (widget.onToggleTheme != null)
             IconButton(
               icon: Icon(
@@ -170,26 +189,38 @@ class _ShoppingListViewState extends State<ShoppingListView> {
 
   Widget _buildListHeader(BuildContext context, ShoppingList list) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final completedCount = list.items.where((i) => i.isCompleted).length;
     final totalCount = list.items.length;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            list.title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+          Row(
+            children: [
+              Text(
+                list.title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: Icon(Icons.share, size: 20, color: colorScheme.primary),
+                tooltip: 'Share List',
+                onPressed: () => _openShareModal(context, list),
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
           ),
           Text(
             '$completedCount of $totalCount completed',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],

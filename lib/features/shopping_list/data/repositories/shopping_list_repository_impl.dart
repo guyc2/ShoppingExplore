@@ -55,6 +55,23 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
   }
 
   @override
+  Future<Result<ShoppingList>> shareShoppingList(String listId, String email) async {
+    AppLogger.d('shareShoppingList requested for list $listId with email $email', tag: 'ShoppingListRepository');
+    try {
+      final updatedDto = await localDataSource.shareShoppingList(listId, email);
+      final domainList = updatedDto.toDomain();
+      AppLogger.i('Successfully shared list $listId with $email', tag: 'ShoppingListRepository');
+      return Success(domainList);
+    } on Failure catch (f) {
+      AppLogger.w('shareShoppingList failure: ${f.message}', tag: 'ShoppingListRepository');
+      return Error(f);
+    } catch (e, stackTrace) {
+      AppLogger.e('shareShoppingList unexpected error', error: e, stackTrace: stackTrace, tag: 'ShoppingListRepository');
+      return Error(CacheFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<void>> deleteShoppingList(String id) async {
     try {
       await localDataSource.deleteShoppingList(id);

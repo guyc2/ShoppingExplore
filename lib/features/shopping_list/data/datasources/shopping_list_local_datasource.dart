@@ -7,6 +7,7 @@ abstract class ShoppingListLocalDataSource {
   Future<List<ShoppingListDto>> getShoppingLists();
   Future<ShoppingListDto> getShoppingList(String id);
   Future<void> saveShoppingList(ShoppingListDto list);
+  Future<ShoppingListDto> shareShoppingList(String listId, String email);
   Future<void> deleteShoppingList(String id);
   Future<void> saveShoppingItem(String listId, ShoppingItemDto item);
   Future<void> deleteShoppingItem(String listId, String itemId);
@@ -24,6 +25,8 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       id: 'default-list',
       title: 'Weekly Groceries',
       description: 'Smart list with checklist and complex item properties',
+      ownerId: 'user@shoppingexplore.com',
+      sharedWithEmails: const ['friend@shoppingexplore.com'],
       createdAt: now,
       updatedAt: now,
       items: [
@@ -31,7 +34,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
           id: 'item-1',
           title: 'Organic Honeycrisp Apples',
           quantity: 4.0,
-          priority: Priority.high, // High priority
+          priority: Priority.high,
           notes: 'Check for local orchard display',
           imageUrls: const ['https://example.com/apple.jpg'],
           linkUrls: const ['https://example.com/apples-info'],
@@ -44,7 +47,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
           id: 'item-2',
           title: 'Almond Milk (Unsweetened)',
           quantity: 2.0,
-          priority: Priority.medium, // Medium priority
+          priority: Priority.medium,
           isCompleted: false,
           createdAt: now,
           updatedAt: now,
@@ -75,6 +78,32 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
   }
 
   @override
+  Future<ShoppingListDto> shareShoppingList(String listId, String email) async {
+    final list = _cache[listId];
+    if (list == null) {
+      throw const CacheFailure('Shopping list not found');
+    }
+    final cleanEmail = email.trim().toLowerCase();
+    if (list.sharedWithEmails.contains(cleanEmail)) {
+      return list;
+    }
+    final updatedEmails = List<String>.from(list.sharedWithEmails)..add(cleanEmail);
+    final updatedDto = ShoppingListDto(
+      id: list.id,
+      title: list.title,
+      description: list.description,
+      colorHex: list.colorHex,
+      ownerId: list.ownerId,
+      sharedWithEmails: updatedEmails,
+      items: list.items,
+      createdAt: list.createdAt,
+      updatedAt: DateTime.now(),
+    );
+    _cache[listId] = updatedDto;
+    return updatedDto;
+  }
+
+  @override
   Future<void> deleteShoppingList(String id) async {
     if (!_cache.containsKey(id)) {
       throw const CacheFailure('Shopping list not found');
@@ -102,6 +131,8 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       title: list.title,
       description: list.description,
       colorHex: list.colorHex,
+      ownerId: list.ownerId,
+      sharedWithEmails: list.sharedWithEmails,
       items: updatedItems,
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
@@ -123,6 +154,8 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       title: list.title,
       description: list.description,
       colorHex: list.colorHex,
+      ownerId: list.ownerId,
+      sharedWithEmails: list.sharedWithEmails,
       items: updatedItems,
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
