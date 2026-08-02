@@ -108,4 +108,40 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get addFirstItem => 'הוסף פריט למטה כדי להתחיל!';
+
+  @override
+  String get quickDebugGuyC => 'התחברות מהירה כ-Guy C (מצב דיבאג)';
+
+  @override
+  String get allMyLists => 'כל הרשימות שלי';
+
+  @override
+  String get newShoppingList => 'רשימת קניות חדשה';
+
+  @override
+  String get shortDescriptionLabel => 'תיאור קצר';
+
+  @override
+  String get fullDescriptionLabel => 'תיאור מלא';
+
+  @override
+  String get sharedWithLabel => 'משותף עם';
+
+  @override
+  String get accountProfile => 'חשבון ופרופיל';
+
+  @override
+  String get assignedToLabel => 'מוקצה ל-';
+
+  @override
+  String get activeShoppingMode => 'מצב קניות פעיל';
+
+  @override
+  String get removedItemsSection => 'בעגלה / פריטים שהוסרו';
+
+  @override
+  String get completeShopping => 'סיום קנייה';
+
+  @override
+  String get cancelShopping => 'ביטול קנייה';
 }

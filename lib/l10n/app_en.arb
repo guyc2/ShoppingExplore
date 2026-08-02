@@ -38,5 +38,17 @@
   "displayNameRequired": "Display name is required for registration",
   "authFailed": "Authentication failed",
   "emptyList": "Your shopping list is empty",
-  "addFirstItem": "Add an item below to get started!"
+  "addFirstItem": "Add an item below to get started!",
+  "quickDebugGuyC": "Quick Debug Login as Guy C",
+  "allMyLists": "All My Lists",
+  "newShoppingList": "New Shopping List",
+  "shortDescriptionLabel": "Short Description",
+  "fullDescriptionLabel": "Full Description",
+  "sharedWithLabel": "Shared with",
+  "accountProfile": "Account & Profile",
+  "assignedToLabel": "Assigned to",
+  "activeShoppingMode": "Active Shopping Mode",
+  "removedItemsSection": "In Cart / Removed Items",
+  "completeShopping": "Complete Shopping",
+  "cancelShopping": "Cancel Shopping"
 }

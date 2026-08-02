@@ -37,13 +37,40 @@ class InMemoryAuthDataSource implements AuthLocalDataSource {
       ),
       password: 'password123',
     ),
+    'guy@shoppingexplore.com': _StoredUser(
+      dto: const UserDto(
+        id: 'user-4',
+        email: 'guy@shoppingexplore.com',
+        displayName: 'Guy C',
+        createdAt: '2026-08-01T10:00:00.000Z',
+      ),
+      password: 'password123',
+    ),
+    'guyc@shoppingexplore.com': _StoredUser(
+      dto: const UserDto(
+        id: 'user-5',
+        email: 'guyc@shoppingexplore.com',
+        displayName: 'Guy C',
+        createdAt: '2026-08-01T10:00:00.000Z',
+      ),
+      password: 'password123',
+    ),
+    'guyc2@shoppingexplore.com': _StoredUser(
+      dto: const UserDto(
+        id: 'user-6',
+        email: 'guyc2@shoppingexplore.com',
+        displayName: 'Guy C',
+        createdAt: '2026-08-01T10:00:00.000Z',
+      ),
+      password: 'password123',
+    ),
   };
 
   UserDto? _currentUserDto;
 
   InMemoryAuthDataSource({bool startAuthenticated = true}) {
     if (startAuthenticated) {
-      _currentUserDto = _users['user@shoppingexplore.com']?.dto;
+      _currentUserDto = _users['guy@shoppingexplore.com']?.dto;
     } else {
       _currentUserDto = null;
     }

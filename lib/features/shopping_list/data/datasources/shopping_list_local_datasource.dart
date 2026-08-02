@@ -21,12 +21,16 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
   factory InMemoryShoppingListLocalDataSource.withDefaultData() {
     final ds = InMemoryShoppingListLocalDataSource();
     final now = DateTime.now();
+
     final defaultList = ShoppingListDto(
       id: 'default-list',
       title: 'Weekly Groceries',
-      description: 'Smart list with checklist and complex item properties',
-      ownerId: 'user@shoppingexplore.com',
-      sharedWithEmails: const ['friend@shoppingexplore.com'],
+      shortDescription: 'Fresh produce, dairy & essentials',
+      description: 'Smart list with checklist and complex item properties for household weekly shopping.',
+      colorHex: '#4CAF50',
+      imageUrl: 'grocery',
+      ownerId: 'guy@shoppingexplore.com',
+      sharedWithEmails: const ['user@shoppingexplore.com', 'friend@shoppingexplore.com'],
       createdAt: now,
       updatedAt: now,
       items: [
@@ -36,6 +40,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
           quantity: 4.0,
           priority: Priority.high,
           notes: 'Check for local orchard display',
+          assignedToEmail: 'guy@shoppingexplore.com',
           imageUrls: const ['https://example.com/apple.jpg'],
           linkUrls: const ['https://example.com/apples-info'],
           attributes: const {'organic': 'true', 'origin': 'local'},
@@ -48,13 +53,89 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
           title: 'Almond Milk (Unsweetened)',
           quantity: 2.0,
           priority: Priority.medium,
+          assignedToEmail: 'friend@shoppingexplore.com',
+          isCompleted: true,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ],
+    );
+
+    final techList = ShoppingListDto(
+      id: 'tech-list',
+      title: 'Tech & Electronics Wishlist',
+      shortDescription: 'Gadgets, cables & workstation gear',
+      description: 'Items to research, compare prices, and buy for the office renovation and smart home setup.',
+      colorHex: '#2196F3',
+      imageUrl: 'tech',
+      ownerId: 'guy@shoppingexplore.com',
+      sharedWithEmails: const ['user@shoppingexplore.com', 'colleague@shoppingexplore.com'],
+      createdAt: now,
+      updatedAt: now,
+      items: [
+        ShoppingItemDto(
+          id: 'tech-1',
+          title: '4K USB-C Curved Monitor',
+          quantity: 1.0,
+          priority: Priority.high,
+          notes: 'Check HDMI 2.1 compatibility',
+          assignedToEmail: 'guy@shoppingexplore.com',
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: now,
+        ),
+        ShoppingItemDto(
+          id: 'tech-2',
+          title: 'Ergonomic Mechanical Keyboard',
+          quantity: 1.0,
+          priority: Priority.medium,
+          notes: 'Brown switches preferred',
+          assignedToEmail: 'colleague@shoppingexplore.com',
+          isCompleted: true,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ],
+    );
+
+    final bbqList = ShoppingListDto(
+      id: 'bbq-list',
+      title: 'Weekend BBQ Party',
+      shortDescription: 'Meats, drinks & grill supplies',
+      description: 'Everything needed for Sunday afternoon barbecue party with friends and family.',
+      colorHex: '#FF9800',
+      imageUrl: 'party',
+      ownerId: 'guy@shoppingexplore.com',
+      sharedWithEmails: const ['user@shoppingexplore.com', 'friend@shoppingexplore.com'],
+      createdAt: now,
+      updatedAt: now,
+      items: [
+        ShoppingItemDto(
+          id: 'bbq-1',
+          title: 'Prime Ribeye Steaks',
+          quantity: 6.0,
+          priority: Priority.high,
+          assignedToEmail: 'guy@shoppingexplore.com',
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: now,
+        ),
+        ShoppingItemDto(
+          id: 'bbq-2',
+          title: 'Craft IPA Beer 6-pack',
+          quantity: 4.0,
+          priority: Priority.medium,
+          assignedToEmail: 'friend@shoppingexplore.com',
           isCompleted: false,
           createdAt: now,
           updatedAt: now,
         ),
       ],
     );
+
     ds._cache[defaultList.id] = defaultList;
+    ds._cache[techList.id] = techList;
+    ds._cache[bbqList.id] = bbqList;
     return ds;
   }
 
@@ -91,8 +172,10 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
     final updatedDto = ShoppingListDto(
       id: list.id,
       title: list.title,
+      shortDescription: list.shortDescription,
       description: list.description,
       colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
       ownerId: list.ownerId,
       sharedWithEmails: updatedEmails,
       items: list.items,
@@ -129,8 +212,10 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
     _cache[listId] = ShoppingListDto(
       id: list.id,
       title: list.title,
+      shortDescription: list.shortDescription,
       description: list.description,
       colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
       ownerId: list.ownerId,
       sharedWithEmails: list.sharedWithEmails,
       items: updatedItems,
@@ -152,8 +237,10 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
     _cache[listId] = ShoppingListDto(
       id: list.id,
       title: list.title,
+      shortDescription: list.shortDescription,
       description: list.description,
       colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
       ownerId: list.ownerId,
       sharedWithEmails: list.sharedWithEmails,
       items: updatedItems,

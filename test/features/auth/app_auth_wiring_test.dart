@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopping_explore/app.dart';
 import 'package:shopping_explore/features/auth/presentation/views/login_view.dart';

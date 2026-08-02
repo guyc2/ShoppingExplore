@@ -10,6 +10,7 @@ class ShoppingItem extends Equatable {
   final String? unit;
   final Priority priority;
   final String? notes;
+  final String? assignedToEmail;
   final List<String> imageUrls;
   final List<String> linkUrls;
   final Map<String, String> attributes;
@@ -24,6 +25,7 @@ class ShoppingItem extends Equatable {
     this.unit,
     this.priority = Priority.medium,
     this.notes,
+    this.assignedToEmail,
     this.imageUrls = const [],
     this.linkUrls = const [],
     this.attributes = const {},
@@ -39,6 +41,7 @@ class ShoppingItem extends Equatable {
     String? unit,
     Priority? priority,
     String? notes,
+    String? assignedToEmail,
     List<String>? imageUrls,
     List<String>? linkUrls,
     Map<String, String>? attributes,
@@ -53,6 +56,7 @@ class ShoppingItem extends Equatable {
       unit: unit ?? this.unit,
       priority: priority ?? this.priority,
       notes: notes ?? this.notes,
+      assignedToEmail: assignedToEmail ?? this.assignedToEmail,
       imageUrls: imageUrls ?? this.imageUrls,
       linkUrls: linkUrls ?? this.linkUrls,
       attributes: attributes ?? this.attributes,
@@ -70,6 +74,7 @@ class ShoppingItem extends Equatable {
         unit,
         priority,
         notes,
+        assignedToEmail,
         imageUrls,
         linkUrls,
         attributes,

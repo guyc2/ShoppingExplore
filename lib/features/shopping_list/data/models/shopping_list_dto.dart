@@ -5,8 +5,10 @@ class ShoppingListDto extends ShoppingList {
   const ShoppingListDto({
     required super.id,
     required super.title,
+    super.shortDescription,
     super.description,
     super.colorHex,
+    super.imageUrl,
     super.ownerId,
     super.sharedWithEmails = const [],
     super.items = const [],
@@ -18,8 +20,10 @@ class ShoppingListDto extends ShoppingList {
     return ShoppingListDto(
       id: json['id'] as String,
       title: json['title'] as String,
+      shortDescription: json['shortDescription'] as String?,
       description: json['description'] as String?,
       colorHex: json['colorHex'] as String?,
+      imageUrl: json['imageUrl'] as String?,
       ownerId: json['ownerId'] as String?,
       sharedWithEmails: (json['sharedWithEmails'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -38,8 +42,10 @@ class ShoppingListDto extends ShoppingList {
     return {
       'id': id,
       'title': title,
+      'shortDescription': shortDescription,
       'description': description,
       'colorHex': colorHex,
+      'imageUrl': imageUrl,
       'ownerId': ownerId,
       'sharedWithEmails': sharedWithEmails,
       'items': items.map((item) => ShoppingItemDto.fromDomain(item).toJson()).toList(),
@@ -52,8 +58,10 @@ class ShoppingListDto extends ShoppingList {
     return ShoppingListDto(
       id: list.id,
       title: list.title,
+      shortDescription: list.shortDescription,
       description: list.description,
       colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
       ownerId: list.ownerId,
       sharedWithEmails: list.sharedWithEmails,
       items: list.items,
@@ -66,8 +74,10 @@ class ShoppingListDto extends ShoppingList {
     return ShoppingList(
       id: id,
       title: title,
+      shortDescription: shortDescription,
       description: description,
       colorHex: colorHex,
+      imageUrl: imageUrl,
       ownerId: ownerId,
       sharedWithEmails: sharedWithEmails,
       items: items.map((item) => ShoppingItemDto.fromDomain(item).toDomain()).toList(),

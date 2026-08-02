@@ -55,3 +55,10 @@ This skill provides guidelines and patterns for engineering features in the **Sh
   - Merge completed sprint feature branches into `develop`.
   - Never develop on `main` or merge into `main` without explicit user instruction.
   - Stop at each Sprint Gate and wait for user permission before proceeding.
+
+## 6. Mandatory Bilingual Localization & RTL Support (Hebrew & English)
+
+- **Bilingual Requirement**: Every feature, UI component, additional development, and update MUST support both Hebrew (`'he'`) and English (`'en'`).
+- **ARB Translation Files**: All user-facing strings must be defined in `lib/l10n/app_en.arb` (English) and `lib/l10n/app_he.arb` (Hebrew) and accessed via `AppLocalizations.of(context)`. Never hardcode user-facing strings in UI components.
+- **RTL Directionality**: UI layouts must support Right-to-Left (RTL) layout directionality for Hebrew. Use `Directionality`-aware properties (`EdgeInsets.directional`, `AlignmentDirectional`, `Row`/`Column` cross-axis alignment) so badges, icons, padding, and text align correctly in both languages.
+

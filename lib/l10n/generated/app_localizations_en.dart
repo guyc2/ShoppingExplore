@@ -108,4 +108,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFirstItem => 'Add an item below to get started!';
+
+  @override
+  String get quickDebugGuyC => 'Quick Debug Login as Guy C';
+
+  @override
+  String get allMyLists => 'All My Lists';
+
+  @override
+  String get newShoppingList => 'New Shopping List';
+
+  @override
+  String get shortDescriptionLabel => 'Short Description';
+
+  @override
+  String get fullDescriptionLabel => 'Full Description';
+
+  @override
+  String get sharedWithLabel => 'Shared with';
+
+  @override
+  String get accountProfile => 'Account & Profile';
+
+  @override
+  String get assignedToLabel => 'Assigned to';
+
+  @override
+  String get activeShoppingMode => 'Active Shopping Mode';
+
+  @override
+  String get removedItemsSection => 'In Cart / Removed Items';
+
+  @override
+  String get completeShopping => 'Complete Shopping';
+
+  @override
+  String get cancelShopping => 'Cancel Shopping';
 }

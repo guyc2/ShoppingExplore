@@ -13,10 +13,14 @@ import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
 import 'features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
 import 'features/shopping_list/domain/usecases/create_shopping_item.dart';
+import 'features/shopping_list/domain/usecases/create_shopping_list.dart';
 import 'features/shopping_list/domain/usecases/delete_shopping_item.dart';
+import 'features/shopping_list/domain/usecases/delete_shopping_list.dart';
 import 'features/shopping_list/domain/usecases/get_shopping_lists.dart';
+import 'features/shopping_list/domain/usecases/share_shopping_list.dart';
 import 'features/shopping_list/domain/usecases/toggle_item_completion.dart';
 import 'features/shopping_list/domain/usecases/update_item_properties.dart';
+import 'features/shopping_list/domain/usecases/update_shopping_list.dart';
 import 'features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'features/shopping_list/presentation/views/shopping_list_view.dart';
 
@@ -29,7 +33,7 @@ class ShoppingExploreApp extends StatefulWidget {
 }
 
 class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
-  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode _themeMode = ThemeMode.light;
   Locale _locale = const Locale('he', '');
   late final ShoppingListController _controller;
   late final AuthController _authController;
@@ -45,6 +49,10 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       toggleItemCompletion: ToggleItemCompletion(repository),
       updateItemProperties: UpdateItemProperties(repository),
       deleteShoppingItem: DeleteShoppingItem(repository),
+      shareShoppingList: ShareShoppingList(repository),
+      createShoppingList: CreateShoppingList(repository),
+      updateShoppingList: UpdateShoppingList(repository),
+      deleteShoppingList: DeleteShoppingList(repository),
     );
 
     final authDataSource = InMemoryAuthDataSource(startAuthenticated: false);

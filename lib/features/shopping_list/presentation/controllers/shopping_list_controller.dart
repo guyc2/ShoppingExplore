@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/shopping_item.dart';
+import '../../domain/entities/shopping_list.dart';
 import '../../domain/usecases/create_shopping_item.dart';
+import '../../domain/usecases/create_shopping_list.dart';
 import '../../domain/usecases/delete_shopping_item.dart';
+import '../../domain/usecases/delete_shopping_list.dart';
 import '../../domain/usecases/get_shopping_lists.dart';
 import '../../domain/usecases/share_shopping_list.dart';
 import '../../domain/usecases/toggle_item_completion.dart';
 import '../../domain/usecases/update_item_properties.dart';
+import '../../domain/usecases/update_shopping_list.dart';
 import 'shopping_list_state.dart';
 
 class ShoppingListController extends ValueNotifier<ShoppingListState> {
@@ -16,6 +20,9 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
   final UpdateItemProperties updateItemProperties;
   final DeleteShoppingItem deleteShoppingItem;
   final ShareShoppingList? shareShoppingList;
+  final CreateShoppingList? createShoppingList;
+  final UpdateShoppingList? updateShoppingList;
+  final DeleteShoppingList? deleteShoppingList;
 
   ShoppingListController({
     required this.getShoppingLists,
@@ -24,6 +31,9 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     required this.updateItemProperties,
     required this.deleteShoppingItem,
     this.shareShoppingList,
+    this.createShoppingList,
+    this.updateShoppingList,
+    this.deleteShoppingList,
   }) : super(const ShoppingListInitial());
 
   Future<void> loadShoppingLists() async {
@@ -104,4 +114,75 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       return false;
     }
   }
+
+  Future<bool> createList({
+    required String title,
+    String? shortDescription,
+    String? description,
+    String? colorHex,
+    String? imageUrl,
+    String? ownerId,
+    List<String> sharedWithEmails = const [],
+  }) async {
+    AppLogger.d('Creating new shopping list: $title', tag: 'ShoppingListController');
+    if (createShoppingList == null) {
+      AppLogger.w('CreateShoppingList usecase not configured', tag: 'ShoppingListController');
+      return false;
+    }
+    final result = await createShoppingList!.execute(
+      title: title,
+      shortDescription: shortDescription,
+      description: description,
+      colorHex: colorHex,
+      imageUrl: imageUrl,
+      ownerId: ownerId,
+      sharedWithEmails: sharedWithEmails,
+    );
+    if (result.isSuccess) {
+      AppLogger.i('Shopping list created successfully: ${result.value.id}', tag: 'ShoppingListController');
+      await loadShoppingLists();
+      return true;
+    } else {
+      AppLogger.w('Failed to create shopping list: ${result.error.message}', tag: 'ShoppingListController');
+      value = ShoppingListError(result.error);
+      return false;
+    }
+  }
+
+  Future<bool> updateList(ShoppingList list) async {
+    AppLogger.d('Updating shopping list: ${list.title}', tag: 'ShoppingListController');
+    if (updateShoppingList == null) {
+      AppLogger.w('UpdateShoppingList usecase not configured', tag: 'ShoppingListController');
+      return false;
+    }
+    final result = await updateShoppingList!.execute(list);
+    if (result.isSuccess) {
+      AppLogger.i('Shopping list updated successfully', tag: 'ShoppingListController');
+      await loadShoppingLists();
+      return true;
+    } else {
+      AppLogger.w('Failed to update shopping list: ${result.error.message}', tag: 'ShoppingListController');
+      value = ShoppingListError(result.error);
+      return false;
+    }
+  }
+
+  Future<bool> deleteList(String listId) async {
+    AppLogger.d('Deleting shopping list $listId', tag: 'ShoppingListController');
+    if (deleteShoppingList == null) {
+      AppLogger.w('DeleteShoppingList usecase not configured', tag: 'ShoppingListController');
+      return false;
+    }
+    final result = await deleteShoppingList!.execute(listId);
+    if (result.isSuccess) {
+      AppLogger.i('Shopping list deleted successfully', tag: 'ShoppingListController');
+      await loadShoppingLists();
+      return true;
+    } else {
+      AppLogger.w('Failed to delete shopping list: ${result.error.message}', tag: 'ShoppingListController');
+      value = ShoppingListError(result.error);
+      return false;
+    }
+  }
 }
+
