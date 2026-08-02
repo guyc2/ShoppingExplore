@@ -41,9 +41,14 @@ class InMemoryAuthDataSource implements AuthLocalDataSource {
 
   UserDto? _currentUserDto;
 
-  InMemoryAuthDataSource() {
-    _currentUserDto = _users['user@shoppingexplore.com']?.dto;
+  InMemoryAuthDataSource({bool startAuthenticated = true}) {
+    if (startAuthenticated) {
+      _currentUserDto = _users['user@shoppingexplore.com']?.dto;
+    } else {
+      _currentUserDto = null;
+    }
   }
+
 
   @override
   Future<UserDto> login(String email, String password) async {

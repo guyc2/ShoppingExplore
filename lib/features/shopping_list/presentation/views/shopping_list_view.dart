@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../../../../core/utils/logger.dart';
 import 'package:shopping_explore/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:shopping_explore/features/auth/presentation/widgets/auth_user_button.dart';
@@ -16,6 +17,8 @@ class ShoppingListView extends StatefulWidget {
   final AuthController? authController;
   final ThemeMode? themeMode;
   final VoidCallback? onToggleTheme;
+  final Locale? currentLocale;
+  final VoidCallback? onToggleLocale;
 
   const ShoppingListView({
     super.key,
@@ -23,6 +26,8 @@ class ShoppingListView extends StatefulWidget {
     this.authController,
     this.themeMode,
     this.onToggleTheme,
+    this.currentLocale,
+    this.onToggleLocale,
   });
 
   @override
@@ -83,18 +88,38 @@ class _ShoppingListViewState extends State<ShoppingListView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Shopping Explore',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l10n?.appTitle ?? 'Shopping Explore',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 0,
         actions: [
           if (widget.authController != null)
             AuthUserButton(authController: widget.authController!),
+          if (widget.onToggleLocale != null)
+            IconButton(
+              icon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.language, size: 20),
+                  const SizedBox(width: 4),
+                  Text(
+                    widget.currentLocale?.languageCode == 'he' ? 'HE' : 'EN',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              tooltip: 'Switch Language',
+              onPressed: widget.onToggleLocale,
+            ),
           if (widget.onToggleTheme != null)
             IconButton(
               icon: Icon(
@@ -190,6 +215,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
   Widget _buildListHeader(BuildContext context, ShoppingList list) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
     final completedCount = list.items.where((i) => i.isCompleted).length;
     final totalCount = list.items.length;
 
@@ -211,7 +237,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
               const SizedBox(width: 8),
               IconButton(
                 icon: Icon(Icons.share, size: 20, color: colorScheme.primary),
-                tooltip: 'Share List',
+                tooltip: l10n?.shareList ?? 'Share List',
                 onPressed: () => _openShareModal(context, list),
                 visualDensity: VisualDensity.compact,
               ),
@@ -230,6 +256,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -241,14 +268,14 @@ class _ShoppingListViewState extends State<ShoppingListView> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Your shopping list is empty',
+            l10n?.emptyList ?? 'Your shopping list is empty',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Add an item below to get started!',
+            l10n?.addFirstItem ?? 'Add an item below to get started!',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

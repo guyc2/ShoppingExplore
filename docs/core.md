@@ -11,8 +11,10 @@ aliases: [Core, Infrastructure]
 - [core/network/](../lib/core/network) — Houses the HTTP REST client wrapper and request interceptors (inferred).
 - [core/theme/](../lib/core/theme) — Material 3 theme configuration, color tokens, and Google Fonts typography.
 - [core/utils/](../lib/core/utils) — Shared extensions, formatters, and [core/utils/logger.dart](../lib/core/utils/logger.dart) centralized logging interface.
+- [l10n/](../lib/l10n) & [l10n.yaml](../l10n.yaml) — Internationalization (i18n) and RTL directionality support via `AppLocalizations` (`flutter_localizations` & `intl`), providing localized strings for Hebrew (`'he'`) and English (`'en'`).
 - [.agents/skills/review-pr/](../.agents/skills/review-pr/SKILL.md) — PR review skill for security, migration risk, and test coverage auditing.
 - [.agents/skills/logging/](../.agents/skills/logging/SKILL.md) — Centralized logging instructions and usage guidelines.
+
 
 **Dependencies** — Used by feature modules like [[catalog|Catalog Module]]. Requires external packages defined in [pubspec.yaml](../pubspec.yaml) such as `google_fonts` and `cupertino_icons`.
 

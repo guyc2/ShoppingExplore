@@ -45,11 +45,12 @@ graph TD
 ```
 
 ## Module Notes Directory
-- [[core|Core Infrastructure]] — Shared network client, theme tokens, error definitions, and utility helpers.
-- [[auth|Authentication Module]] — User authentication domain entities, login/registration usecases, local/remote data sources, and UI view controllers.
+- [[core|Core Infrastructure]] — Shared network client, theme tokens, error definitions, localization (`l10n`, RTL support), and utility helpers.
+- [[auth|Authentication Module]] — User authentication domain entities, login/registration usecases, local/remote data sources, and UI view controllers wired at the composition root (`app.dart`).
 - [[catalog|Catalog Module]] — Product catalog business entities, data sources, repositories, and UI view controllers.
 - [[shopping_list|Shopping List Module]] — Advanced shopping list domain entities, collaborative sharing, rich item attributes, DTOs, and repository implementations.
 - [[workflow|Development & Sprint Workflow]] — Mandatory architecture and maintenance governance, sprint planning, multi-agent code reviews, testing subagent rules, and execution gates.
 
 ## Feature Implementation Plans
 - [[plans/advanced_shopping_list_plan|Advanced Shopping List Plan]] — Implementation plan for the Advanced Shopping List feature framework including Sprint 4 Collaborative Sharing & Authentication.
+
