@@ -175,29 +175,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
                 Expanded(
                   child: items.isEmpty
                       ? _buildEmptyState(context)
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            final item = items[index];
-                            return ShoppingItemTile(
-                              item: item,
-                              onToggle: () => widget.controller.toggleItem(
-                                activeList.id,
-                                item,
-                              ),
-                              onDelete: () => widget.controller.deleteItem(
-                                activeList.id,
-                                item.id,
-                              ),
-                              onTap: () => _openEditor(
-                                context,
-                                activeList.id,
-                                item,
-                              ),
-                            );
-                          },
-                        ),
+                      : _buildItemsList(context, activeList),
                 ),
                 AddItemInput(
                   onAdd: (title) => _onAddItem(activeList.id, title),
@@ -212,43 +190,225 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     );
   }
 
+  void _startShoppingMode(String listId) {
+    widget.controller.enterShoppingMode(listId);
+    setState(() {});
+  }
+
+  void _completeShoppingMode(String listId) {
+    widget.controller.completeShoppingMode(listId);
+    setState(() {});
+  }
+
+  void _cancelShoppingMode(String listId) {
+    widget.controller.cancelShoppingMode(listId);
+    setState(() {});
+  }
+
+  void _removeItem(String listId, String itemId) {
+    if (widget.controller.isShoppingMode(listId)) {
+      widget.controller.removeItemInShoppingMode(listId, itemId);
+    } else {
+      widget.controller.deleteItem(listId, itemId);
+    }
+    setState(() {});
+  }
+
+  void _restoreItem(String listId, String itemId) {
+    widget.controller.restoreItemFromCart(listId, itemId);
+    setState(() {});
+  }
+
+  Widget _buildItemsList(BuildContext context, ShoppingList activeList) {
+    final isShoppingMode = widget.controller.isShoppingMode(activeList.id);
+    final removedIds = widget.controller.removedCartItemIds(activeList.id);
+    final l10n = AppLocalizations.of(context);
+
+    if (!isShoppingMode) {
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: activeList.items.length,
+        itemBuilder: (context, index) {
+          final item = activeList.items[index];
+          return ShoppingItemTile(
+            item: item,
+            onToggle: () => widget.controller.toggleItem(
+              activeList.id,
+              item,
+            ),
+            onDelete: () => _removeItem(activeList.id, item.id),
+            onTap: () => _openEditor(
+              context,
+              activeList.id,
+              item,
+            ),
+          );
+        },
+      );
+    }
+
+    final activeItems = activeList.items
+        .where((i) => !removedIds.contains(i.id))
+        .toList();
+    final removedItems = activeList.items
+        .where((i) => removedIds.contains(i.id))
+        .toList();
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Text(
+            '${l10n?.activeItemsSection ?? 'Active Items'} (${activeItems.length})',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          ),
+        ),
+        ...activeItems.map(
+          (item) => ShoppingItemTile(
+            item: item,
+            onToggle: () => widget.controller.toggleItem(
+              activeList.id,
+              item,
+            ),
+            onDelete: () => _removeItem(activeList.id, item.id),
+            onTap: () => _openEditor(
+              context,
+              activeList.id,
+              item,
+            ),
+          ),
+        ),
+        if (removedItems.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Text(
+              '${l10n?.removedItemsSection ?? 'In Cart / Removed Items'} (${removedItems.length})',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+            ),
+          ),
+          ...removedItems.map(
+            (item) => ShoppingItemTile(
+              item: item,
+              isRemovedInShoppingMode: true,
+              onToggle: () {},
+              onDelete: () => widget.controller.deleteItem(activeList.id, item.id),
+              onRestore: () => _restoreItem(activeList.id, item.id),
+              onTap: () => _openEditor(
+                context,
+                activeList.id,
+                item,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildListHeader(BuildContext context, ShoppingList list) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
     final completedCount = list.items.where((i) => i.isCompleted).length;
     final totalCount = list.items.length;
+    final isShoppingMode = widget.controller.isShoppingMode(list.id);
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                list.title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                children: [
+                  Text(
+                    list.title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(Icons.share, size: 20, color: colorScheme.primary),
+                    tooltip: l10n?.shareList ?? 'Share List',
+                    onPressed: () => _openShareModal(context, list),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: Icon(Icons.share, size: 20, color: colorScheme.primary),
-                tooltip: l10n?.shareList ?? 'Share List',
-                onPressed: () => _openShareModal(context, list),
-                visualDensity: VisualDensity.compact,
+              Text(
+                '$completedCount of $totalCount completed',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
-          Text(
-            '$completedCount of $totalCount completed',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+          const SizedBox(height: 8),
+          if (!isShoppingMode)
+            ActionChip(
+              avatar: Icon(
+                Icons.shopping_cart_checkout,
+                size: 16,
+                color: colorScheme.primary,
+              ),
+              label: Text(l10n?.startShopping ?? 'Start Shopping'),
+              onPressed: () => _startShoppingMode(list.id),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Chip(
+                  avatar: Icon(
+                    Icons.shopping_cart,
+                    size: 16,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                  label: Text(
+                    l10n?.activeShoppingMode ?? 'Active Shopping Mode',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimaryContainer,
+                      fontSize: 12,
+                    ),
+                  ),
+                  backgroundColor: colorScheme.primaryContainer,
+                ),
+                ActionChip(
+                  avatar: Icon(
+                    Icons.check_circle_outline,
+                    size: 16,
+                    color: colorScheme.primary,
+                  ),
+                  label: Text(l10n?.completeShopping ?? 'Complete Shopping'),
+                  onPressed: () => _completeShoppingMode(list.id),
+                ),
+                ActionChip(
+                  avatar: Icon(
+                    Icons.cancel_outlined,
+                    size: 16,
+                    color: colorScheme.error,
+                  ),
+                  label: Text(l10n?.cancelShopping ?? 'Cancel Shopping'),
+                  onPressed: () => _cancelShoppingMode(list.id),
+                ),
+              ],
             ),
-          ),
         ],
       ),
     );

@@ -42,7 +42,11 @@ flowchart TD
 
 **Notes / gotchas** —
 > [!info] Multi-List & Guy C Seeded Data
-> `InMemoryShoppingListLocalDataSource.withDefaultData()` is seeded with 3 distinct lists owned by Debug User Guy C (`guy@shoppingexplore.com`): *Weekly Groceries*, *Tech & Electronics Wishlist*, and *Weekend BBQ Party*, each with assigned items and short descriptions.
+> `InMemoryShoppingListLocalDataSource.withDefaultData()` is seeded with 3 distinct lists owned by Debug User Guy C (`guy@shoppingexplore.com`): *Weekly Groceries*, *Tech & Electronics Wishlist*, and *Weekend BBQ Party*, each with assigned items (`assignedToEmail`) and short descriptions.
+
+> [!info] Active Shopping Mode & Split 2-Section Checklist
+> The `ShoppingListController` manages per-list Active Shopping Mode state (`_shoppingModes`, `_removedCartItemIds`). When shopping mode is active, removing an item moves it to Section 2 (*In Cart / Removed Items*) without deleting it from the repository. Users can either click **Complete Shopping** (permanently deletes marked items from datasource) or **Cancel Shopping** (restores all removed items back to Section 1 *Active Items* without data loss).
 
 > [!info] Material 3 Styling Compliance
 > Presentation components (`ShoppingListView`, `ShoppingItemTile`, `AddItemInput`, `ShoppingItemEditorModal`, `ShoppingListShareModal`) strictly utilize modern Material 3 theme tokens (`surfaceContainerHighest`, `withValues(alpha: ...)`, `initialValue`) to ensure zero-deprecation compatibility across light and dark themes.
+

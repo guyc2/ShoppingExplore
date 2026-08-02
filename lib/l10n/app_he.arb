@@ -43,5 +43,8 @@
   "activeShoppingMode": "מצב קניות פעיל",
   "removedItemsSection": "בעגלה / פריטים שהוסרו",
   "completeShopping": "סיום קנייה",
-  "cancelShopping": "ביטול קנייה"
+  "cancelShopping": "ביטול קנייה",
+  "startShopping": "התחל קנייה",
+  "restoreItem": "החזר לרשימה",
+  "activeItemsSection": "פריטים פעילים"
 }

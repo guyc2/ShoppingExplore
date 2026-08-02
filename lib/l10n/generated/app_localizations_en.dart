@@ -144,4 +144,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelShopping => 'Cancel Shopping';
+
+  @override
+  String get startShopping => 'Start Shopping';
+
+  @override
+  String get restoreItem => 'Restore to list';
+
+  @override
+  String get activeItemsSection => 'Active Items';
 }

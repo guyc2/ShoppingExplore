@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
 import 'package:shopping_explore/features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/create_shopping_item.dart';
@@ -31,6 +32,8 @@ void main() {
     testWidgets('renders default weekly groceries list and allows quick adding item', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: ShoppingListView(controller: controller),
         ),
       );
@@ -45,6 +48,39 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Fresh Bread'), findsOneWidget);
+    });
+
+    testWidgets('allows entering Shopping Mode, moving items to removed section, and canceling to restore items', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ShoppingListView(controller: controller),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Start Shopping'), findsOneWidget);
+
+      await tester.tap(find.text('Start Shopping'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Active Shopping Mode'), findsOneWidget);
+      expect(find.text('Active Items (2)'), findsOneWidget);
+
+      // Tap delete on first item in Shopping Mode -> moves to In Cart / Removed section
+      await tester.tap(find.byIcon(Icons.delete_outline).first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Active Items (1)'), findsOneWidget);
+      expect(find.text('In Cart / Removed Items (1)'), findsOneWidget);
+
+      // Tap Cancel Shopping -> restores all items back to standard list
+      await tester.tap(find.text('Cancel Shopping'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Active Shopping Mode'), findsNothing);
+      expect(find.text('Organic Honeycrisp Apples'), findsOneWidget);
     });
   });
 }
