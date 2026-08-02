@@ -184,5 +184,53 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       return false;
     }
   }
+
+  // Active Shopping Mode state
+  final Map<String, bool> _shoppingModes = {};
+  final Map<String, Set<String>> _removedCartItemIds = {};
+
+  bool isShoppingMode(String listId) => _shoppingModes[listId] ?? false;
+  Set<String> removedCartItemIds(String listId) => _removedCartItemIds[listId] ?? {};
+
+  void enterShoppingMode(String listId) {
+    AppLogger.i('Entering shopping mode for list $listId', tag: 'ShoppingListController');
+    _shoppingModes[listId] = true;
+    _removedCartItemIds[listId] = {};
+    notifyListeners();
+  }
+
+  void removeItemInShoppingMode(String listId, String itemId) {
+    AppLogger.d('Marking item $itemId as removed in shopping mode for list $listId', tag: 'ShoppingListController');
+    _removedCartItemIds.putIfAbsent(listId, () => {});
+    _removedCartItemIds[listId]!.add(itemId);
+    notifyListeners();
+  }
+
+  void restoreItemFromCart(String listId, String itemId) {
+    AppLogger.d('Restoring item $itemId from cart in shopping mode for list $listId', tag: 'ShoppingListController');
+    if (_removedCartItemIds.containsKey(listId)) {
+      _removedCartItemIds[listId]!.remove(itemId);
+      notifyListeners();
+    }
+  }
+
+  Future<void> completeShoppingMode(String listId) async {
+    AppLogger.i('Completing shopping mode for list $listId', tag: 'ShoppingListController');
+    final removedIds = _removedCartItemIds[listId] ?? {};
+    for (final itemId in removedIds) {
+      AppLogger.d('Permanently deleting item $itemId on shopping mode complete', tag: 'ShoppingListController');
+      await deleteShoppingItem.execute(listId: listId, itemId: itemId);
+    }
+    _removedCartItemIds.remove(listId);
+    _shoppingModes[listId] = false;
+    await loadShoppingLists();
+  }
+
+  void cancelShoppingMode(String listId) {
+    AppLogger.i('Canceling shopping mode for list $listId and restoring all removed items', tag: 'ShoppingListController');
+    _removedCartItemIds.remove(listId);
+    _shoppingModes[listId] = false;
+    notifyListeners();
+  }
 }
 

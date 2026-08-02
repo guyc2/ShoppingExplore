@@ -50,5 +50,8 @@
   "activeShoppingMode": "Active Shopping Mode",
   "removedItemsSection": "In Cart / Removed Items",
   "completeShopping": "Complete Shopping",
-  "cancelShopping": "Cancel Shopping"
+  "cancelShopping": "Cancel Shopping",
+  "startShopping": "Start Shopping",
+  "restoreItem": "Restore to list",
+  "activeItemsSection": "Active Items"
 }

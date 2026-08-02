@@ -144,4 +144,13 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get cancelShopping => 'ביטול קנייה';
+
+  @override
+  String get startShopping => 'התחל קנייה';
+
+  @override
+  String get restoreItem => 'החזר לרשימה';
+
+  @override
+  String get activeItemsSection => 'פריטים פעילים';
 }

@@ -21,6 +21,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
   late TextEditingController _quantityController;
   late TextEditingController _notesController;
   late TextEditingController _linksController;
+  late TextEditingController _assignedToController;
   late Priority _priority;
 
   @override
@@ -32,6 +33,8 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
     _notesController = TextEditingController(text: widget.item.notes ?? '');
     _linksController =
         TextEditingController(text: widget.item.linkUrls.join(', '));
+    _assignedToController =
+        TextEditingController(text: widget.item.assignedToEmail ?? '');
     _priority = widget.item.priority;
   }
 
@@ -41,6 +44,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
     _quantityController.dispose();
     _notesController.dispose();
     _linksController.dispose();
+    _assignedToController.dispose();
     super.dispose();
   }
 
@@ -54,6 +58,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
         .map((e) => e.trim())
         .where((e) => e.isNotEmpty)
         .toList();
+    final assigned = _assignedToController.text.trim();
 
     final updatedItem = widget.item.copyWith(
       title: title,
@@ -63,6 +68,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
           ? null
           : _notesController.text.trim(),
       linkUrls: links,
+      assignedToEmail: assigned.isEmpty ? null : assigned,
     );
 
     widget.onSave(updatedItem);
@@ -107,6 +113,15 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
               decoration: const InputDecoration(
                 labelText: 'Title',
                 border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _assignedToController,
+              decoration: const InputDecoration(
+                labelText: 'Assigned To (Email)',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.person_outline),
               ),
             ),
             const SizedBox(height: 12),

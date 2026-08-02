@@ -6,6 +6,8 @@ class ShoppingItemTile extends StatelessWidget {
   final VoidCallback onToggle;
   final VoidCallback onDelete;
   final VoidCallback onTap;
+  final bool isRemovedInShoppingMode;
+  final VoidCallback? onRestore;
 
   const ShoppingItemTile({
     super.key,
@@ -13,6 +15,8 @@ class ShoppingItemTile extends StatelessWidget {
     required this.onToggle,
     required this.onDelete,
     required this.onTap,
+    this.isRemovedInShoppingMode = false,
+    this.onRestore,
   });
 
   @override
@@ -21,12 +25,12 @@ class ShoppingItemTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Card(
-      elevation: item.isCompleted ? 0 : 2,
+      elevation: (item.isCompleted || isRemovedInShoppingMode) ? 0 : 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: item.isCompleted
+          color: (item.isCompleted || isRemovedInShoppingMode)
               ? colorScheme.outlineVariant
               : colorScheme.outline.withValues(alpha: 0.3),
         ),
@@ -39,13 +43,19 @@ class ShoppingItemTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Checkbox(
-                value: item.isCompleted,
-                onChanged: (_) => onToggle(),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
+              if (isRemovedInShoppingMode)
+                Icon(
+                  Icons.shopping_cart_checkout,
+                  color: colorScheme.primary,
+                )
+              else
+                Checkbox(
+                  value: item.isCompleted,
+                  onChanged: (_) => onToggle(),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
-              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -54,10 +64,10 @@ class ShoppingItemTile extends StatelessWidget {
                     Text(
                       item.title,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        decoration: item.isCompleted
+                        decoration: (item.isCompleted || isRemovedInShoppingMode)
                             ? TextDecoration.lineThrough
                             : null,
-                        color: item.isCompleted
+                        color: (item.isCompleted || isRemovedInShoppingMode)
                             ? colorScheme.onSurface.withValues(alpha: 0.5)
                             : colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
@@ -69,14 +79,24 @@ class ShoppingItemTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              IconButton(
-                icon: Icon(
-                  Icons.delete_outline,
-                  color: colorScheme.error,
+              if (isRemovedInShoppingMode && onRestore != null)
+                IconButton(
+                  icon: Icon(
+                    Icons.restore,
+                    color: colorScheme.primary,
+                  ),
+                  onPressed: onRestore,
+                  tooltip: 'Restore Item',
+                )
+              else
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: colorScheme.error,
+                  ),
+                  onPressed: onDelete,
+                  tooltip: 'Delete Item',
                 ),
-                onPressed: onDelete,
-                tooltip: 'Delete Item',
-              ),
             ],
           ),
         ),
@@ -88,6 +108,16 @@ class ShoppingItemTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final badges = <Widget>[];
+
+    if (item.assignedToEmail != null && item.assignedToEmail!.isNotEmpty) {
+      badges.add(
+        _BadgePill(
+          label: item.assignedToEmail!.split('@').first,
+          color: colorScheme.secondaryContainer,
+          textColor: colorScheme.onSecondaryContainer,
+        ),
+      );
+    }
 
     if (item.quantity != 1.0) {
       badges.add(

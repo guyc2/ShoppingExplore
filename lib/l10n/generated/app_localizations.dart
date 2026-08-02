@@ -367,6 +367,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel Shopping'**
   String get cancelShopping;
+
+  /// No description provided for @startShopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Shopping'**
+  String get startShopping;
+
+  /// No description provided for @restoreItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore to list'**
+  String get restoreItem;
+
+  /// No description provided for @activeItemsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Items'**
+  String get activeItemsSection;
 }
 
 class _AppLocalizationsDelegate
