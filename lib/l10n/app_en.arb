@@ -53,5 +53,21 @@
   "cancelShopping": "Cancel Shopping",
   "startShopping": "Start Shopping",
   "restoreItem": "Restore to list",
-  "activeItemsSection": "Active Items"
+  "activeItemsSection": "Active Items",
+  "welcomeBack": "Welcome back",
+  "welcomeGuest": "Welcome!",
+  "listsCount": "lists",
+  "itemsCount": "items",
+  "createFirstList": "Tap + to create your first shopping list!",
+  "createList": "Create List",
+  "newListTitleHint": "e.g., Birthday Party Supplies",
+  "newListDescHint": "Optional brief description",
+  "colorLabel": "Color",
+  "completedLabel": "completed",
+  "memberSince": "Member since 2024",
+  "statsLists": "Lists",
+  "statsItems": "Items",
+  "statsShared": "Shared",
+  "deleteList": "Delete List",
+  "deleteListConfirm": "Are you sure you want to delete this list?"
 }

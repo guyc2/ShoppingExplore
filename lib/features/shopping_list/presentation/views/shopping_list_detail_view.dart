@@ -1,0 +1,483 @@
+import 'package:flutter/material.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
+import '../../../../core/utils/logger.dart';
+import '../../domain/entities/shopping_item.dart';
+import '../../domain/entities/shopping_list.dart';
+import '../controllers/shopping_list_controller.dart';
+import '../controllers/shopping_list_state.dart';
+import '../widgets/add_item_input.dart';
+import '../widgets/shopping_item_editor_modal.dart';
+import '../widgets/shopping_item_tile.dart';
+import '../widgets/shopping_list_share_modal.dart';
+
+/// Detail view for a single shopping list. Displays the list metadata
+/// header (title, description, color, icon, collaborators), the
+/// interactive 2-section checklist with Active Shopping Mode,
+/// and a quick-add input bar.
+class ShoppingListDetailView extends StatefulWidget {
+  final ShoppingListController controller;
+  final String listId;
+
+  const ShoppingListDetailView({
+    super.key,
+    required this.controller,
+    required this.listId,
+  });
+
+  @override
+  State<ShoppingListDetailView> createState() => _ShoppingListDetailViewState();
+}
+
+class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
+  @override
+  void initState() {
+    super.initState();
+    AppLogger.i('Opening detail view for list ${widget.listId}',
+        tag: 'ShoppingListDetailView');
+  }
+
+  ShoppingList? _findList(ShoppingListState state) {
+    if (state is ShoppingListLoaded) {
+      try {
+        return state.lists.firstWhere((l) => l.id == widget.listId);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  void _onAddItem(String title) {
+    AppLogger.d('Quick-adding item "$title" to list ${widget.listId}',
+        tag: 'ShoppingListDetailView');
+    final now = DateTime.now();
+    final item = ShoppingItem(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: title,
+      createdAt: now,
+      updatedAt: now,
+    );
+    widget.controller.addItem(widget.listId, item);
+  }
+
+  void _openEditor(BuildContext context, ShoppingItem item) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => ShoppingItemEditorModal(
+        item: item,
+        onSave: (updatedItem) {
+          widget.controller.updateItem(widget.listId, updatedItem);
+        },
+      ),
+    );
+  }
+
+  void _openShareModal(BuildContext context, ShoppingList list) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => ShoppingListShareModal(
+        shoppingList: list,
+        controller: widget.controller,
+      ),
+    );
+  }
+
+  void _removeItem(String itemId) {
+    if (widget.controller.isShoppingMode(widget.listId)) {
+      widget.controller.removeItemInShoppingMode(widget.listId, itemId);
+    } else {
+      widget.controller.deleteItem(widget.listId, itemId);
+    }
+    setState(() {});
+  }
+
+  void _restoreItem(String itemId) {
+    widget.controller.restoreItemFromCart(widget.listId, itemId);
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+
+    return ValueListenableBuilder<ShoppingListState>(
+      valueListenable: widget.controller,
+      builder: (context, state, _) {
+        final list = _findList(state);
+        if (list == null) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(l10n?.appTitle ?? 'Shopping Explore'),
+            ),
+            body: const Center(child: Text('List not found')),
+          );
+        }
+
+        final listColor = _parseHexColor(list.colorHex) ??
+            theme.colorScheme.primary;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              list.title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+            elevation: 0,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.share, color: theme.colorScheme.primary),
+                tooltip: l10n?.shareList ?? 'Share List',
+                onPressed: () => _openShareModal(context, list),
+              ),
+              const SizedBox(width: 4),
+            ],
+          ),
+          body: Column(
+            children: [
+              // List metadata header
+              _buildMetadataHeader(context, list, listColor),
+
+              // Shopping mode controls
+              _buildShoppingModeControls(context, list),
+
+              // Item checklist
+              Expanded(
+                child: list.items.isEmpty
+                    ? _buildEmptyState(context)
+                    : _buildItemsList(context, list),
+              ),
+
+              // Quick-add bar
+              AddItemInput(
+                onAdd: (title) => _onAddItem(title),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMetadataHeader(
+    BuildContext context,
+    ShoppingList list,
+    Color listColor,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+
+    final completedCount = list.items.where((i) => i.isCompleted).length;
+    final totalCount = list.items.length;
+    final progress = totalCount > 0 ? completedCount / totalCount : 0.0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            listColor.withValues(alpha: 0.08),
+            colorScheme.surface.withValues(alpha: 0.0),
+          ],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Short description
+          if (list.shortDescription != null &&
+              list.shortDescription!.isNotEmpty) ...[
+            Text(
+              list.shortDescription!,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+
+          // Full description
+          if (list.description != null && list.description!.isNotEmpty) ...[
+            Text(
+              list.description!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+          ],
+
+          // Progress row
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '$completedCount / $totalCount ${l10n?.completedLabel ?? 'completed'}',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: listColor,
+                          ),
+                        ),
+                        Text(
+                          '${(progress * 100).toInt()}%',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 6,
+                        backgroundColor: listColor.withValues(alpha: 0.12),
+                        valueColor: AlwaysStoppedAnimation<Color>(listColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          // Collaborators
+          if (list.sharedWithEmails.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: [
+                Icon(
+                  Icons.people_outline,
+                  size: 16,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                ...list.sharedWithEmails.map(
+                  (email) => Chip(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+                    label: Text(
+                      email.split('@').first,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShoppingModeControls(BuildContext context, ShoppingList list) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final isShoppingMode = widget.controller.isShoppingMode(list.id);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: !isShoppingMode
+          ? ActionChip(
+              avatar: Icon(
+                Icons.shopping_cart_checkout,
+                size: 16,
+                color: colorScheme.primary,
+              ),
+              label: Text(l10n?.startShopping ?? 'Start Shopping'),
+              onPressed: () {
+                widget.controller.enterShoppingMode(list.id);
+                setState(() {});
+              },
+            )
+          : Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Chip(
+                  avatar: Icon(
+                    Icons.shopping_cart,
+                    size: 16,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                  label: Text(
+                    l10n?.activeShoppingMode ?? 'Active Shopping Mode',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimaryContainer,
+                      fontSize: 12,
+                    ),
+                  ),
+                  backgroundColor: colorScheme.primaryContainer,
+                ),
+                ActionChip(
+                  avatar: Icon(
+                    Icons.check_circle_outline,
+                    size: 16,
+                    color: colorScheme.primary,
+                  ),
+                  label: Text(l10n?.completeShopping ?? 'Complete Shopping'),
+                  onPressed: () {
+                    widget.controller.completeShoppingMode(list.id);
+                    setState(() {});
+                  },
+                ),
+                ActionChip(
+                  avatar: Icon(
+                    Icons.cancel_outlined,
+                    size: 16,
+                    color: colorScheme.error,
+                  ),
+                  label: Text(l10n?.cancelShopping ?? 'Cancel Shopping'),
+                  onPressed: () {
+                    widget.controller.cancelShoppingMode(list.id);
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildItemsList(BuildContext context, ShoppingList list) {
+    final isShoppingMode = widget.controller.isShoppingMode(list.id);
+    final removedIds = widget.controller.removedCartItemIds(list.id);
+    final l10n = AppLocalizations.of(context);
+
+    if (!isShoppingMode) {
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: list.items.length,
+        itemBuilder: (context, index) {
+          final item = list.items[index];
+          return ShoppingItemTile(
+            item: item,
+            onToggle: () => widget.controller.toggleItem(list.id, item),
+            onDelete: () => _removeItem(item.id),
+            onTap: () => _openEditor(context, item),
+          );
+        },
+      );
+    }
+
+    final activeItems =
+        list.items.where((i) => !removedIds.contains(i.id)).toList();
+    final removedItems =
+        list.items.where((i) => removedIds.contains(i.id)).toList();
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Text(
+            '${l10n?.activeItemsSection ?? 'Active Items'} (${activeItems.length})',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          ),
+        ),
+        ...activeItems.map(
+          (item) => ShoppingItemTile(
+            item: item,
+            onToggle: () => widget.controller.toggleItem(list.id, item),
+            onDelete: () => _removeItem(item.id),
+            onTap: () => _openEditor(context, item),
+          ),
+        ),
+        if (removedItems.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Text(
+              '${l10n?.removedItemsSection ?? 'In Cart / Removed Items'} (${removedItems.length})',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+            ),
+          ),
+          ...removedItems.map(
+            (item) => ShoppingItemTile(
+              item: item,
+              isRemovedInShoppingMode: true,
+              onToggle: () {},
+              onDelete: () =>
+                  widget.controller.deleteItem(list.id, item.id),
+              onRestore: () => _restoreItem(item.id),
+              onTap: () => _openEditor(context, item),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.shopping_bag_outlined,
+            size: 64,
+            color: theme.colorScheme.outline,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n?.emptyList ?? 'Your shopping list is empty',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n?.addFirstItem ?? 'Add an item below to get started!',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Color? _parseHexColor(String? hex) {
+    if (hex == null || hex.isEmpty) return null;
+    final cleaned = hex.replaceAll('#', '');
+    if (cleaned.length == 6) {
+      final value = int.tryParse('FF$cleaned', radix: 16);
+      if (value != null) return Color(value);
+    }
+    return null;
+  }
+}

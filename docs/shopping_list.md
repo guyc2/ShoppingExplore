@@ -4,7 +4,7 @@ aliases: [Shopping List, Advanced Shopping List]
 ---
 # Shopping List Module
 
-**Purpose** — Encapsulates the core business logic, domain entities, and data access layer for the Advanced Shopping List feature. It supports both simple checklist items, complex items with rich properties (images, links, priority, notes, attributes), and collaborative sharing with other authenticated users.
+**Purpose** — Encapsulates the core business logic, domain entities, data access layer, and stylish multi-list dashboard for the Advanced Shopping List feature. It supports simple checklist items, complex items with rich properties (images, links, priority, notes, attributes), collaborative sharing, Active Shopping Mode with split 2-section checklist, and a responsive card-based dashboard.
 
 **Key files** —
 - [shopping_list/domain/entities/shopping_item.dart](../lib/features/shopping_list/domain/entities/shopping_item.dart) — Pure Dart entity representing a shopping item with rich attributes and optional `assignedToEmail`.
@@ -17,8 +17,11 @@ aliases: [Shopping List, Advanced Shopping List]
 - [shopping_list/data/repositories/shopping_list_repository_impl.dart](../lib/features/shopping_list/data/repositories/shopping_list_repository_impl.dart) — Concrete repository implementation mapping DTOs to Domain Entities with AppLogger telemetry.
 - [shopping_list/domain/usecases/](../lib/features/shopping_list/domain/usecases) — Business logic actions: `GetShoppingLists`, `CreateShoppingList`, `UpdateShoppingList`, `DeleteShoppingList`, `CreateShoppingItem`, `ToggleItemCompletion`, `UpdateItemProperties`, `DeleteShoppingItem`, `ShareShoppingList`.
 - [shopping_list/presentation/controllers/shopping_list_controller.dart](../lib/features/shopping_list/presentation/controllers/shopping_list_controller.dart) — ViewModel managing list CRUD state (`ShoppingListState`) and operations with integrated logging.
-- [shopping_list/presentation/views/shopping_list_view.dart](../lib/features/shopping_list/presentation/views/shopping_list_view.dart) — Main screen displaying items, dark/light theme toggle, collaborative share button, auth profile button, and quick-add checklist input.
-- [shopping_list/presentation/widgets/shopping_item_tile.dart](../lib/features/shopping_list/presentation/widgets/shopping_item_tile.dart) — Reusable item card displaying checklist checkbox and rich badges (priority, notes, links, attributes).
+- [shopping_list/presentation/views/shopping_list_view.dart](../lib/features/shopping_list/presentation/views/shopping_list_view.dart) — **Multi-list dashboard ("All My Lists")** displaying greeting banner, responsive grid of `ShoppingListCard` widgets, Shopping Cart brand icon in AppBar, language/theme toggles, and FAB for creating new lists.
+- [shopping_list/presentation/views/shopping_list_detail_view.dart](../lib/features/shopping_list/presentation/views/shopping_list_detail_view.dart) — **Detail view** for a single list showing metadata header (title, description, progress, collaborators), 2-section Active Shopping Mode checklist, and quick-add bar.
+- [shopping_list/presentation/widgets/shopping_list_card.dart](../lib/features/shopping_list/presentation/widgets/shopping_list_card.dart) — Stylish card with category icon badge, title, short description, completion progress bar, and stacked collaborator avatars.
+- [shopping_list/presentation/widgets/create_shopping_list_modal.dart](../lib/features/shopping_list/presentation/widgets/create_shopping_list_modal.dart) — Dialog modal for creating a new list with title, description, category icon picker, and color selector.
+- [shopping_list/presentation/widgets/shopping_item_tile.dart](../lib/features/shopping_list/presentation/widgets/shopping_item_tile.dart) — Reusable item card displaying checklist checkbox and rich badges (priority, notes, links, attributes, assignee).
 - [shopping_list/presentation/widgets/shopping_item_editor_modal.dart](../lib/features/shopping_list/presentation/widgets/shopping_item_editor_modal.dart) — Modal bottom sheet for editing complex rich item properties.
 - [shopping_list/presentation/widgets/shopping_list_share_modal.dart](../lib/features/shopping_list/presentation/widgets/shopping_list_share_modal.dart) — Dialog modal for managing list owner and adding new collaborator emails.
 - [shopping_list/presentation/widgets/add_item_input.dart](../lib/features/shopping_list/presentation/widgets/add_item_input.dart) — Quick inline checklist entry bar.
@@ -28,7 +31,9 @@ aliases: [Shopping List, Advanced Shopping List]
 **Flow** —
 ```mermaid
 flowchart TD
-    UI[ShoppingListView / ItemTile / ShareModal / EditorModal] --> Controller[ShoppingListController]
+    Dashboard[ShoppingListView Dashboard] -->|tap card| DetailView[ShoppingListDetailView]
+    DetailView --> Controller[ShoppingListController]
+    Dashboard --> Controller
     Controller --> UseCases[Domain UseCases]
     UseCases --> RepoInterface[ShoppingListRepository]
     RepoImpl[ShoppingListRepositoryImpl] -. implements .-> RepoInterface
@@ -47,6 +52,12 @@ flowchart TD
 > [!info] Active Shopping Mode & Split 2-Section Checklist
 > The `ShoppingListController` manages per-list Active Shopping Mode state (`_shoppingModes`, `_removedCartItemIds`). When shopping mode is active, removing an item moves it to Section 2 (*In Cart / Removed Items*) without deleting it from the repository. Users can either click **Complete Shopping** (permanently deletes marked items from datasource) or **Cancel Shopping** (restores all removed items back to Section 1 *Active Items* without data loss).
 
+> [!info] Dashboard Architecture
+> `ShoppingListView` serves as the home page dashboard ("All My Lists"), displaying all lists as responsive `ShoppingListCard` widgets in a `SliverGrid`. Tapping a card navigates to `ShoppingListDetailView` via `MaterialPageRoute`. The dashboard includes a gradient greeting banner, Shopping Cart brand icon (`Icons.shopping_cart_checkout_rounded`), and `FloatingActionButton.extended` opening `CreateShoppingListModal`.
+
+> [!info] Account & Profile Modal
+> `AccountProfileModal` (accessible from `AuthUserButton` popup menu) displays a gradient avatar, display name, email, member since badge, and reactive statistics tiles (total lists, total items, shared lists).
+
 > [!info] Material 3 Styling Compliance
-> Presentation components (`ShoppingListView`, `ShoppingItemTile`, `AddItemInput`, `ShoppingItemEditorModal`, `ShoppingListShareModal`) strictly utilize modern Material 3 theme tokens (`surfaceContainerHighest`, `withValues(alpha: ...)`, `initialValue`) to ensure zero-deprecation compatibility across light and dark themes.
+> All presentation components strictly utilize modern Material 3 theme tokens (`surfaceContainerHighest`, `withValues(alpha: ...)`, `initialValue`) to ensure zero-deprecation compatibility across light and dark themes.
 

@@ -153,4 +153,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activeItemsSection => 'Active Items';
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get welcomeGuest => 'Welcome!';
+
+  @override
+  String get listsCount => 'lists';
+
+  @override
+  String get itemsCount => 'items';
+
+  @override
+  String get createFirstList => 'Tap + to create your first shopping list!';
+
+  @override
+  String get createList => 'Create List';
+
+  @override
+  String get newListTitleHint => 'e.g., Birthday Party Supplies';
+
+  @override
+  String get newListDescHint => 'Optional brief description';
+
+  @override
+  String get colorLabel => 'Color';
+
+  @override
+  String get completedLabel => 'completed';
+
+  @override
+  String get memberSince => 'Member since 2024';
+
+  @override
+  String get statsLists => 'Lists';
+
+  @override
+  String get statsItems => 'Items';
+
+  @override
+  String get statsShared => 'Shared';
+
+  @override
+  String get deleteList => 'Delete List';
+
+  @override
+  String get deleteListConfirm => 'Are you sure you want to delete this list?';
 }

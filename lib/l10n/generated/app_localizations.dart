@@ -385,6 +385,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active Items'**
   String get activeItemsSection;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack;
+
+  /// No description provided for @welcomeGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome!'**
+  String get welcomeGuest;
+
+  /// No description provided for @listsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'lists'**
+  String get listsCount;
+
+  /// No description provided for @itemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get itemsCount;
+
+  /// No description provided for @createFirstList.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to create your first shopping list!'**
+  String get createFirstList;
+
+  /// No description provided for @createList.
+  ///
+  /// In en, this message translates to:
+  /// **'Create List'**
+  String get createList;
+
+  /// No description provided for @newListTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Birthday Party Supplies'**
+  String get newListTitleHint;
+
+  /// No description provided for @newListDescHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional brief description'**
+  String get newListDescHint;
+
+  /// No description provided for @colorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get colorLabel;
+
+  /// No description provided for @completedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'completed'**
+  String get completedLabel;
+
+  /// No description provided for @memberSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since 2024'**
+  String get memberSince;
+
+  /// No description provided for @statsLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Lists'**
+  String get statsLists;
+
+  /// No description provided for @statsItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get statsItems;
+
+  /// No description provided for @statsShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared'**
+  String get statsShared;
+
+  /// No description provided for @deleteList.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete List'**
+  String get deleteList;
+
+  /// No description provided for @deleteListConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this list?'**
+  String get deleteListConfirm;
 }
 
 class _AppLocalizationsDelegate
