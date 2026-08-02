@@ -46,5 +46,21 @@
   "cancelShopping": "ביטול קנייה",
   "startShopping": "התחל קנייה",
   "restoreItem": "החזר לרשימה",
-  "activeItemsSection": "פריטים פעילים"
+  "activeItemsSection": "פריטים פעילים",
+  "welcomeBack": "ברוך שובך",
+  "welcomeGuest": "!ברוכים הבאים",
+  "listsCount": "רשימות",
+  "itemsCount": "פריטים",
+  "createFirstList": "לחץ + כדי ליצור את רשימת הקניות הראשונה שלך!",
+  "createList": "צור רשימה",
+  "newListTitleHint": "לדוגמה, ציוד למסיבת יום הולדת",
+  "newListDescHint": "תיאור קצר אופציונלי",
+  "colorLabel": "צבע",
+  "completedLabel": "הושלמו",
+  "memberSince": "חבר מאז 2024",
+  "statsLists": "רשימות",
+  "statsItems": "פריטים",
+  "statsShared": "משותפים",
+  "deleteList": "מחק רשימה",
+  "deleteListConfirm": "האם אתה בטוח שברצונך למחוק רשימה זו?"
 }

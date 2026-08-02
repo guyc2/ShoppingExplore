@@ -153,4 +153,52 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get activeItemsSection => 'פריטים פעילים';
+
+  @override
+  String get welcomeBack => 'ברוך שובך';
+
+  @override
+  String get welcomeGuest => '!ברוכים הבאים';
+
+  @override
+  String get listsCount => 'רשימות';
+
+  @override
+  String get itemsCount => 'פריטים';
+
+  @override
+  String get createFirstList => 'לחץ + כדי ליצור את רשימת הקניות הראשונה שלך!';
+
+  @override
+  String get createList => 'צור רשימה';
+
+  @override
+  String get newListTitleHint => 'לדוגמה, ציוד למסיבת יום הולדת';
+
+  @override
+  String get newListDescHint => 'תיאור קצר אופציונלי';
+
+  @override
+  String get colorLabel => 'צבע';
+
+  @override
+  String get completedLabel => 'הושלמו';
+
+  @override
+  String get memberSince => 'חבר מאז 2024';
+
+  @override
+  String get statsLists => 'רשימות';
+
+  @override
+  String get statsItems => 'פריטים';
+
+  @override
+  String get statsShared => 'משותפים';
+
+  @override
+  String get deleteList => 'מחק רשימה';
+
+  @override
+  String get deleteListConfirm => 'האם אתה בטוח שברצונך למחוק רשימה זו?';
 }

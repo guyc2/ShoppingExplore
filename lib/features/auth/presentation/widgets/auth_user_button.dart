@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../controllers/auth_controller.dart';
+import '../views/account_profile_modal.dart';
 import '../views/login_view.dart';
 
 class AuthUserButton extends StatelessWidget {
@@ -23,6 +24,13 @@ class AuthUserButton extends StatelessWidget {
             onSelected: (value) {
               if (value == 'logout') {
                 authController.logout();
+              } else if (value == 'profile') {
+                showDialog<void>(
+                  context: context,
+                  builder: (_) => AccountProfileModal(
+                    authController: authController,
+                  ),
+                );
               } else if (value == 'switch') {
                 showDialog<void>(
                   context: context,
@@ -47,6 +55,16 @@ class AuthUserButton extends StatelessWidget {
                 ),
               ),
               const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'profile',
+                child: Row(
+                  children: [
+                    const Icon(Icons.person_outline, size: 18),
+                    const SizedBox(width: 8),
+                    Text(l10n?.accountProfile ?? 'Account & Profile'),
+                  ],
+                ),
+              ),
               PopupMenuItem(
                 value: 'switch',
                 child: Row(
