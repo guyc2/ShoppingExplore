@@ -9,6 +9,7 @@ aliases: [Development Workflow, Sprint Gates]
 **Key files** —
 - [.agents/AGENTS.md](../.agents/AGENTS.md) — Section 6 defines the workspace rules for sprint planning and gates.
 - [.agents/skills/manage-architecture/SKILL.md](../.agents/skills/manage-architecture/SKILL.md) — Architecture manager skill for plan validation and layer boundary audits.
+- [.agents/skills/manage-maintenance/SKILL.md](../.agents/skills/manage-maintenance/SKILL.md) — Maintenance and debugging skill for proactive framework modernization and reactive bug triage.
 - [.agents/skills/review-pr/SKILL.md](../.agents/skills/review-pr/SKILL.md) — Peer review skill used by review subagents.
 
 **Dependencies** — Applies across all feature modules including [[catalog|Catalog Module]] and [[core|Core Infrastructure]].
@@ -36,6 +37,10 @@ sequenceDiagram
 **Notes / gotchas** —
 > [!info] Architecture Governance Requirement
 > Before any development plan or sprint is executed, the **Architecture Manager Subagent** (`manage-architecture`) must review and validate the plan to enforce Clean Architecture layer rules, `.NET Analogy` boundaries (zero UI imports in `domain/`), DTO serialization in `data/`, and `/docs/` synchronization.
+
+> [!info] Maintenance & Debugging Governance
+> Routine Flutter/Material 3 framework modernization, static analysis zero-tolerance audits (`dart analyze`), dependency conflict resolution, and reactive bug/layout triage are governed by the **Maintenance & Debugging Subagent** (`manage-maintenance`).
+
 
 > [!warning] Execution Pause Requirement
 > Under no circumstances may an agent automatically start Sprint $N+1$ immediately after completing Sprint $N$. Explicit user permission is required at every sprint boundary.

@@ -46,6 +46,7 @@ sequenceDiagram
    - Clean Architecture compliance (no UI imports in domain layer).
    - Telemetry: Proper use of `AppLogger` (`d`, `i`, `w`, `e`) across repositories, data sources, and controllers.
    - Error Handling: Typed `Result<T>` and `Failure` hierarchy without swallowed exceptions.
+4. **Maintenance & Debugging Subagent (`manage-maintenance` skill)**: Governs proactive framework modernization (Material 3 tokens, `dart analyze` zero-tolerance, automated `dart fix --apply`), dependency conflict resolution, and reactive bug/layout overflow debugging with mandatory regression test coverage.
 
 
 ## 3. Sprint Execution Gate (Strict Pause)
