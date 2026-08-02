@@ -1,0 +1,42 @@
+{
+  "appTitle": "Shopping Explore",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "signOut": "Sign Out",
+  "switchAccount": "Switch Account",
+  "signedInAs": "Signed in as:\n{email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccount": "Create Account",
+  "emailAddress": "Email Address",
+  "password": "Password",
+  "displayName": "Display Name",
+  "cancel": "Cancel",
+  "register": "Register",
+  "alreadyHaveAccount": "Already have an account? Sign In",
+  "needAccount": "Need an account? Register",
+  "noListsAvailable": "No lists available",
+  "addItem": "Add Item",
+  "quickAddItem": "Quick-add item...",
+  "editItem": "Edit Item",
+  "titleLabel": "Title",
+  "quantityLabel": "Quantity",
+  "categoryLabel": "Category",
+  "notesLabel": "Notes",
+  "save": "Save",
+  "shareList": "Share List",
+  "collaborators": "Collaborators",
+  "inviteByEmail": "Invite by Email",
+  "canEdit": "Can edit",
+  "canView": "Can view",
+  "emailRequired": "Email and password are required",
+  "displayNameRequired": "Display name is required for registration",
+  "authFailed": "Authentication failed",
+  "emptyList": "Your shopping list is empty",
+  "addFirstItem": "Add an item below to get started!"
+}

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../controllers/auth_controller.dart';
 
 class LoginView extends StatefulWidget {
   final AuthController authController;
+  final bool initialIsRegistering;
 
-  const LoginView({super.key, required this.authController});
+  const LoginView({
+    super.key,
+    required this.authController,
+    this.initialIsRegistering = false,
+  });
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -14,8 +20,14 @@ class _LoginViewState extends State<LoginView> {
   final _emailController = TextEditingController(text: 'user@shoppingexplore.com');
   final _passwordController = TextEditingController(text: 'password123');
   final _nameController = TextEditingController();
-  bool _isRegistering = false;
+  late bool _isRegistering;
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _isRegistering = widget.initialIsRegistering;
+  }
 
   @override
   void dispose() {
@@ -26,12 +38,13 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _errorMessage = null);
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _errorMessage = 'Email and password are required');
+      setState(() => _errorMessage = l10n?.emailRequired ?? 'Email and password are required');
       return;
     }
 
@@ -39,7 +52,7 @@ class _LoginViewState extends State<LoginView> {
     if (_isRegistering) {
       final displayName = _nameController.text.trim();
       if (displayName.isEmpty) {
-        setState(() => _errorMessage = 'Display name is required for registration');
+        setState(() => _errorMessage = l10n?.displayNameRequired ?? 'Display name is required for registration');
         return;
       }
       success = await widget.authController.register(email, password, displayName);
@@ -54,7 +67,7 @@ class _LoginViewState extends State<LoginView> {
       if (state is AuthError) {
         setState(() => _errorMessage = state.message);
       } else {
-        setState(() => _errorMessage = 'Authentication failed');
+        setState(() => _errorMessage = l10n?.authFailed ?? 'Authentication failed');
       }
     }
   }
@@ -63,6 +76,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -72,16 +86,41 @@ class _LoginViewState extends State<LoginView> {
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                _isRegistering ? 'Create Account' : 'Sign In',
+                _isRegistering
+                    ? (l10n?.createAccount ?? 'Create Account')
+                    : (l10n?.signIn ?? 'Sign In'),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment<bool>(
+                    value: false,
+                    label: Text(l10n?.signIn ?? 'Sign In'),
+                    icon: const Icon(Icons.login, size: 18),
+                  ),
+                  ButtonSegment<bool>(
+                    value: true,
+                    label: Text(l10n?.signUp ?? 'Sign Up'),
+                    icon: const Icon(Icons.person_add_outlined, size: 18),
+                  ),
+                ],
+                selected: {_isRegistering},
+                onSelectionChanged: (Set<bool> newSelection) {
+                  setState(() {
+                    _isRegistering = newSelection.first;
+                    _errorMessage = null;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
               if (_errorMessage != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -92,6 +131,7 @@ class _LoginViewState extends State<LoginView> {
                   child: Text(
                     _errorMessage!,
                     style: TextStyle(color: colorScheme.onErrorContainer),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -99,27 +139,27 @@ class _LoginViewState extends State<LoginView> {
               if (_isRegistering) ...[
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Display Name',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n?.displayName ?? 'Display Name',
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 16),
               ],
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email Address',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n?.emailAddress ?? 'Email Address',
+                  border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n?.password ?? 'Password',
+                  border: const OutlineInputBorder(),
                 ),
                 obscureText: true,
               ),
@@ -129,25 +169,18 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: Text(l10n?.cancel ?? 'Cancel'),
                   ),
                   const SizedBox(width: 12),
                   FilledButton(
                     onPressed: _submit,
-                    child: Text(_isRegistering ? 'Register' : 'Login'),
+                    child: Text(
+                      _isRegistering
+                          ? (l10n?.register ?? 'Register')
+                          : (l10n?.signIn ?? 'Login'),
+                    ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 12),
-              Center(
-                child: TextButton(
-                  onPressed: () => setState(() => _isRegistering = !_isRegistering),
-                  child: Text(
-                    _isRegistering
-                        ? 'Already have an account? Sign In'
-                        : 'Need an account? Register',
-                  ),
-                ),
               ),
             ],
           ),
