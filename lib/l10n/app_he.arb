@@ -62,5 +62,12 @@
   "statsItems": "פריטים",
   "statsShared": "משותפים",
   "deleteList": "מחק רשימה",
-  "deleteListConfirm": "האם אתה בטוח שברצונך למחוק רשימה זו?"
+  "deleteListConfirm": "האם אתה בטוח שברצונך למחוק רשימה זו?",
+  "rememberMeOnDevice": "זכור אותי במכשיר זה",
+  "editProfile": "ערוך פרופיל",
+  "saveProfile": "שמור שינויים",
+  "avatarStyle": "סגנון תמונה",
+  "profileUpdatedSuccess": "הפרופיל עודכן בהצלחה",
+  "authGuardTitle": "נדרשת התחברות",
+  "authGuardMessage": "אנא התחבר או צור חשבון כדי לצפות ולנהל את רשימות הקניות שלך."
 }

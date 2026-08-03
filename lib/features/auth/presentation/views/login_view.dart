@@ -21,6 +21,7 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController(text: 'password123');
   final _nameController = TextEditingController();
   late bool _isRegistering;
+  bool _rememberMe = false;
   String? _errorMessage;
 
   @override
@@ -55,9 +56,18 @@ class _LoginViewState extends State<LoginView> {
         setState(() => _errorMessage = l10n?.displayNameRequired ?? 'Display name is required for registration');
         return;
       }
-      success = await widget.authController.register(email, password, displayName);
+      success = await widget.authController.register(
+        email,
+        password,
+        displayName,
+        rememberMe: _rememberMe,
+      );
     } else {
-      success = await widget.authController.login(email, password);
+      success = await widget.authController.login(
+        email,
+        password,
+        rememberMe: _rememberMe,
+      );
     }
 
     if (success && mounted) {
@@ -73,7 +83,11 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> _debugLoginGuyC() async {
-    final success = await widget.authController.login('guy@shoppingexplore.com', 'password123');
+    final success = await widget.authController.login(
+      'guy@shoppingexplore.com',
+      'password123',
+      rememberMe: _rememberMe,
+    );
     if (success && mounted) {
       Navigator.of(context).pop();
     }
@@ -182,7 +196,20 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 obscureText: true,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
+              CheckboxListTile(
+                value: _rememberMe,
+                onChanged: (val) {
+                  setState(() => _rememberMe = val ?? false);
+                },
+                title: Text(
+                  l10n?.rememberMeOnDevice ?? 'Remember me on this device',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

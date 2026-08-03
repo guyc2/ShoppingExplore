@@ -4,12 +4,14 @@ class UserDto {
   final String id;
   final String email;
   final String displayName;
+  final String? avatarUrl;
   final String createdAt;
 
   const UserDto({
     required this.id,
     required this.email,
     required this.displayName,
+    this.avatarUrl,
     required this.createdAt,
   });
 
@@ -18,6 +20,7 @@ class UserDto {
       id: json['id'] as String,
       email: json['email'] as String,
       displayName: json['displayName'] as String,
+      avatarUrl: json['avatarUrl'] as String?,
       createdAt: json['createdAt'] as String,
     );
   }
@@ -27,6 +30,7 @@ class UserDto {
       'id': id,
       'email': email,
       'displayName': displayName,
+      'avatarUrl': avatarUrl,
       'createdAt': createdAt,
     };
   }
@@ -36,6 +40,7 @@ class UserDto {
       id: id,
       email: email,
       displayName: displayName,
+      avatarUrl: avatarUrl,
       createdAt: DateTime.tryParse(createdAt) ?? DateTime.now(),
     );
   }
@@ -45,6 +50,7 @@ class UserDto {
       id: user.id,
       email: user.email,
       displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
       createdAt: user.createdAt.toIso8601String(),
     );
   }

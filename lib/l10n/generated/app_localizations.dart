@@ -481,6 +481,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this list?'**
   String get deleteListConfirm;
+
+  /// No description provided for @rememberMeOnDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me on this device'**
+  String get rememberMeOnDevice;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @saveProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveProfile;
+
+  /// No description provided for @avatarStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar Style'**
+  String get avatarStyle;
+
+  /// No description provided for @profileUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdatedSuccess;
+
+  /// No description provided for @authGuardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication Required'**
+  String get authGuardTitle;
+
+  /// No description provided for @authGuardMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in or create an account to view and manage your shopping lists.'**
+  String get authGuardMessage;
 }
 
 class _AppLocalizationsDelegate

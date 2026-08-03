@@ -4,6 +4,7 @@ import '../../../../core/utils/logger.dart';
 import 'package:shopping_explore/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:shopping_explore/features/auth/presentation/widgets/auth_user_button.dart';
 import 'package:shopping_explore/features/auth/presentation/views/account_profile_modal.dart';
+import 'package:shopping_explore/features/auth/presentation/views/login_view.dart';
 import '../../domain/entities/shopping_list.dart';
 import '../controllers/shopping_list_controller.dart';
 import '../controllers/shopping_list_state.dart';
@@ -122,51 +123,70 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
-    return Scaffold(
-      appBar: _buildAppBar(context, l10n),
-      body: ValueListenableBuilder<ShoppingListState>(
-        valueListenable: widget.controller,
-        builder: (context, state, _) {
-          if (state is ShoppingListLoading || state is ShoppingListInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return ListenableBuilder(
+      listenable: widget.authController ?? ChangeNotifier(),
+      builder: (context, _) {
+        final authState = widget.authController?.state;
+        final isUnauthenticated = authState is Unauthenticated;
+        final isAuthLoading = authState is AuthLoading;
 
-          if (state is ShoppingListError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    state.failure.message,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.error,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => widget.controller.loadShoppingLists(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
+        return Scaffold(
+          appBar: _buildAppBar(context, l10n),
+          body: isAuthLoading
+              ? const Center(child: CircularProgressIndicator())
+              : (isUnauthenticated
+                  ? _buildAuthGuard(context, l10n)
+                  : ValueListenableBuilder<ShoppingListState>(
+                      valueListenable: widget.controller,
+                      builder: (context, state, _) {
+                        if (state is ShoppingListLoading ||
+                            state is ShoppingListInitial) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
 
-          if (state is ShoppingListLoaded) {
-            if (state.lists.isEmpty) {
-              return _buildEmptyDashboard(context, l10n);
-            }
-            return _buildDashboard(context, state.lists, l10n);
-          }
+                        if (state is ShoppingListError) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  state.failure.message,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: theme.colorScheme.error,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: () => widget.controller
+                                      .loadShoppingLists(),
+                                  child: const Text('Retry'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
 
-          return const SizedBox.shrink();
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openCreateListModal(context),
-        icon: const Icon(Icons.add_shopping_cart),
-        label: Text(l10n?.newShoppingList ?? 'New List'),
-      ),
+                        if (state is ShoppingListLoaded) {
+                          if (state.lists.isEmpty) {
+                            return _buildEmptyDashboard(context, l10n);
+                          }
+                          return _buildDashboard(
+                              context, state.lists, l10n);
+                        }
+
+                        return const SizedBox.shrink();
+                      },
+                    )),
+          floatingActionButton: isUnauthenticated || isAuthLoading
+              ? null
+              : FloatingActionButton.extended(
+                  onPressed: () => _openCreateListModal(context),
+                  icon: const Icon(Icons.add_shopping_cart),
+                  label: Text(l10n?.newShoppingList ?? 'New List'),
+                ),
+        );
+      },
     );
   }
 
@@ -438,6 +458,139 @@ class _ShoppingListViewState extends State<ShoppingListView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAuthGuard(BuildContext context, AppLocalizations? l10n) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 420),
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: colorScheme.outlineVariant),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorScheme.surface,
+                colorScheme.primaryContainer.withValues(alpha: 0.15),
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colorScheme.primary.withValues(alpha: 0.1),
+                ),
+                child: Icon(
+                  Icons.lock_outline_rounded,
+                  size: 36,
+                  color: colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                l10n?.authGuardTitle ?? 'Authentication Required',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n?.authGuardMessage ??
+                    'Please sign in or create an account to view and manage your shopping lists.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        showDialog<void>(
+                          context: context,
+                          builder: (_) => LoginView(
+                            authController: widget.authController!,
+                            initialIsRegistering: false,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.login, size: 18),
+                      label: Text(l10n?.signIn ?? 'Sign In'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        showDialog<void>(
+                          context: context,
+                          builder: (_) => LoginView(
+                            authController: widget.authController!,
+                            initialIsRegistering: true,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.person_add_outlined, size: 18),
+                      label: Text(l10n?.createAccount ?? 'Create Account'),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ActionChip(
+                avatar: const Icon(Icons.bug_report_rounded, size: 18),
+                label: Text(l10n?.quickDebugGuyC ?? 'Quick Debug Login as Guy C'),
+                backgroundColor: colorScheme.secondaryContainer,
+                labelStyle: TextStyle(
+                  color: colorScheme.onSecondaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
+                onPressed: () {
+                  widget.authController?.login('guy@shoppingexplore.com', 'password123', rememberMe: true);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -2,22 +2,18 @@ import '../../../../core/error/result.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
-class RegisterUseCase {
+class UpdateUserProfileUseCase {
   final AuthRepository repository;
 
-  const RegisterUseCase(this.repository);
+  const UpdateUserProfileUseCase(this.repository);
 
   Future<Result<User>> execute({
-    required String email,
-    required String password,
     required String displayName,
-    bool rememberMe = false,
+    String? avatarUrl,
   }) {
-    return repository.register(
-      email: email,
-      password: password,
+    return repository.updateProfile(
       displayName: displayName,
-      rememberMe: rememberMe,
+      avatarUrl: avatarUrl,
     );
   }
 }

@@ -5,6 +5,8 @@ import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
+import '../../domain/usecases/restore_persistent_session_usecase.dart';
+import '../../domain/usecases/update_user_profile_usecase.dart';
 
 abstract class AuthState {
   const AuthState();
@@ -37,6 +39,8 @@ class AuthController extends ChangeNotifier {
   final RegisterUseCase registerUseCase;
   final LogoutUseCase logoutUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
+  final UpdateUserProfileUseCase? updateUserProfileUseCase;
+  final RestorePersistentSessionUseCase? restorePersistentSessionUseCase;
 
   AuthState _state = const AuthInitial();
   AuthState get state => _state;
@@ -46,6 +50,8 @@ class AuthController extends ChangeNotifier {
     required this.registerUseCase,
     required this.logoutUseCase,
     required this.getCurrentUserUseCase,
+    this.updateUserProfileUseCase,
+    this.restorePersistentSessionUseCase,
   });
 
   Future<void> checkAuthStatus() async {
@@ -57,6 +63,17 @@ class AuthController extends ChangeNotifier {
       if (user != null) {
         AppLogger.i('Authenticated as: ${user.email}', tag: 'AuthController');
         _setState(Authenticated(user));
+      } else if (restorePersistentSessionUseCase != null) {
+        AppLogger.i('Attempting to restore persistent session...', tag: 'AuthController');
+        final restoreResult = await restorePersistentSessionUseCase!.execute();
+        if (restoreResult.isSuccess && restoreResult.value != null) {
+          final restoredUser = restoreResult.value!;
+          AppLogger.i('Restored persistent session as: ${restoredUser.email}', tag: 'AuthController');
+          _setState(Authenticated(restoredUser));
+        } else {
+          AppLogger.i('No persistent session found', tag: 'AuthController');
+          _setState(const Unauthenticated());
+        }
       } else {
         AppLogger.i('No authenticated user found', tag: 'AuthController');
         _setState(const Unauthenticated());
@@ -67,10 +84,14 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String email, String password, {bool rememberMe = false}) async {
     _setState(const AuthLoading());
-    AppLogger.d('Attempting login for email: $email', tag: 'AuthController');
-    final result = await loginUseCase.execute(email: email, password: password);
+    AppLogger.d('Attempting login for email: $email (rememberMe: $rememberMe)', tag: 'AuthController');
+    final result = await loginUseCase.execute(
+      email: email,
+      password: password,
+      rememberMe: rememberMe,
+    );
     if (result.isSuccess) {
       final user = result.value;
       AppLogger.i('Login successful: ${user.email}', tag: 'AuthController');
@@ -83,13 +104,19 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  Future<bool> register(String email, String password, String displayName) async {
+  Future<bool> register(
+    String email,
+    String password,
+    String displayName, {
+    bool rememberMe = false,
+  }) async {
     _setState(const AuthLoading());
-    AppLogger.d('Attempting registration for email: $email', tag: 'AuthController');
+    AppLogger.d('Attempting registration for email: $email (rememberMe: $rememberMe)', tag: 'AuthController');
     final result = await registerUseCase.execute(
       email: email,
       password: password,
       displayName: displayName,
+      rememberMe: rememberMe,
     );
     if (result.isSuccess) {
       final user = result.value;
@@ -98,6 +125,31 @@ class AuthController extends ChangeNotifier {
       return true;
     } else {
       AppLogger.w('Registration failed: ${result.error.message}', tag: 'AuthController');
+      _setState(AuthError(result.error.message));
+      return false;
+    }
+  }
+
+  Future<bool> updateProfile({
+    required String displayName,
+    String? avatarUrl,
+  }) async {
+    if (updateUserProfileUseCase == null) {
+      AppLogger.w('UpdateUserProfileUseCase is not configured', tag: 'AuthController');
+      return false;
+    }
+    AppLogger.d('Updating user profile: $displayName', tag: 'AuthController');
+    final result = await updateUserProfileUseCase!.execute(
+      displayName: displayName,
+      avatarUrl: avatarUrl,
+    );
+    if (result.isSuccess) {
+      final updatedUser = result.value;
+      AppLogger.i('User profile updated successfully: ${updatedUser.displayName}', tag: 'AuthController');
+      _setState(Authenticated(updatedUser));
+      return true;
+    } else {
+      AppLogger.w('Failed to update user profile: ${result.error.message}', tag: 'AuthController');
       _setState(AuthError(result.error.message));
       return false;
     }

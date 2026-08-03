@@ -9,6 +9,8 @@ import 'features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/logout_usecase.dart';
 import 'features/auth/domain/usecases/register_usecase.dart';
+import 'features/auth/domain/usecases/restore_persistent_session_usecase.dart';
+import 'features/auth/domain/usecases/update_user_profile_usecase.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
 import 'features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
@@ -62,6 +64,8 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       registerUseCase: RegisterUseCase(authRepository),
       logoutUseCase: LogoutUseCase(authRepository),
       getCurrentUserUseCase: GetCurrentUserUseCase(authRepository),
+      updateUserProfileUseCase: UpdateUserProfileUseCase(authRepository),
+      restorePersistentSessionUseCase: RestorePersistentSessionUseCase(authRepository),
     );
   }
 

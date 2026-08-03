@@ -10,7 +10,12 @@ class LoginUseCase {
   Future<Result<User>> execute({
     required String email,
     required String password,
+    bool rememberMe = false,
   }) {
-    return repository.login(email: email, password: password);
+    return repository.login(
+      email: email,
+      password: password,
+      rememberMe: rememberMe,
+    );
   }
 }

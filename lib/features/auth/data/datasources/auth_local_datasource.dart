@@ -6,9 +6,13 @@ abstract class AuthLocalDataSource {
   Future<UserDto> register(String email, String password, String displayName);
   Future<void> logout();
   Future<UserDto?> getCurrentUser();
+  Future<UserDto> updateProfile(String displayName, String? avatarUrl);
+  Future<void> savePersistentSession(String email);
+  Future<UserDto?> restorePersistentSession();
 }
 
 class InMemoryAuthDataSource implements AuthLocalDataSource {
+  static String? _persistentEmail;
   final Map<String, _StoredUser> _users = {
     'user@shoppingexplore.com': _StoredUser(
       dto: const UserDto(
@@ -110,11 +114,50 @@ class InMemoryAuthDataSource implements AuthLocalDataSource {
   @override
   Future<void> logout() async {
     _currentUserDto = null;
+    _persistentEmail = null;
   }
 
   @override
   Future<UserDto?> getCurrentUser() async {
     return _currentUserDto;
+  }
+
+  @override
+  Future<UserDto> updateProfile(String displayName, String? avatarUrl) async {
+    if (_currentUserDto == null) {
+      throw const ValidationFailure('No authenticated user to update profile.');
+    }
+    final current = _currentUserDto!;
+    final updatedDto = UserDto(
+      id: current.id,
+      email: current.email,
+      displayName: displayName.trim(),
+      avatarUrl: avatarUrl ?? current.avatarUrl,
+      createdAt: current.createdAt,
+    );
+    final stored = _users[current.email];
+    if (stored != null) {
+      _users[current.email] = _StoredUser(dto: updatedDto, password: stored.password);
+    }
+    _currentUserDto = updatedDto;
+    return updatedDto;
+  }
+
+  @override
+  Future<void> savePersistentSession(String email) async {
+    _persistentEmail = email.trim().toLowerCase();
+  }
+
+  @override
+  Future<UserDto?> restorePersistentSession() async {
+    if (_persistentEmail != null) {
+      final stored = _users[_persistentEmail];
+      if (stored != null) {
+        _currentUserDto = stored.dto;
+        return stored.dto;
+      }
+    }
+    return null;
   }
 }
 

@@ -201,4 +201,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteListConfirm => 'Are you sure you want to delete this list?';
+
+  @override
+  String get rememberMeOnDevice => 'Remember me on this device';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get saveProfile => 'Save Changes';
+
+  @override
+  String get avatarStyle => 'Avatar Style';
+
+  @override
+  String get profileUpdatedSuccess => 'Profile updated successfully';
+
+  @override
+  String get authGuardTitle => 'Authentication Required';
+
+  @override
+  String get authGuardMessage =>
+      'Please sign in or create an account to view and manage your shopping lists.';
 }

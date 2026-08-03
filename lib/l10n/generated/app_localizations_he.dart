@@ -201,4 +201,26 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get deleteListConfirm => 'האם אתה בטוח שברצונך למחוק רשימה זו?';
+
+  @override
+  String get rememberMeOnDevice => 'זכור אותי במכשיר זה';
+
+  @override
+  String get editProfile => 'ערוך פרופיל';
+
+  @override
+  String get saveProfile => 'שמור שינויים';
+
+  @override
+  String get avatarStyle => 'סגנון תמונה';
+
+  @override
+  String get profileUpdatedSuccess => 'הפרופיל עודכן בהצלחה';
+
+  @override
+  String get authGuardTitle => 'נדרשת התחברות';
+
+  @override
+  String get authGuardMessage =>
+      'אנא התחבר או צור חשבון כדי לצפות ולנהל את רשימות הקניות שלך.';
 }
