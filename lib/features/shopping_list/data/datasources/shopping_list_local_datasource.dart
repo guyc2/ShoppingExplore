@@ -1,6 +1,7 @@
 import 'dart:async';
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/shopping_item.dart';
+import '../../domain/entities/shopping_session.dart';
 import '../models/shopping_item_dto.dart';
 import '../models/shopping_list_dto.dart';
 
@@ -12,6 +13,8 @@ abstract class ShoppingListLocalDataSource {
   Future<void> deleteShoppingList(String id);
   Future<void> saveShoppingItem(String listId, ShoppingItemDto item);
   Future<void> deleteShoppingItem(String listId, String itemId);
+  Future<ShoppingListDto> startShoppingSession(String listId, String userEmail, {String? locationName});
+  Future<ShoppingListDto> endShoppingSession(String listId, String userEmail);
   Stream<void> get changesStream;
 }
 
@@ -192,6 +195,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       ownerId: list.ownerId,
       sharedWithEmails: updatedEmails,
       items: list.items,
+      activeSessions: list.activeSessions,
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
     );
@@ -234,6 +238,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       ownerId: list.ownerId,
       sharedWithEmails: list.sharedWithEmails,
       items: updatedItems,
+      activeSessions: list.activeSessions,
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
     );
@@ -260,9 +265,71 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       ownerId: list.ownerId,
       sharedWithEmails: list.sharedWithEmails,
       items: updatedItems,
+      activeSessions: list.activeSessions,
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
     );
     notifyChanges();
+  }
+
+  @override
+  Future<ShoppingListDto> startShoppingSession(String listId, String userEmail, {String? locationName}) async {
+    final list = _cache[listId];
+    if (list == null) {
+      throw const CacheFailure('Shopping list not found');
+    }
+    final remainingSessions = list.activeSessions
+        .where((s) => s.userEmail.toLowerCase() != userEmail.toLowerCase())
+        .toList();
+    final newSession = ShoppingSession(
+      userEmail: userEmail,
+      locationName: locationName,
+      startedAt: DateTime.now(),
+    );
+    final updatedList = ShoppingListDto(
+      id: list.id,
+      title: list.title,
+      shortDescription: list.shortDescription,
+      description: list.description,
+      colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
+      ownerId: list.ownerId,
+      sharedWithEmails: list.sharedWithEmails,
+      items: list.items,
+      activeSessions: [...remainingSessions, newSession],
+      createdAt: list.createdAt,
+      updatedAt: DateTime.now(),
+    );
+    _cache[listId] = updatedList;
+    notifyChanges();
+    return updatedList;
+  }
+
+  @override
+  Future<ShoppingListDto> endShoppingSession(String listId, String userEmail) async {
+    final list = _cache[listId];
+    if (list == null) {
+      throw const CacheFailure('Shopping list not found');
+    }
+    final remainingSessions = list.activeSessions
+        .where((s) => s.userEmail.toLowerCase() != userEmail.toLowerCase())
+        .toList();
+    final updatedList = ShoppingListDto(
+      id: list.id,
+      title: list.title,
+      shortDescription: list.shortDescription,
+      description: list.description,
+      colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
+      ownerId: list.ownerId,
+      sharedWithEmails: list.sharedWithEmails,
+      items: list.items,
+      activeSessions: remainingSessions,
+      createdAt: list.createdAt,
+      updatedAt: DateTime.now(),
+    );
+    _cache[listId] = updatedList;
+    notifyChanges();
+    return updatedList;
   }
 }

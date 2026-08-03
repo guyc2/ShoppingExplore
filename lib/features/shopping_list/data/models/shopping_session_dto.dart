@@ -1,0 +1,45 @@
+import '../../domain/entities/shopping_session.dart';
+
+class ShoppingSessionDto {
+  final String userEmail;
+  final String? locationName;
+  final String startedAt;
+
+  const ShoppingSessionDto({
+    required this.userEmail,
+    this.locationName,
+    required this.startedAt,
+  });
+
+  factory ShoppingSessionDto.fromJson(Map<String, dynamic> json) {
+    return ShoppingSessionDto(
+      userEmail: json['userEmail'] as String,
+      locationName: json['locationName'] as String?,
+      startedAt: json['startedAt'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userEmail': userEmail,
+      'locationName': locationName,
+      'startedAt': startedAt,
+    };
+  }
+
+  factory ShoppingSessionDto.fromDomain(ShoppingSession session) {
+    return ShoppingSessionDto(
+      userEmail: session.userEmail,
+      locationName: session.locationName,
+      startedAt: session.startedAt.toIso8601String(),
+    );
+  }
+
+  ShoppingSession toDomain() {
+    return ShoppingSession(
+      userEmail: userEmail,
+      locationName: locationName,
+      startedAt: DateTime.parse(startedAt),
+    );
+  }
+}

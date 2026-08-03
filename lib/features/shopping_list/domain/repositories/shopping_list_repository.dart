@@ -12,4 +12,6 @@ abstract class ShoppingListRepository {
   Future<Result<void>> deleteShoppingItem(String listId, String itemId);
   Stream<Result<List<ShoppingList>>> watchShoppingLists(String? userEmail);
   Stream<Result<ShoppingList>> watchShoppingList(String id);
+  Future<Result<ShoppingList>> startShoppingSession(String listId, String userEmail, {String? locationName});
+  Future<Result<ShoppingList>> endShoppingSession(String listId, String userEmail);
 }

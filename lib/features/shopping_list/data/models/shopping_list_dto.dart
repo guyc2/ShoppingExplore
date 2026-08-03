@@ -1,5 +1,6 @@
 import '../../domain/entities/shopping_list.dart';
 import 'shopping_item_dto.dart';
+import 'shopping_session_dto.dart';
 
 class ShoppingListDto extends ShoppingList {
   const ShoppingListDto({
@@ -12,6 +13,7 @@ class ShoppingListDto extends ShoppingList {
     super.ownerId,
     super.sharedWithEmails = const [],
     super.items = const [],
+    super.activeSessions = const [],
     required super.createdAt,
     required super.updatedAt,
   });
@@ -33,6 +35,10 @@ class ShoppingListDto extends ShoppingList {
               ?.map((item) => ShoppingItemDto.fromJson(item as Map<String, dynamic>))
               .toList() ??
           const [],
+      activeSessions: (json['activeSessions'] as List<dynamic>?)
+              ?.map((session) => ShoppingSessionDto.fromJson(session as Map<String, dynamic>).toDomain())
+              .toList() ??
+          const [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -49,6 +55,7 @@ class ShoppingListDto extends ShoppingList {
       'ownerId': ownerId,
       'sharedWithEmails': sharedWithEmails,
       'items': items.map((item) => ShoppingItemDto.fromDomain(item).toJson()).toList(),
+      'activeSessions': activeSessions.map((session) => ShoppingSessionDto.fromDomain(session).toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -65,6 +72,7 @@ class ShoppingListDto extends ShoppingList {
       ownerId: list.ownerId,
       sharedWithEmails: list.sharedWithEmails,
       items: list.items,
+      activeSessions: list.activeSessions,
       createdAt: list.createdAt,
       updatedAt: list.updatedAt,
     );
@@ -81,6 +89,7 @@ class ShoppingListDto extends ShoppingList {
       ownerId: ownerId,
       sharedWithEmails: sharedWithEmails,
       items: items.map((item) => ShoppingItemDto.fromDomain(item).toDomain()).toList(),
+      activeSessions: activeSessions,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

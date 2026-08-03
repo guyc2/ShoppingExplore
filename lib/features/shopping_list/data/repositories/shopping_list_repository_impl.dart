@@ -179,4 +179,38 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
 
     return controller.stream;
   }
+
+  @override
+  Future<Result<ShoppingList>> startShoppingSession(String listId, String userEmail, {String? locationName}) async {
+    AppLogger.d('startShoppingSession requested for user $userEmail on list $listId at $locationName', tag: 'ShoppingListRepository');
+    try {
+      final updatedDto = await localDataSource.startShoppingSession(listId, userEmail, locationName: locationName);
+      final domainList = updatedDto.toDomain();
+      AppLogger.i('Successfully started shopping session for $userEmail on list $listId', tag: 'ShoppingListRepository');
+      return Success(domainList);
+    } on Failure catch (f) {
+      AppLogger.w('startShoppingSession failure: ${f.message}', tag: 'ShoppingListRepository');
+      return Error(f);
+    } catch (e, stackTrace) {
+      AppLogger.e('startShoppingSession unexpected error', error: e, stackTrace: stackTrace, tag: 'ShoppingListRepository');
+      return Error(CacheFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<ShoppingList>> endShoppingSession(String listId, String userEmail) async {
+    AppLogger.d('endShoppingSession requested for user $userEmail on list $listId', tag: 'ShoppingListRepository');
+    try {
+      final updatedDto = await localDataSource.endShoppingSession(listId, userEmail);
+      final domainList = updatedDto.toDomain();
+      AppLogger.i('Successfully ended shopping session for $userEmail on list $listId', tag: 'ShoppingListRepository');
+      return Success(domainList);
+    } on Failure catch (f) {
+      AppLogger.w('endShoppingSession failure: ${f.message}', tag: 'ShoppingListRepository');
+      return Error(f);
+    } catch (e, stackTrace) {
+      AppLogger.e('endShoppingSession unexpected error', error: e, stackTrace: stackTrace, tag: 'ShoppingListRepository');
+      return Error(CacheFailure(e.toString()));
+    }
+  }
 }

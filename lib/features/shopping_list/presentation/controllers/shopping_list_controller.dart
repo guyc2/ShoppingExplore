@@ -15,6 +15,8 @@ import '../../domain/usecases/update_item_properties.dart';
 import '../../domain/usecases/update_shopping_list.dart';
 import '../../domain/usecases/watch_shopping_list.dart';
 import '../../domain/usecases/watch_shopping_lists.dart';
+import '../../domain/usecases/start_shopping_session.dart';
+import '../../domain/usecases/end_shopping_session.dart';
 import 'shopping_list_state.dart';
 
 class ShoppingListController extends ValueNotifier<ShoppingListState> {
@@ -29,6 +31,8 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
   final DeleteShoppingList? deleteShoppingList;
   final WatchShoppingLists? watchShoppingLists;
   final WatchShoppingList? watchShoppingList;
+  final StartShoppingSession? startShoppingSessionUseCase;
+  final EndShoppingSession? endShoppingSessionUseCase;
 
   StreamSubscription<Result<List<ShoppingList>>>? _listsSubscription;
   StreamSubscription<Result<ShoppingList>>? _listSubscription;
@@ -45,6 +49,8 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     this.deleteShoppingList,
     this.watchShoppingLists,
     this.watchShoppingList,
+    this.startShoppingSessionUseCase,
+    this.endShoppingSessionUseCase,
   }) : super(const ShoppingListInitial());
 
   void subscribeToShoppingLists(String? userEmail) {
@@ -259,11 +265,52 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
   bool isShoppingMode(String listId) => _shoppingModes[listId] ?? false;
   Set<String> removedCartItemIds(String listId) => _removedCartItemIds[listId] ?? {};
 
-  void enterShoppingMode(String listId) {
+  void enterShoppingMode(String listId, {String? userEmail, String? locationName}) {
     AppLogger.i('Entering shopping mode for list $listId', tag: 'ShoppingListController');
     _shoppingModes[listId] = true;
     _removedCartItemIds[listId] = {};
+    if (userEmail != null) {
+      startShoppingSession(listId, userEmail, locationName: locationName);
+    }
     notifyListeners();
+  }
+
+  Future<bool> startShoppingSession(String listId, String userEmail, {String? locationName}) async {
+    AppLogger.i('Starting shopping session for $userEmail at $locationName', tag: 'ShoppingListController');
+    if (startShoppingSessionUseCase == null) return false;
+    final res = await startShoppingSessionUseCase!(listId, userEmail, locationName: locationName);
+    if (res.isSuccess) {
+      if (value is ShoppingListLoaded) {
+        final currentLists = (value as ShoppingListLoaded).lists;
+        final updatedLists = currentLists.map((l) => l.id == listId ? res.value : l).toList();
+        value = ShoppingListLoaded(updatedLists);
+      } else {
+        await loadShoppingLists();
+      }
+      return true;
+    } else {
+      AppLogger.e('Failed to start shopping session: ${res.error.message}', tag: 'ShoppingListController');
+      return false;
+    }
+  }
+
+  Future<bool> endShoppingSession(String listId, String userEmail) async {
+    AppLogger.i('Ending shopping session for $userEmail', tag: 'ShoppingListController');
+    if (endShoppingSessionUseCase == null) return false;
+    final res = await endShoppingSessionUseCase!(listId, userEmail);
+    if (res.isSuccess) {
+      if (value is ShoppingListLoaded) {
+        final currentLists = (value as ShoppingListLoaded).lists;
+        final updatedLists = currentLists.map((l) => l.id == listId ? res.value : l).toList();
+        value = ShoppingListLoaded(updatedLists);
+      } else {
+        await loadShoppingLists();
+      }
+      return true;
+    } else {
+      AppLogger.e('Failed to end shopping session: ${res.error.message}', tag: 'ShoppingListController');
+      return false;
+    }
   }
 
   void removeItemInShoppingMode(String listId, String itemId) {
@@ -281,7 +328,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     }
   }
 
-  Future<void> completeShoppingMode(String listId) async {
+  Future<void> completeShoppingMode(String listId, {String? userEmail}) async {
     AppLogger.i('Completing shopping mode for list $listId', tag: 'ShoppingListController');
     final removedIds = _removedCartItemIds[listId] ?? {};
     for (final itemId in removedIds) {
@@ -290,13 +337,19 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     }
     _removedCartItemIds.remove(listId);
     _shoppingModes[listId] = false;
+    if (userEmail != null) {
+      await endShoppingSession(listId, userEmail);
+    }
     await loadShoppingLists();
   }
 
-  void cancelShoppingMode(String listId) {
+  Future<void> cancelShoppingMode(String listId, {String? userEmail}) async {
     AppLogger.i('Canceling shopping mode for list $listId and restoring all removed items', tag: 'ShoppingListController');
     _removedCartItemIds.remove(listId);
     _shoppingModes[listId] = false;
+    if (userEmail != null) {
+      await endShoppingSession(listId, userEmail);
+    }
     notifyListeners();
   }
 }

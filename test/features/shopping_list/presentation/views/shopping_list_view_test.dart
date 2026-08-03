@@ -99,8 +99,10 @@ void main() {
       await tester.tap(find.text('Weekly Groceries'));
       await tester.pumpAndSettle();
 
-      // Enter shopping mode
+      // Enter shopping mode via StartShoppingModal
       await tester.tap(find.text('Start Shopping'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Start Active Shopping'));
       await tester.pumpAndSettle();
 
       expect(find.text('Active Shopping Mode'), findsOneWidget);

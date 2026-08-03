@@ -67,7 +67,7 @@ void main() {
       controller.removeItemInShoppingMode(listId, itemId);
       expect(controller.removedCartItemIds(listId), contains(itemId));
 
-      controller.cancelShoppingMode(listId);
+      await controller.cancelShoppingMode(listId);
       expect(controller.isShoppingMode(listId), isFalse);
       expect(controller.removedCartItemIds(listId), isEmpty);
 

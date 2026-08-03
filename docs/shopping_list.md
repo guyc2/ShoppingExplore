@@ -65,4 +65,10 @@ flowchart TD
 > [!info] Material 3 Styling Compliance
 > All presentation components strictly utilize modern Material 3 theme tokens (`surfaceContainerHighest`, `withValues(alpha: ...)`, `initialValue`) to ensure zero-deprecation compatibility across light and dark themes.
 
+## Key files
+- `[shopping_list/domain/entities/shopping_session.dart](../lib/features/shopping_list/domain/entities/shopping_session.dart)` — Entity representing an active shopping session with store location and start timestamp.
+- `[shopping_list/presentation/widgets/active_shoppers_banner.dart](../lib/features/shopping_list/presentation/widgets/active_shoppers_banner.dart)` — Real-time active shoppers presence banner with Hebrew/English RTL support.
+- `[shopping_list/presentation/widgets/start_shopping_modal.dart](../lib/features/shopping_list/presentation/widgets/start_shopping_modal.dart)` — Modal sheet for selecting store location when starting Active Shopping Mode.
+
+
 

@@ -4,11 +4,13 @@ import '../../domain/entities/shopping_item.dart';
 class ShoppingItemEditorModal extends StatefulWidget {
   final ShoppingItem item;
   final ValueChanged<ShoppingItem> onSave;
+  final List<String> availableEmails;
 
   const ShoppingItemEditorModal({
     super.key,
     required this.item,
     required this.onSave,
+    this.availableEmails = const [],
   });
 
   @override
@@ -116,15 +118,6 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _assignedToController,
-              decoration: const InputDecoration(
-                labelText: 'Assigned To (Email)',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person_outline),
-              ),
-            ),
-            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -185,6 +178,50 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
                 border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _assignedToController,
+              decoration: InputDecoration(
+                labelText: 'Assigned To (responsible user email)',
+                prefixIcon: const Icon(Icons.person_outline),
+                border: const OutlineInputBorder(),
+                suffixIcon: _assignedToController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: () {
+                          setState(() {
+                            _assignedToController.clear();
+                          });
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+            if (widget.availableEmails.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: widget.availableEmails.map((email) {
+                  final isSelected =
+                      _assignedToController.text.trim().toLowerCase() ==
+                          email.toLowerCase();
+                  return ChoiceChip(
+                    label: Text(
+                      email.contains('@') ? email.split('@')[0] : email,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        _assignedToController.text = selected ? email : '';
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,

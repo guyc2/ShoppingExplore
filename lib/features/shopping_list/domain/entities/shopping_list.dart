@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'shopping_item.dart';
+import 'shopping_session.dart';
 
 class ShoppingList extends Equatable {
   final String id;
@@ -11,6 +12,7 @@ class ShoppingList extends Equatable {
   final String? ownerId;
   final List<String> sharedWithEmails;
   final List<ShoppingItem> items;
+  final List<ShoppingSession> activeSessions;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -24,6 +26,7 @@ class ShoppingList extends Equatable {
     this.ownerId,
     this.sharedWithEmails = const [],
     this.items = const [],
+    this.activeSessions = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -38,6 +41,7 @@ class ShoppingList extends Equatable {
     String? ownerId,
     List<String>? sharedWithEmails,
     List<ShoppingItem>? items,
+    List<ShoppingSession>? activeSessions,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -51,6 +55,7 @@ class ShoppingList extends Equatable {
       ownerId: ownerId ?? this.ownerId,
       sharedWithEmails: sharedWithEmails ?? this.sharedWithEmails,
       items: items ?? this.items,
+      activeSessions: activeSessions ?? this.activeSessions,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -67,6 +72,7 @@ class ShoppingList extends Equatable {
         ownerId,
         sharedWithEmails,
         items,
+        activeSessions,
         createdAt,
         updatedAt,
       ];

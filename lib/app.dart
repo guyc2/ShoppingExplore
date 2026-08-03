@@ -25,6 +25,8 @@ import 'features/shopping_list/domain/usecases/update_item_properties.dart';
 import 'features/shopping_list/domain/usecases/update_shopping_list.dart';
 import 'features/shopping_list/domain/usecases/watch_shopping_list.dart';
 import 'features/shopping_list/domain/usecases/watch_shopping_lists.dart';
+import 'features/shopping_list/domain/usecases/start_shopping_session.dart';
+import 'features/shopping_list/domain/usecases/end_shopping_session.dart';
 import 'features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'features/shopping_list/presentation/views/shopping_list_view.dart';
 
@@ -45,8 +47,11 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
   @override
   void initState() {
     super.initState();
-    final localDataSource = InMemoryShoppingListLocalDataSource.withDefaultData();
-    final repository = ShoppingListRepositoryImpl(localDataSource: localDataSource);
+    AppLogger.i('Initializing ShoppingExploreApp state', tag: 'App');
+    final dataSource = InMemoryShoppingListLocalDataSource.withDefaultData();
+    final repository =
+        ShoppingListRepositoryImpl(localDataSource: dataSource);
+
     _controller = ShoppingListController(
       getShoppingLists: GetShoppingLists(repository),
       createShoppingItem: CreateShoppingItem(repository),
@@ -59,6 +64,8 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       deleteShoppingList: DeleteShoppingList(repository),
       watchShoppingLists: WatchShoppingLists(repository),
       watchShoppingList: WatchShoppingList(repository),
+      startShoppingSessionUseCase: StartShoppingSession(repository),
+      endShoppingSessionUseCase: EndShoppingSession(repository),
     );
 
     final authDataSource = InMemoryAuthDataSource(startAuthenticated: false);

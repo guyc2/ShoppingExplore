@@ -6,9 +6,11 @@ import '../../domain/entities/shopping_list.dart';
 import '../controllers/shopping_list_controller.dart';
 import '../controllers/shopping_list_state.dart';
 import '../widgets/add_item_input.dart';
+import '../widgets/active_shoppers_banner.dart';
 import '../widgets/shopping_item_editor_modal.dart';
 import '../widgets/shopping_item_tile.dart';
 import '../widgets/shopping_list_share_modal.dart';
+import '../widgets/start_shopping_modal.dart';
 
 /// Detail view for a single shopping list. Displays the list metadata
 /// header (title, description, color, icon, collaborators), the
@@ -61,7 +63,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
     widget.controller.addItem(widget.listId, item);
   }
 
-  void _openEditor(BuildContext context, ShoppingItem item) {
+  void _openEditor(BuildContext context, ShoppingItem item, [List<String> availableEmails = const []]) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -70,6 +72,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
       ),
       builder: (_) => ShoppingItemEditorModal(
         item: item,
+        availableEmails: availableEmails,
         onSave: (updatedItem) {
           widget.controller.updateItem(widget.listId, updatedItem);
         },
@@ -167,6 +170,12 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
             children: [
               // List metadata header
               _buildMetadataHeader(context, list, listColor),
+
+              // Active Shoppers banner
+              ActiveShoppersBanner(
+                activeSessions: list.activeSessions,
+                currentUserEmail: 'guy@shoppingexplore.com',
+              ),
 
               // Shopping mode controls
               _buildShoppingModeControls(context, list),
@@ -336,8 +345,18 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
               ),
               label: Text(l10n?.startShopping ?? 'Start Shopping'),
               onPressed: () {
-                widget.controller.enterShoppingMode(list.id);
-                setState(() {});
+                StartShoppingModal.show(
+                  context,
+                  listTitle: list.title,
+                  onStart: (locationName) {
+                    widget.controller.enterShoppingMode(
+                      list.id,
+                      userEmail: 'guy@shoppingexplore.com',
+                      locationName: locationName,
+                    );
+                    setState(() {});
+                  },
+                );
               },
             )
           : Wrap(
@@ -369,7 +388,10 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                   ),
                   label: Text(l10n?.completeShopping ?? 'Complete Shopping'),
                   onPressed: () {
-                    widget.controller.completeShoppingMode(list.id);
+                    widget.controller.completeShoppingMode(
+                      list.id,
+                      userEmail: 'guy@shoppingexplore.com',
+                    );
                     setState(() {});
                   },
                 ),
@@ -381,7 +403,10 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                   ),
                   label: Text(l10n?.cancelShopping ?? 'Cancel Shopping'),
                   onPressed: () {
-                    widget.controller.cancelShoppingMode(list.id);
+                    widget.controller.cancelShoppingMode(
+                      list.id,
+                      userEmail: 'guy@shoppingexplore.com',
+                    );
                     setState(() {});
                   },
                 ),
@@ -394,6 +419,10 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
     final isShoppingMode = widget.controller.isShoppingMode(list.id);
     final removedIds = widget.controller.removedCartItemIds(list.id);
     final l10n = AppLocalizations.of(context);
+    final availableEmails = [
+      if (list.ownerId != null) list.ownerId!,
+      ...list.sharedWithEmails,
+    ];
 
     if (!isShoppingMode) {
       final unmarkedItems = list.items.where((i) => !i.isCompleted).toList();
@@ -417,7 +446,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
               item: item,
               onToggle: () => widget.controller.toggleItem(list.id, item),
               onDelete: () => _removeItem(item.id),
-              onTap: () => _openEditor(context, item),
+              onTap: () => _openEditor(context, item, availableEmails),
             ),
           ),
           if (markedItems.isNotEmpty) ...[
@@ -437,7 +466,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                 item: item,
                 onToggle: () => widget.controller.toggleItem(list.id, item),
                 onDelete: () => _removeItem(item.id),
-                onTap: () => _openEditor(context, item),
+                onTap: () => _openEditor(context, item, availableEmails),
               ),
             ),
           ],
@@ -468,7 +497,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
             item: item,
             onToggle: () => widget.controller.toggleItem(list.id, item),
             onDelete: () => _removeItem(item.id),
-            onTap: () => _openEditor(context, item),
+            onTap: () => _openEditor(context, item, availableEmails),
           ),
         ),
         if (removedItems.isNotEmpty) ...[
@@ -491,7 +520,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
               onDelete: () =>
                   widget.controller.deleteItem(list.id, item.id),
               onRestore: () => _restoreItem(item.id),
-              onTap: () => _openEditor(context, item),
+              onTap: () => _openEditor(context, item, availableEmails),
             ),
           ),
         ],
