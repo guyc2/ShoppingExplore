@@ -69,5 +69,8 @@
   "avatarStyle": "סגנון תמונה",
   "profileUpdatedSuccess": "הפרופיל עודכן בהצלחה",
   "authGuardTitle": "נדרשת התחברות",
-  "authGuardMessage": "אנא התחבר או צור חשבון כדי לצפות ולנהל את רשימות הקניות שלך."
+  "authGuardMessage": "אנא התחבר או צור חשבון כדי לצפות ולנהל את רשימות הקניות שלך.",
+  "toBuySection": "לקנות",
+  "completedSection": "הושלמו",
+  "liveSyncing": "סנכרון חי"
 }

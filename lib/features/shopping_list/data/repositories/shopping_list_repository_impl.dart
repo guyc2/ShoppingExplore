@@ -1,3 +1,5 @@
+// ignore_for_file: close_sinks
+import 'dart:async';
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
 import '../../../../core/utils/logger.dart';
@@ -126,5 +128,55 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
       AppLogger.e('deleteShoppingItem unexpected error', error: e, stackTrace: stackTrace, tag: 'ShoppingListRepository');
       return Error(CacheFailure(e.toString()));
     }
+  }
+
+  @override
+  Stream<Result<List<ShoppingList>>> watchShoppingLists(String? userEmail) {
+    late StreamController<Result<List<ShoppingList>>> controller;
+    StreamSubscription<void>? sub;
+
+    controller = StreamController<Result<List<ShoppingList>>>(
+      onListen: () async {
+        AppLogger.d('watchShoppingLists stream subscribed for user $userEmail', tag: 'ShoppingListRepository');
+        controller.add(await getShoppingLists());
+        sub = localDataSource.changesStream.listen((_) async {
+          AppLogger.d('changesStream emitted, refreshing shopping lists for user $userEmail', tag: 'ShoppingListRepository');
+          if (!controller.isClosed) {
+            controller.add(await getShoppingLists());
+          }
+        });
+      },
+      onCancel: () async {
+        AppLogger.d('watchShoppingLists stream cancelled for user $userEmail', tag: 'ShoppingListRepository');
+        await sub?.cancel();
+      },
+    );
+
+    return controller.stream;
+  }
+
+  @override
+  Stream<Result<ShoppingList>> watchShoppingList(String id) {
+    late StreamController<Result<ShoppingList>> controller;
+    StreamSubscription<void>? sub;
+
+    controller = StreamController<Result<ShoppingList>>(
+      onListen: () async {
+        AppLogger.d('watchShoppingList stream subscribed for list $id', tag: 'ShoppingListRepository');
+        controller.add(await getShoppingList(id));
+        sub = localDataSource.changesStream.listen((_) async {
+          AppLogger.d('changesStream emitted, refreshing shopping list $id', tag: 'ShoppingListRepository');
+          if (!controller.isClosed) {
+            controller.add(await getShoppingList(id));
+          }
+        });
+      },
+      onCancel: () async {
+        AppLogger.d('watchShoppingList stream cancelled for list $id', tag: 'ShoppingListRepository');
+        await sub?.cancel();
+      },
+    );
+
+    return controller.stream;
   }
 }

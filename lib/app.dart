@@ -23,6 +23,8 @@ import 'features/shopping_list/domain/usecases/share_shopping_list.dart';
 import 'features/shopping_list/domain/usecases/toggle_item_completion.dart';
 import 'features/shopping_list/domain/usecases/update_item_properties.dart';
 import 'features/shopping_list/domain/usecases/update_shopping_list.dart';
+import 'features/shopping_list/domain/usecases/watch_shopping_list.dart';
+import 'features/shopping_list/domain/usecases/watch_shopping_lists.dart';
 import 'features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'features/shopping_list/presentation/views/shopping_list_view.dart';
 
@@ -55,6 +57,8 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       createShoppingList: CreateShoppingList(repository),
       updateShoppingList: UpdateShoppingList(repository),
       deleteShoppingList: DeleteShoppingList(repository),
+      watchShoppingLists: WatchShoppingLists(repository),
+      watchShoppingList: WatchShoppingList(repository),
     );
 
     final authDataSource = InMemoryAuthDataSource(startAuthenticated: false);
@@ -67,6 +71,8 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       updateUserProfileUseCase: UpdateUserProfileUseCase(authRepository),
       restorePersistentSessionUseCase: RestorePersistentSessionUseCase(authRepository),
     );
+
+    _controller.subscribeToShoppingLists(null);
   }
 
   @override

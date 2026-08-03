@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import '../../../../core/error/result.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/shopping_item.dart';
 import '../../domain/entities/shopping_list.dart';
@@ -11,6 +13,8 @@ import '../../domain/usecases/share_shopping_list.dart';
 import '../../domain/usecases/toggle_item_completion.dart';
 import '../../domain/usecases/update_item_properties.dart';
 import '../../domain/usecases/update_shopping_list.dart';
+import '../../domain/usecases/watch_shopping_list.dart';
+import '../../domain/usecases/watch_shopping_lists.dart';
 import 'shopping_list_state.dart';
 
 class ShoppingListController extends ValueNotifier<ShoppingListState> {
@@ -23,6 +27,11 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
   final CreateShoppingList? createShoppingList;
   final UpdateShoppingList? updateShoppingList;
   final DeleteShoppingList? deleteShoppingList;
+  final WatchShoppingLists? watchShoppingLists;
+  final WatchShoppingList? watchShoppingList;
+
+  StreamSubscription<Result<List<ShoppingList>>>? _listsSubscription;
+  StreamSubscription<Result<ShoppingList>>? _listSubscription;
 
   ShoppingListController({
     required this.getShoppingLists,
@@ -34,7 +43,65 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     this.createShoppingList,
     this.updateShoppingList,
     this.deleteShoppingList,
+    this.watchShoppingLists,
+    this.watchShoppingList,
   }) : super(const ShoppingListInitial());
+
+  void subscribeToShoppingLists(String? userEmail) {
+    AppLogger.i('Subscribing to shopping lists stream for user: $userEmail', tag: 'ShoppingListController');
+    _listsSubscription?.cancel();
+    if (watchShoppingLists == null) {
+      AppLogger.w('WatchShoppingLists usecase not configured', tag: 'ShoppingListController');
+      return;
+    }
+    value = const ShoppingListLoading();
+    _listsSubscription = watchShoppingLists!.call(userEmail: userEmail).listen((result) {
+      if (result.isSuccess) {
+        AppLogger.i('Stream emitted ${result.value.length} lists', tag: 'ShoppingListController');
+        value = ShoppingListLoaded(result.value);
+      } else {
+        AppLogger.e('Stream error: ${result.error.message}', tag: 'ShoppingListController');
+        value = ShoppingListError(result.error);
+      }
+    });
+  }
+
+  void subscribeToShoppingList(String listId) {
+    AppLogger.i('Subscribing to shopping list stream for list: $listId', tag: 'ShoppingListController');
+    _listSubscription?.cancel();
+    if (watchShoppingList == null) {
+      AppLogger.w('WatchShoppingList usecase not configured', tag: 'ShoppingListController');
+      return;
+    }
+    _listSubscription = watchShoppingList!.call(listId).listen((result) {
+      if (result.isSuccess) {
+        AppLogger.d('Stream emitted update for list $listId', tag: 'ShoppingListController');
+        final current = value;
+        if (current is ShoppingListLoaded) {
+          final updatedList = result.value;
+          final index = current.lists.indexWhere((l) => l.id == listId);
+          if (index >= 0) {
+            final updatedLists = List<ShoppingList>.from(current.lists);
+            updatedLists[index] = updatedList;
+            value = ShoppingListLoaded(updatedLists);
+          } else {
+            value = ShoppingListLoaded([...current.lists, updatedList]);
+          }
+        } else {
+          value = ShoppingListLoaded([result.value]);
+        }
+      } else {
+        AppLogger.e('Stream error for list $listId: ${result.error.message}', tag: 'ShoppingListController');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _listsSubscription?.cancel();
+    _listSubscription?.cancel();
+    super.dispose();
+  }
 
   Future<void> loadShoppingLists() async {
     AppLogger.i('Loading shopping lists...', tag: 'ShoppingListController');

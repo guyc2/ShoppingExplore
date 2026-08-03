@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/shopping_item.dart';
 import '../models/shopping_item_dto.dart';
@@ -11,10 +12,21 @@ abstract class ShoppingListLocalDataSource {
   Future<void> deleteShoppingList(String id);
   Future<void> saveShoppingItem(String listId, ShoppingItemDto item);
   Future<void> deleteShoppingItem(String listId, String itemId);
+  Stream<void> get changesStream;
 }
 
 class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource {
   final Map<String, ShoppingListDto> _cache = {};
+  final StreamController<void> _changesController = StreamController<void>.broadcast();
+
+  @override
+  Stream<void> get changesStream => _changesController.stream;
+
+  void notifyChanges() {
+    if (!_changesController.isClosed) {
+      _changesController.add(null);
+    }
+  }
 
   InMemoryShoppingListLocalDataSource();
 
@@ -156,6 +168,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
   @override
   Future<void> saveShoppingList(ShoppingListDto list) async {
     _cache[list.id] = list;
+    notifyChanges();
   }
 
   @override
@@ -183,6 +196,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       updatedAt: DateTime.now(),
     );
     _cache[listId] = updatedDto;
+    notifyChanges();
     return updatedDto;
   }
 
@@ -192,6 +206,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       throw const CacheFailure('Shopping list not found');
     }
     _cache.remove(id);
+    notifyChanges();
   }
 
   @override
@@ -222,6 +237,7 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
     );
+    notifyChanges();
   }
 
   @override
@@ -247,5 +263,6 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
     );
+    notifyChanges();
   }
 }

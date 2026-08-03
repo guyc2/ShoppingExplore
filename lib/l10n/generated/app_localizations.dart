@@ -523,6 +523,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please sign in or create an account to view and manage your shopping lists.'**
   String get authGuardMessage;
+
+  /// No description provided for @toBuySection.
+  ///
+  /// In en, this message translates to:
+  /// **'To Buy'**
+  String get toBuySection;
+
+  /// No description provided for @completedSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedSection;
+
+  /// No description provided for @liveSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Sync'**
+  String get liveSyncing;
 }
 
 class _AppLocalizationsDelegate

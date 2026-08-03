@@ -223,4 +223,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authGuardMessage =>
       'Please sign in or create an account to view and manage your shopping lists.';
+
+  @override
+  String get toBuySection => 'To Buy';
+
+  @override
+  String get completedSection => 'Completed';
+
+  @override
+  String get liveSyncing => 'Live Sync';
 }

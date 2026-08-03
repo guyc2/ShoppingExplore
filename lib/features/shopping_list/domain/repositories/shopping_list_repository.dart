@@ -10,4 +10,6 @@ abstract class ShoppingListRepository {
   Future<Result<void>> deleteShoppingList(String id);
   Future<Result<ShoppingItem>> saveShoppingItem(String listId, ShoppingItem item);
   Future<Result<void>> deleteShoppingItem(String listId, String itemId);
+  Stream<Result<List<ShoppingList>>> watchShoppingLists(String? userEmail);
+  Stream<Result<ShoppingList>> watchShoppingList(String id);
 }

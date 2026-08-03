@@ -76,5 +76,8 @@
   "avatarStyle": "Avatar Style",
   "profileUpdatedSuccess": "Profile updated successfully",
   "authGuardTitle": "Authentication Required",
-  "authGuardMessage": "Please sign in or create an account to view and manage your shopping lists."
+  "authGuardMessage": "Please sign in or create an account to view and manage your shopping lists.",
+  "toBuySection": "To Buy",
+  "completedSection": "Completed",
+  "liveSyncing": "Live Sync"
 }

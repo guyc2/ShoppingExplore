@@ -223,4 +223,13 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get authGuardMessage =>
       'אנא התחבר או צור חשבון כדי לצפות ולנהל את רשימות הקניות שלך.';
+
+  @override
+  String get toBuySection => 'לקנות';
+
+  @override
+  String get completedSection => 'הושלמו';
+
+  @override
+  String get liveSyncing => 'סנכרון חי';
 }

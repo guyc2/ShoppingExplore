@@ -34,6 +34,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
     super.initState();
     AppLogger.i('Opening detail view for list ${widget.listId}',
         tag: 'ShoppingListDetailView');
+    widget.controller.subscribeToShoppingList(widget.listId);
   }
 
   ShoppingList? _findList(ShoppingListState state) {
@@ -130,6 +131,30 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
             centerTitle: true,
             elevation: 0,
             actions: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.sync_rounded, size: 14, color: theme.colorScheme.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        l10n?.liveSyncing ?? 'Live Sync',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               IconButton(
                 icon: Icon(Icons.share, color: theme.colorScheme.primary),
                 tooltip: l10n?.shareList ?? 'Share List',
@@ -371,18 +396,52 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
     final l10n = AppLocalizations.of(context);
 
     if (!isShoppingMode) {
-      return ListView.builder(
+      final unmarkedItems = list.items.where((i) => !i.isCompleted).toList();
+      final markedItems = list.items.where((i) => i.isCompleted).toList();
+
+      return ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: list.items.length,
-        itemBuilder: (context, index) {
-          final item = list.items[index];
-          return ShoppingItemTile(
-            item: item,
-            onToggle: () => widget.controller.toggleItem(list.id, item),
-            onDelete: () => _removeItem(item.id),
-            onTap: () => _openEditor(context, item),
-          );
-        },
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Text(
+              '${l10n?.toBuySection ?? 'To Buy'} (${unmarkedItems.length})',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+          ),
+          ...unmarkedItems.map(
+            (item) => ShoppingItemTile(
+              item: item,
+              onToggle: () => widget.controller.toggleItem(list.id, item),
+              onDelete: () => _removeItem(item.id),
+              onTap: () => _openEditor(context, item),
+            ),
+          ),
+          if (markedItems.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Text(
+                '${l10n?.completedSection ?? 'Completed'} (${markedItems.length})',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+              ),
+            ),
+            ...markedItems.map(
+              (item) => ShoppingItemTile(
+                item: item,
+                onToggle: () => widget.controller.toggleItem(list.id, item),
+                onDelete: () => _removeItem(item.id),
+                onTap: () => _openEditor(context, item),
+              ),
+            ),
+          ],
+        ],
       );
     }
 

@@ -46,11 +46,15 @@ flowchart TD
 ```
 
 **Notes / gotchas** —
+> [!info] Reactive Real-Time Sync Streams
+> `ShoppingListRepository` and `ShoppingListRepositoryImpl` expose real-time broadcast streams (`watchShoppingLists`, `watchShoppingList`) built on `StreamController` with non-blocking `onListen` and `onCancel` lifecycle handlers that subscribe to `ShoppingListLocalDataSource.changesStream`. `ShoppingListController` manages explicit stream subscriptions (`subscribeToShoppingLists` and `subscribeToShoppingList`) that automatically refresh domain state whenever any data source mutation occurs.
+
 > [!info] Multi-List & Guy C Seeded Data
 > `InMemoryShoppingListLocalDataSource.withDefaultData()` is seeded with 3 distinct lists owned by Debug User Guy C (`guy@shoppingexplore.com`): *Weekly Groceries*, *Tech & Electronics Wishlist*, and *Weekend BBQ Party*, each with assigned items (`assignedToEmail`) and short descriptions.
 
-> [!info] Active Shopping Mode & Split 2-Section Checklist
-> The `ShoppingListController` manages per-list Active Shopping Mode state (`_shoppingModes`, `_removedCartItemIds`). When shopping mode is active, removing an item moves it to Section 2 (*In Cart / Removed Items*) without deleting it from the repository. Users can either click **Complete Shopping** (permanently deletes marked items from datasource) or **Cancel Shopping** (restores all removed items back to Section 1 *Active Items* without data loss).
+> [!info] 2-Section Checklist UI & Active Shopping Mode
+> In normal mode (`!isShoppingMode`), `ShoppingListDetailView` partitions items into two distinct sections: **Section 1: To Buy** (`!isCompleted`, localized as `"To Buy"` / `"לקנות"`) above and **Section 2: Completed** (`isCompleted`, localized as `"Completed"` / `"הושלמו"`) below. A prominent **Live Sync** indicator pill is displayed in the AppBar actions.
+> When Active Shopping Mode is enabled, removing an item moves it to **In Cart / Removed Items** without deleting it from the repository. Users can either click **Complete Shopping** (permanently deletes marked items from datasource) or **Cancel Shopping** (restores all removed items back to **Active Items** without data loss).
 
 > [!info] Dashboard Architecture
 > `ShoppingListView` serves as the home page dashboard ("All My Lists"), displaying all lists as responsive `ShoppingListCard` widgets in a `SliverGrid`. Tapping a card navigates to `ShoppingListDetailView` via `MaterialPageRoute`. The dashboard includes a gradient greeting banner, Shopping Cart brand icon (`Icons.shopping_cart_checkout_rounded`), and `FloatingActionButton.extended` opening `CreateShoppingListModal`.
@@ -60,4 +64,5 @@ flowchart TD
 
 > [!info] Material 3 Styling Compliance
 > All presentation components strictly utilize modern Material 3 theme tokens (`surfaceContainerHighest`, `withValues(alpha: ...)`, `initialValue`) to ensure zero-deprecation compatibility across light and dark themes.
+
 
