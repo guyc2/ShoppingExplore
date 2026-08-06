@@ -727,6 +727,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assigned To (responsible user)'**
   String get assignedToUser;
+
+  /// No description provided for @expandImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand Image'**
+  String get expandImage;
+
+  /// No description provided for @collapseImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse Image'**
+  String get collapseImage;
 }
 
 class _AppLocalizationsDelegate

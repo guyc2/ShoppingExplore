@@ -326,4 +326,10 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get assignedToUser => 'מוקצה ל- (משתמש אחראי)';
+
+  @override
+  String get expandImage => 'הצג תמונה';
+
+  @override
+  String get collapseImage => 'הסתר תמונה';
 }

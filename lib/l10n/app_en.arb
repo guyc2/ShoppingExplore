@@ -118,5 +118,7 @@
   "priorityHigh": "High",
   "urlsAndLinks": "URLs / Links (comma separated)",
   "saveChanges": "Save Changes",
-  "assignedToUser": "Assigned To (responsible user)"
+  "assignedToUser": "Assigned To (responsible user)",
+  "expandImage": "Expand Image",
+  "collapseImage": "Collapse Image"
 }

@@ -326,4 +326,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assignedToUser => 'Assigned To (responsible user)';
+
+  @override
+  String get expandImage => 'Expand Image';
+
+  @override
+  String get collapseImage => 'Collapse Image';
 }

@@ -111,5 +111,7 @@
   "priorityHigh": "גבוהה",
   "urlsAndLinks": "קישורים וכתובות (מופרדים בפסיק)",
   "saveChanges": "שמור שינויים",
-  "assignedToUser": "מוקצה ל- (משתמש אחראי)"
+  "assignedToUser": "מוקצה ל- (משתמש אחראי)",
+  "expandImage": "הצג תמונה",
+  "collapseImage": "הסתר תמונה"
 }

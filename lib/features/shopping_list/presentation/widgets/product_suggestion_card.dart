@@ -5,7 +5,7 @@ import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/utils/logger.dart';
 
-class ProductSuggestionCard extends StatelessWidget {
+class ProductSuggestionCard extends StatefulWidget {
   final ProductSuggestion suggestion;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -16,6 +16,13 @@ class ProductSuggestionCard extends StatelessWidget {
     this.onEdit,
     this.onDelete,
   });
+
+  @override
+  State<ProductSuggestionCard> createState() => _ProductSuggestionCardState();
+}
+
+class _ProductSuggestionCardState extends State<ProductSuggestionCard> {
+  bool _isImageExpanded = false;
 
   Future<void> _launchUrl(BuildContext context, String urlString) async {
     final uri = Uri.tryParse(urlString);
@@ -73,6 +80,8 @@ class ProductSuggestionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    final suggestion = widget.suggestion;
+    final hasImage = suggestion.imageUrl != null && suggestion.imageUrl!.isNotEmpty;
     final hasProsCons = suggestion.pros.isNotEmpty || suggestion.cons.isNotEmpty;
     final hasPurchaseInfo = suggestion.purchaseLocation != null || suggestion.purchaseUrl != null || suggestion.price != null;
 
@@ -86,7 +95,7 @@ class ProductSuggestionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (suggestion.imageUrl != null && suggestion.imageUrl!.isNotEmpty)
+          if (hasImage && _isImageExpanded)
             _buildImageWidget(suggestion.imageUrl!, theme),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -94,7 +103,7 @@ class ProductSuggestionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Text(
@@ -102,21 +111,32 @@ class ProductSuggestionCard extends StatelessWidget {
                         style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    if (onEdit != null)
+                    if (hasImage)
+                      IconButton(
+                        icon: Icon(
+                          _isImageExpanded ? Icons.image : Icons.image_outlined,
+                          color: theme.colorScheme.primary,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isImageExpanded = !_isImageExpanded;
+                          });
+                        },
+                        tooltip: _isImageExpanded
+                            ? (l10n?.collapseImage ?? 'Collapse Image')
+                            : (l10n?.expandImage ?? 'Expand Image'),
+                      ),
+                    if (widget.onEdit != null)
                       IconButton(
                         icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary),
-                        onPressed: onEdit,
+                        onPressed: widget.onEdit,
                         tooltip: l10n?.editSuggestion ?? 'Edit',
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
                       ),
-                    if (onDelete != null)
+                    if (widget.onDelete != null)
                       IconButton(
                         icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
-                        onPressed: onDelete,
+                        onPressed: widget.onDelete,
                         tooltip: l10n?.deleteSuggestion ?? 'Delete Suggestion',
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
                       ),
                   ],
                 ),
