@@ -85,17 +85,19 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 16,
-        right: 16,
-        top: 24,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final mediaQuery = MediaQuery.of(context);
+    final bottomInset = mediaQuery.viewInsets.bottom;
+    final maxHeight = mediaQuery.size.height * 0.85;
+
+    return Container(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -248,6 +250,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

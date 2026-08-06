@@ -245,24 +245,24 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    
+    final mediaQuery = MediaQuery.of(context);
+    final bottomInset = mediaQuery.viewInsets.bottom;
+    final maxHeight = mediaQuery.size.height * 0.85;
+
     final isEditing = widget.initialSuggestion != null;
     final title = isEditing 
         ? (l10n?.editSuggestion ?? 'Edit Suggestion') 
         : (l10n?.addSuggestion ?? 'Add Suggestion');
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 24,
-        bottom: bottomInset + 24,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Container(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               title,
@@ -378,6 +378,7 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

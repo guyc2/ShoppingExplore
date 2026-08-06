@@ -73,9 +73,10 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
             ],
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
             Row(
@@ -250,8 +251,9 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _handleCreate() {
     final title = _titleController.text.trim();

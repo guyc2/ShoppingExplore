@@ -68,9 +68,10 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
   }
 
   void _openEditor() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (_) => ShoppingItemEditorModal(
         item: item,
         availableEmails: widget.availableEmails,
@@ -82,9 +83,10 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
   }
 
   void _openAddSuggestionModal() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (_) => AddSuggestionModal(
         imageStorageService: widget.imageStorageService,
         onSave: (suggestion) {
@@ -158,6 +160,7 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
                         showModalBottomSheet<void>(
                           context: context,
                           isScrollControlled: true,
+                          useSafeArea: true,
                           builder: (context) => AddSuggestionModal(
                             imageStorageService: widget.imageStorageService,
                             initialSuggestion: suggestion,
