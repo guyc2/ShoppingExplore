@@ -188,6 +188,13 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
               controller: _assignedToController,
               decoration: InputDecoration(
                 labelText: l10n?.assignedToUser ?? 'Assigned To (responsible user)',
+                helperText: _assignedToController.text.trim().isNotEmpty
+                    ? 'Assigned to: ${getDisplayNameForEmail(_assignedToController.text.trim())}'
+                    : null,
+                helperStyle: TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
                 prefixIcon: const Icon(Icons.person_outline),
                 border: const OutlineInputBorder(),
                 suffixIcon: _assignedToController.text.isNotEmpty

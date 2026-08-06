@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/user_utils.dart';
 import '../../domain/entities/shopping_list.dart';
 import '../controllers/shopping_list_controller.dart';
 
@@ -117,7 +118,14 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
                   children: list.sharedWithEmails
                       .map(
                         (email) => Chip(
-                          label: Text(email),
+                          avatar: CircleAvatar(
+                            backgroundColor: colorScheme.primary,
+                            child: Text(
+                              getDisplayNameForEmail(email)[0].toUpperCase(),
+                              style: TextStyle(color: colorScheme.onPrimary, fontSize: 11),
+                            ),
+                          ),
+                          label: Text(getDisplayNameForEmail(email)),
                           backgroundColor: colorScheme.surfaceContainerHighest,
                         ),
                       )

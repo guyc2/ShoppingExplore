@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/utils/user_utils.dart';
 import '../../domain/entities/shopping_item.dart';
 import '../../domain/entities/shopping_list.dart';
 import '../controllers/shopping_list_controller.dart';
@@ -314,7 +315,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                     padding: EdgeInsets.zero,
                     labelPadding: const EdgeInsets.symmetric(horizontal: 6),
                     label: Text(
-                      email.split('@').first,
+                      getDisplayNameForEmail(email),
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontSize: 10,
                       ),
