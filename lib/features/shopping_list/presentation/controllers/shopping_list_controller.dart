@@ -197,7 +197,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     }
   }
 
-  Future<bool> createList({
+  Future<ShoppingList?> createList({
     required String title,
     String? shortDescription,
     String? description,
@@ -209,7 +209,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     AppLogger.d('Creating new shopping list: $title', tag: 'ShoppingListController');
     if (createShoppingList == null) {
       AppLogger.w('CreateShoppingList usecase not configured', tag: 'ShoppingListController');
-      return false;
+      return null;
     }
     final result = await createShoppingList!.execute(
       title: title,
@@ -223,11 +223,11 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     if (result.isSuccess) {
       AppLogger.i('Shopping list created successfully: ${result.value.id}', tag: 'ShoppingListController');
       await loadShoppingLists();
-      return true;
+      return result.value;
     } else {
       AppLogger.w('Failed to create shopping list: ${result.error.message}', tag: 'ShoppingListController');
       value = ShoppingListError(result.error);
-      return false;
+      return null;
     }
   }
 

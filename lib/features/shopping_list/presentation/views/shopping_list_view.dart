@@ -71,14 +71,17 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     showDialog<void>(
       context: context,
       builder: (_) => CreateShoppingListModal(
-        onCreate: (title, shortDesc, colorHex, imageUrl) {
-          widget.controller.createList(
+        onCreate: (title, shortDesc, colorHex, imageUrl) async {
+          final newList = await widget.controller.createList(
             title: title,
             shortDescription: shortDesc,
             colorHex: colorHex,
             imageUrl: imageUrl,
             ownerId: _getCurrentUserEmail(),
           );
+          if (newList != null && context.mounted) {
+            _openListDetail(context, newList);
+          }
         },
       ),
     );
