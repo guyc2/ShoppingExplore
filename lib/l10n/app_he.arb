@@ -103,5 +103,13 @@
   "takePhoto": "צלם תמונה",
   "chooseFromGallery": "בחר מגלריה",
   "removeImage": "הסר תמונה",
-  "imagePickError": "שגיאה בבחירת התמונה"
+  "imagePickError": "שגיאה בבחירת התמונה",
+  "addItemHint": "הוסף מוצר...",
+  "editItemDetails": "ערוך פרטי פריט",
+  "priorityLow": "נמוכה",
+  "priorityMedium": "בינונית",
+  "priorityHigh": "גבוהה",
+  "urlsAndLinks": "קישורים וכתובות (מופרדים בפסיק)",
+  "saveChanges": "שמור שינויים",
+  "assignedToUser": "מוקצה ל- (משתמש אחראי)"
 }

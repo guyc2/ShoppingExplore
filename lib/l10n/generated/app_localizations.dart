@@ -679,6 +679,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to pick image'**
   String get imagePickError;
+
+  /// No description provided for @addItemHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an item...'**
+  String get addItemHint;
+
+  /// No description provided for @editItemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Item Details'**
+  String get editItemDetails;
+
+  /// No description provided for @priorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get priorityLow;
+
+  /// No description provided for @priorityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get priorityMedium;
+
+  /// No description provided for @priorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get priorityHigh;
+
+  /// No description provided for @urlsAndLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'URLs / Links (comma separated)'**
+  String get urlsAndLinks;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @assignedToUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned To (responsible user)'**
+  String get assignedToUser;
 }
 
 class _AppLocalizationsDelegate

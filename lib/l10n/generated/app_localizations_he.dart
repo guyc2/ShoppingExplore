@@ -302,4 +302,28 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get imagePickError => 'שגיאה בבחירת התמונה';
+
+  @override
+  String get addItemHint => 'הוסף מוצר...';
+
+  @override
+  String get editItemDetails => 'ערוך פרטי פריט';
+
+  @override
+  String get priorityLow => 'נמוכה';
+
+  @override
+  String get priorityMedium => 'בינונית';
+
+  @override
+  String get priorityHigh => 'גבוהה';
+
+  @override
+  String get urlsAndLinks => 'קישורים וכתובות (מופרדים בפסיק)';
+
+  @override
+  String get saveChanges => 'שמור שינויים';
+
+  @override
+  String get assignedToUser => 'מוקצה ל- (משתמש אחראי)';
 }

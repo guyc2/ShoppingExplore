@@ -41,21 +41,24 @@ class ProductSuggestionCard extends StatelessWidget {
   }
 
   Widget _buildImageWidget(String path, ThemeData theme) {
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return Image.network(
-        path,
-        height: 180,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _buildFallback(theme),
-      );
-    } else {
-      return Image.file(
-        File(path),
-        height: 180,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _buildFallback(theme),
-      );
-    }
+    return Container(
+      height: 180,
+      width: double.infinity,
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      child: path.startsWith('http://') || path.startsWith('https://')
+          ? Image.network(
+              path,
+              height: 180,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => _buildFallback(theme),
+            )
+          : Image.file(
+              File(path),
+              height: 180,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => _buildFallback(theme),
+            ),
+    );
   }
 
   Widget _buildFallback(ThemeData theme) {

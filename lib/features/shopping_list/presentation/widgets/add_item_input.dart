@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 
 class AddItemInput extends StatefulWidget {
   final ValueChanged<String> onAdd;
@@ -34,6 +35,8 @@ class _AddItemInputState extends State<AddItemInput> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -55,7 +58,7 @@ class _AddItemInputState extends State<AddItemInput> {
                 textInputAction: TextInputAction.done,
                 onSubmitted: (_) => _submit(),
                 decoration: InputDecoration(
-                  hintText: 'Add an item...',
+                  hintText: l10n?.addItemHint ?? 'הוסף מוצר...',
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   contentPadding: const EdgeInsets.symmetric(

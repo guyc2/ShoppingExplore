@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_explore/core/utils/user_utils.dart';
 import '../../domain/entities/shopping_item.dart';
 
 class ShoppingItemTile extends StatelessWidget {
@@ -112,7 +113,7 @@ class ShoppingItemTile extends StatelessWidget {
     if (item.assignedToEmail != null && item.assignedToEmail!.isNotEmpty) {
       badges.add(
         _BadgePill(
-          label: item.assignedToEmail!.split('@').first,
+          label: getDisplayNameForEmail(item.assignedToEmail),
           color: colorScheme.secondaryContainer,
           textColor: colorScheme.onSecondaryContainer,
         ),

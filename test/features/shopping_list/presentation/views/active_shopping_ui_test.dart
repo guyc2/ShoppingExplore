@@ -119,7 +119,7 @@ void main() {
         ),
       );
 
-      expect(find.text('guy'), findsOneWidget); // Email prefix badge
+      expect(find.text('Guy C'), findsOneWidget); // Display name badge
       expect(find.text('Organic Milk'), findsOneWidget);
     });
 
@@ -159,12 +159,12 @@ void main() {
       await tester.tap(find.text('Edit Item'));
       await tester.pumpAndSettle();
 
-      expect(find.text('friend'), findsOneWidget);
+      expect(find.text('Friend'), findsOneWidget);
 
       // Scroll into view before tapping
-      await tester.ensureVisible(find.text('friend'));
+      await tester.ensureVisible(find.text('Friend'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('friend'));
+      await tester.tap(find.text('Friend'));
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(find.text('Save Changes'));

@@ -302,4 +302,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imagePickError => 'Failed to pick image';
+
+  @override
+  String get addItemHint => 'Add an item...';
+
+  @override
+  String get editItemDetails => 'Edit Item Details';
+
+  @override
+  String get priorityLow => 'Low';
+
+  @override
+  String get priorityMedium => 'Medium';
+
+  @override
+  String get priorityHigh => 'High';
+
+  @override
+  String get urlsAndLinks => 'URLs / Links (comma separated)';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get assignedToUser => 'Assigned To (responsible user)';
 }

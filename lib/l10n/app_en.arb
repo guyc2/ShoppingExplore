@@ -110,5 +110,13 @@
   "takePhoto": "Take Photo",
   "chooseFromGallery": "Choose from Gallery",
   "removeImage": "Remove Image",
-  "imagePickError": "Failed to pick image"
+  "imagePickError": "Failed to pick image",
+  "addItemHint": "Add an item...",
+  "editItemDetails": "Edit Item Details",
+  "priorityLow": "Low",
+  "priorityMedium": "Medium",
+  "priorityHigh": "High",
+  "urlsAndLinks": "URLs / Links (comma separated)",
+  "saveChanges": "Save Changes",
+  "assignedToUser": "Assigned To (responsible user)"
 }

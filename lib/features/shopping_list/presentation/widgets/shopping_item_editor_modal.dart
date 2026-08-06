@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
+import '../../../../core/utils/user_utils.dart';
 import '../../domain/entities/shopping_item.dart';
 
 class ShoppingItemEditorModal extends StatefulWidget {
@@ -81,6 +83,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -98,7 +101,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Edit Item Details',
+                  l10n?.editItemDetails ?? 'Edit Item Details',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -112,9 +115,9 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
             const SizedBox(height: 16),
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Title',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n?.titleLabel ?? 'Title',
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -125,9 +128,9 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
                     controller: _quantityController,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Quantity',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n?.quantityLabel ?? 'Quantity',
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -136,22 +139,22 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
                   flex: 2,
                   child: DropdownButtonFormField<Priority>(
                     initialValue: _priority,
-                    decoration: const InputDecoration(
-                      labelText: 'Priority',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n?.categoryLabel ?? 'Priority',
+                      border: const OutlineInputBorder(),
                     ),
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: Priority.low,
-                        child: Text('Low'),
+                        child: Text(l10n?.priorityLow ?? 'Low'),
                       ),
                       DropdownMenuItem(
                         value: Priority.medium,
-                        child: Text('Medium'),
+                        child: Text(l10n?.priorityMedium ?? 'Medium'),
                       ),
                       DropdownMenuItem(
                         value: Priority.high,
-                        child: Text('High'),
+                        child: Text(l10n?.priorityHigh ?? 'High'),
                       ),
                     ],
                     onChanged: (val) {
@@ -165,24 +168,24 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
             TextField(
               controller: _notesController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Notes',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n?.notesLabel ?? 'Notes',
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _linksController,
-              decoration: const InputDecoration(
-                labelText: 'URLs / Links (comma separated)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n?.urlsAndLinks ?? 'URLs / Links (comma separated)',
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _assignedToController,
               decoration: InputDecoration(
-                labelText: 'Assigned To (responsible user email)',
+                labelText: l10n?.assignedToUser ?? 'Assigned To (responsible user)',
                 prefixIcon: const Icon(Icons.person_outline),
                 border: const OutlineInputBorder(),
                 suffixIcon: _assignedToController.text.isNotEmpty
@@ -209,7 +212,7 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
                           email.toLowerCase();
                   return ChoiceChip(
                     label: Text(
-                      email.contains('@') ? email.split('@')[0] : email,
+                      getDisplayNameForEmail(email),
                       style: const TextStyle(fontSize: 12),
                     ),
                     selected: isSelected,
@@ -235,9 +238,9 @@ class _ShoppingItemEditorModalState extends State<ShoppingItemEditorModal> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Save Changes',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                child: Text(
+                  l10n?.saveChanges ?? 'Save Changes',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
             ),

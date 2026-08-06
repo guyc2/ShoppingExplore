@@ -8,6 +8,7 @@ import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../widgets/product_suggestion_card.dart';
 import '../widgets/add_suggestion_modal.dart';
 import '../../../../core/services/image_storage_service.dart';
+import '../../../../core/utils/user_utils.dart';
 
 class ShoppingItemDetailPage extends StatefulWidget {
   final ShoppingItem initialItem;
@@ -241,7 +242,7 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
               if (item.assignedToEmail != null && item.assignedToEmail!.isNotEmpty)
                 Chip(
                   avatar: const Icon(Icons.person_outline, size: 18),
-                  label: Text(item.assignedToEmail!),
+                  label: Text(getDisplayNameForEmail(item.assignedToEmail)),
                   backgroundColor: theme.colorScheme.secondaryContainer,
                   labelStyle: TextStyle(color: theme.colorScheme.onSecondaryContainer),
                 ),

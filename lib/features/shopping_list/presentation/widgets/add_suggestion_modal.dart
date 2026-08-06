@@ -190,23 +190,25 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
   }
 
   Widget _buildImageWidget(String path) {
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return Image.network(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return const Center(child: Icon(Icons.broken_image, size: 48));
-        },
-      );
-    } else {
-      return Image.file(
-        File(path),
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return const Center(child: Icon(Icons.broken_image, size: 48));
-        },
-      );
-    }
+    final theme = Theme.of(context);
+    return Container(
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      child: path.startsWith('http://') || path.startsWith('https://')
+          ? Image.network(
+              path,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(child: Icon(Icons.broken_image, size: 48));
+              },
+            )
+          : Image.file(
+              File(path),
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(child: Icon(Icons.broken_image, size: 48));
+              },
+            ),
+    );
   }
 
   Future<void> _pickImage(ImagePickerSource source, AppLocalizations? l10n) async {
