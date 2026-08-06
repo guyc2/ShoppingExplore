@@ -52,8 +52,8 @@ This skill provides guidelines and patterns for engineering features in the **Sh
 - All feature development and sprints must follow the `gitflow-sprint-workflow` skill:
   - Create a dedicated feature branch for each sprint (`feature/<name>`).
   - Perform automated tests via a Testing subagent and code review audit via a Reviewer subagent (`review-pr`).
-  - Merge completed sprint feature branches into `develop`.
-  - Never develop on `main` or merge into `main` without explicit user instruction.
+  - Rebase completed sprint feature branches onto `develop` (using git rebase) and NOT merge.
+  - Never develop on `main` or merge/rebase into `main` without explicit user instruction.
   - Stop at each Sprint Gate and wait for user permission before proceeding.
 
 ## 6. Mandatory Bilingual Localization & RTL Support (Hebrew & English)

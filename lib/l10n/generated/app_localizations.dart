@@ -655,6 +655,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Suggestion'**
   String get editSuggestion;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @removeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Image'**
+  String get removeImage;
+
+  /// No description provided for @imagePickError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick image'**
+  String get imagePickError;
 }
 
 class _AppLocalizationsDelegate

@@ -290,4 +290,16 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get editSuggestion => 'ערוך הצעה';
+
+  @override
+  String get takePhoto => 'צלם תמונה';
+
+  @override
+  String get chooseFromGallery => 'בחר מגלריה';
+
+  @override
+  String get removeImage => 'הסר תמונה';
+
+  @override
+  String get imagePickError => 'שגיאה בבחירת התמונה';
 }

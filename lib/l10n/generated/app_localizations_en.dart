@@ -290,4 +290,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editSuggestion => 'Edit Suggestion';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get removeImage => 'Remove Image';
+
+  @override
+  String get imagePickError => 'Failed to pick image';
 }

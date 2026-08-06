@@ -14,7 +14,7 @@ This skill defines the mandatory GitFlow branching rules, multi-agent peer revie
   - **RULE**: Merging `develop` into `main` is strictly reserved for the user or explicit user instruction.
 - **`develop` Branch**: Main integration branch for all ongoing development.
   - Initialized from `main`.
-  - Receives merges from completed sprint feature branches after tests and code review pass.
+  - Receives changes from completed sprint feature branches by rebasing (using git rebase) and NOT merging, after tests and code review pass.
 - **Feature/Sprint Branches**:
   - Dedicated branches for each feature or sprint (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`).
   - Created from `develop` (or `main` at project initialization).
@@ -35,7 +35,7 @@ sequenceDiagram
     TestSubagent-->>Agent: Pass all unit & integration tests
     Agent->>ReviewSubagent: Delegate PR / code review audit (review-pr skill)
     ReviewSubagent-->>Agent: Pass review (verifying AppLogger & error handling)
-    Agent->>Agent: Merge feature branch into develop branch
+    Agent->>Agent: Rebase feature branch onto develop branch
     Agent->>User: STOP at Execution Gate — Present summary & await permission for next Sprint
 ```
 
@@ -52,7 +52,7 @@ sequenceDiagram
 ## 3. Sprint Execution Gate (Strict Pause)
 
 - **RULE**: Under no circumstances may an agent automatically proceed from Sprint $N$ to Sprint $N+1$.
-- Upon completing Sprint $N$ (implementation + tests + review audit + merge to `develop`), the agent MUST **STOP** and wait for explicit user approval to resume to Sprint $N+1$.
+- Upon completing Sprint $N$ (implementation + tests + review audit + rebase onto `develop`), the agent MUST **STOP** and wait for explicit user approval to resume to Sprint $N+1$.
 
 ## 4. Documentation Synchronization
 

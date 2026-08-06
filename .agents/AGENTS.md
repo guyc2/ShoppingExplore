@@ -89,7 +89,7 @@ When generating or modifying code in this codebase, AI agents MUST follow these 
    - `docs:` Documentation updates
    - `refactor:` Code refactoring without behavioral change
    - `test:` Adding or updating tests
-5. **Branching & GitFlow Policy**: NEVER develop or commit directly to the `main` branch. All development, refactoring, and sprint execution MUST occur on dedicated feature branches (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`). Upon passing tests and PR code review, feature branches MUST be merged into the `develop` branch. Merging `develop` into `main` is strictly reserved for the user or explicit user instruction.
+5. **Branching & GitFlow Policy**: NEVER develop or commit directly to the `main` branch. All development, refactoring, and sprint execution MUST occur on dedicated feature branches (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`). Upon passing tests and PR code review, feature branches MUST be rebased onto the `develop` branch (using git rebase) and NOT merged. Merging `develop` into `main` is strictly reserved for the user or explicit user instruction.
 
 ---
 
