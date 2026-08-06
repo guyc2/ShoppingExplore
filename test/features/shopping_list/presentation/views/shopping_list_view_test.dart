@@ -13,6 +13,16 @@ import 'package:shopping_explore/features/shopping_list/domain/usecases/update_i
 import 'package:shopping_explore/features/shopping_list/domain/usecases/update_shopping_list.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/views/shopping_list_view.dart';
+import 'package:shopping_explore/core/services/image_storage_service.dart';
+import 'package:shopping_explore/core/error/failure.dart';
+import 'package:shopping_explore/core/error/result.dart';
+
+class FakeImageStorageService implements ImageStorageService {
+  @override
+  Future<Result<String?>> pickAndCompressImage(ImagePickerSource source) async {
+    return const Success(null);
+  }
+}
 
 void main() {
   group('ShoppingListView Dashboard Test', () {
@@ -40,7 +50,10 @@ void main() {
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ShoppingListView(controller: controller),
+          home: ShoppingListView(
+            controller: controller,
+            imageStorageService: FakeImageStorageService(),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -56,7 +69,10 @@ void main() {
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ShoppingListView(controller: controller),
+          home: ShoppingListView(
+            controller: controller,
+            imageStorageService: FakeImageStorageService(),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -70,7 +86,10 @@ void main() {
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ShoppingListView(controller: controller),
+          home: ShoppingListView(
+            controller: controller,
+            imageStorageService: FakeImageStorageService(),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -90,7 +109,10 @@ void main() {
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ShoppingListView(controller: controller),
+          home: ShoppingListView(
+            controller: controller,
+            imageStorageService: FakeImageStorageService(),
+          ),
         ),
       );
       await tester.pumpAndSettle();

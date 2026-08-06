@@ -8,6 +8,16 @@ import 'package:shopping_explore/features/shopping_list/presentation/controllers
 import 'package:shopping_explore/features/shopping_list/presentation/views/shopping_item_detail_page.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/widgets/product_suggestion_card.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
+import 'package:shopping_explore/core/services/image_storage_service.dart';
+import 'package:shopping_explore/core/error/failure.dart';
+import 'package:shopping_explore/core/error/result.dart';
+
+class FakeImageStorageService implements ImageStorageService {
+  @override
+  Future<Result<String?>> pickAndCompressImage(ImagePickerSource source) async {
+    return const Success(null);
+  }
+}
 
 class FakeShoppingListController extends ValueNotifier<ShoppingListState> implements ShoppingListController {
   FakeShoppingListController() : super(const ShoppingListInitial());
@@ -65,6 +75,7 @@ void main() {
             listId: 'list-1',
             controller: fakeController,
             availableEmails: const [],
+            imageStorageService: FakeImageStorageService(),
           ),
         ),
       );

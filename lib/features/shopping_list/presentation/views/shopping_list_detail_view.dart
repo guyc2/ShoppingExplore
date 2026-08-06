@@ -11,6 +11,7 @@ import '../widgets/shopping_item_tile.dart';
 import 'shopping_item_detail_page.dart';
 import '../widgets/shopping_list_share_modal.dart';
 import '../widgets/start_shopping_modal.dart';
+import '../../../../core/services/image_storage_service.dart';
 
 /// Detail view for a single shopping list. Displays the list metadata
 /// header (title, description, color, icon, collaborators), the
@@ -19,11 +20,13 @@ import '../widgets/start_shopping_modal.dart';
 class ShoppingListDetailView extends StatefulWidget {
   final ShoppingListController controller;
   final String listId;
+  final ImageStorageService imageStorageService;
 
   const ShoppingListDetailView({
     super.key,
     required this.controller,
     required this.listId,
+    required this.imageStorageService,
   });
 
   @override
@@ -72,6 +75,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
           listId: widget.listId,
           controller: widget.controller,
           availableEmails: availableEmails,
+          imageStorageService: widget.imageStorageService,
         ),
       ),
     );

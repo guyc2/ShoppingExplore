@@ -11,6 +11,7 @@ import '../controllers/shopping_list_state.dart';
 import '../widgets/shopping_list_card.dart';
 import '../widgets/create_shopping_list_modal.dart';
 import 'shopping_list_detail_view.dart';
+import '../../../../core/services/image_storage_service.dart';
 
 /// The main home page — a stylish multi-list dashboard displaying all
 /// the user's shopping lists in a responsive grid. Includes a greeting
@@ -23,6 +24,7 @@ class ShoppingListView extends StatefulWidget {
   final VoidCallback? onToggleTheme;
   final Locale? currentLocale;
   final VoidCallback? onToggleLocale;
+  final ImageStorageService imageStorageService;
 
   const ShoppingListView({
     super.key,
@@ -32,6 +34,7 @@ class ShoppingListView extends StatefulWidget {
     this.onToggleTheme,
     this.currentLocale,
     this.onToggleLocale,
+    required this.imageStorageService,
   });
 
   @override
@@ -57,6 +60,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
         builder: (_) => ShoppingListDetailView(
           controller: widget.controller,
           listId: list.id,
+          imageStorageService: widget.imageStorageService,
         ),
       ),
     );

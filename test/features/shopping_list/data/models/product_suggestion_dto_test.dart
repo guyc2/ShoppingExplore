@@ -39,6 +39,7 @@ void main() {
       'purchaseLocation': 'Nike Store',
       'purchaseUrl': 'https://nike.com',
       'price': 129.99,
+      'currency': null,
     };
 
     test('should return a valid ProductSuggestionDto from JSON', () {

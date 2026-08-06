@@ -29,6 +29,8 @@ import 'features/shopping_list/domain/usecases/start_shopping_session.dart';
 import 'features/shopping_list/domain/usecases/end_shopping_session.dart';
 import 'features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'features/shopping_list/presentation/views/shopping_list_view.dart';
+import 'core/services/local_image_storage_service_impl.dart';
+import 'core/services/image_storage_service.dart';
 
 /// The root application widget for ShoppingExplore.
 class ShoppingExploreApp extends StatefulWidget {
@@ -43,11 +45,13 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
   Locale _locale = const Locale('he', '');
   late final ShoppingListController _controller;
   late final AuthController _authController;
+  late final ImageStorageService _imageStorageService;
 
   @override
   void initState() {
     super.initState();
     AppLogger.i('Initializing ShoppingExploreApp state', tag: 'App');
+    _imageStorageService = LocalImageStorageServiceImpl();
     final dataSource = InMemoryShoppingListLocalDataSource.withDefaultData();
     final repository =
         ShoppingListRepositoryImpl(localDataSource: dataSource);
@@ -132,6 +136,7 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
         onToggleTheme: _toggleTheme,
         currentLocale: _locale,
         onToggleLocale: _toggleLocale,
+        imageStorageService: _imageStorageService,
       ),
     );
   }

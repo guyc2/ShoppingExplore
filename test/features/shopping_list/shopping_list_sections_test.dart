@@ -19,6 +19,16 @@ import 'package:shopping_explore/features/shopping_list/domain/usecases/watch_sh
 import 'package:shopping_explore/features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/views/shopping_list_detail_view.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
+import 'package:shopping_explore/core/services/image_storage_service.dart';
+import 'package:shopping_explore/core/error/failure.dart';
+import 'package:shopping_explore/core/error/result.dart';
+
+class FakeImageStorageService implements ImageStorageService {
+  @override
+  Future<Result<String?>> pickAndCompressImage(ImagePickerSource source) async {
+    return const Success(null);
+  }
+}
 
 void main() {
   group('ShoppingList 2-Section Checklist Widget Tests', () {
@@ -96,6 +106,7 @@ void main() {
           home: ShoppingListDetailView(
             listId: 'list-sections-1',
             controller: controller,
+            imageStorageService: FakeImageStorageService(),
           ),
         ),
       );
@@ -123,6 +134,7 @@ void main() {
           home: ShoppingListDetailView(
             listId: 'list-sections-1',
             controller: controller,
+            imageStorageService: FakeImageStorageService(),
           ),
         ),
       );

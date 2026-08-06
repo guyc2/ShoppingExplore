@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../domain/entities/product_suggestion.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/utils/logger.dart';
 
 class ProductSuggestionCard extends StatelessWidget {
   final ProductSuggestion suggestion;
@@ -18,14 +20,50 @@ class ProductSuggestionCard extends StatelessWidget {
   Future<void> _launchUrl(BuildContext context, String urlString) async {
     final uri = Uri.tryParse(urlString);
     if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      try {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } catch (e) {
+        AppLogger.e('Exception launching URL: $urlString', error: e, tag: 'ProductSuggestionCard');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not launch link: $urlString')),
+          );
+        }
+      }
     } else {
+      AppLogger.w('Invalid URL or cannot launch: $urlString', tag: 'ProductSuggestionCard');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Could not launch link: $urlString')),
         );
       }
     }
+  }
+
+  Widget _buildImageWidget(String path, ThemeData theme) {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return Image.network(
+        path,
+        height: 180,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _buildFallback(theme),
+      );
+    } else {
+      return Image.file(
+        File(path),
+        height: 180,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _buildFallback(theme),
+      );
+    }
+  }
+
+  Widget _buildFallback(ThemeData theme) {
+    return Container(
+      height: 180,
+      color: theme.colorScheme.surfaceContainerHighest,
+      child: Icon(Icons.image_not_supported_outlined, size: 48, color: theme.colorScheme.outline),
+    );
   }
 
   @override
@@ -46,16 +84,7 @@ class ProductSuggestionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (suggestion.imageUrl != null && suggestion.imageUrl!.isNotEmpty)
-            Image.network(
-              suggestion.imageUrl!,
-              height: 180,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 180,
-                color: theme.colorScheme.surfaceContainerHighest,
-                child: Icon(Icons.image_not_supported_outlined, size: 48, color: theme.colorScheme.outline),
-              ),
-            ),
+            _buildImageWidget(suggestion.imageUrl!, theme),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

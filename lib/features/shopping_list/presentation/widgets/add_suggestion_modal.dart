@@ -1,17 +1,21 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/services/image_storage_service.dart';
 import '../../domain/entities/product_suggestion.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 
 class AddSuggestionModal extends StatefulWidget {
   final ProductSuggestion? initialSuggestion;
   final void Function(ProductSuggestion) onSave;
+  final ImageStorageService imageStorageService;
 
   const AddSuggestionModal({
     super.key,
     this.initialSuggestion,
     required this.onSave,
+    required this.imageStorageService,
   });
 
   @override
@@ -28,11 +32,14 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
   final _urlController = TextEditingController();
   final _priceController = TextEditingController();
   
+  late final ImageStorageService _storageService;
+  bool _isPickingImage = false;
   String _currency = '₪';
 
   @override
   void initState() {
     super.initState();
+    _storageService = widget.imageStorageService;
     if (widget.initialSuggestion != null) {
       final s = widget.initialSuggestion!;
       _nameController.text = s.name;
@@ -90,6 +97,149 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
     Navigator.pop(context);
   }
 
+  Widget _buildImageSection(AppLocalizations? l10n) {
+    final hasImage = _imageUrlController.text.trim().isNotEmpty;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (hasImage) ...[
+          Stack(
+            alignment: Alignment.topRight,
+            children: [
+              Container(
+                height: 160,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: _buildImageWidget(_imageUrlController.text.trim()),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.cancel, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    _imageUrlController.clear();
+                  });
+                },
+              ),
+            ],
+          ),
+        ] else if (_isPickingImage) ...[
+          Container(
+            height: 160,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ] else ...[
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _pickImage(ImagePickerSource.camera, l10n),
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  label: Text(l10n?.takePhoto ?? 'Take Photo'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _pickImage(ImagePickerSource.gallery, l10n),
+                  icon: const Icon(Icons.photo_library_outlined),
+                  label: Text(l10n?.chooseFromGallery ?? 'Choose Gallery'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+        const SizedBox(height: 12),
+        TextField(
+          controller: _imageUrlController,
+          decoration: InputDecoration(
+            labelText: l10n?.imageUrl ?? 'Or paste Image URL',
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.link),
+          ),
+          keyboardType: TextInputType.url,
+          textDirection: TextDirection.ltr,
+          onChanged: (_) => setState(() {}),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageWidget(String path) {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return Image.network(
+        path,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return const Center(child: Icon(Icons.broken_image, size: 48));
+        },
+      );
+    } else {
+      return Image.file(
+        File(path),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return const Center(child: Icon(Icons.broken_image, size: 48));
+        },
+      );
+    }
+  }
+
+  Future<void> _pickImage(ImagePickerSource source, AppLocalizations? l10n) async {
+    setState(() {
+      _isPickingImage = true;
+    });
+
+    final result = await _storageService.pickAndCompressImage(source);
+
+    if (mounted) {
+      setState(() {
+        _isPickingImage = false;
+      });
+
+      if (result.isSuccess) {
+        final path = result.value;
+        if (path != null) {
+          setState(() {
+            _imageUrlController.text = path;
+          });
+        }
+      } else {
+        AppLogger.e('Failed to pick image', error: result.error.message, tag: 'AddSuggestionModal');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n?.imagePickError ?? 'Failed to pick image'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -137,16 +287,7 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
               maxLines: 2,
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _imageUrlController,
-              decoration: InputDecoration(
-                labelText: l10n?.imageUrl ?? 'Image URL',
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.link),
-              ),
-              keyboardType: TextInputType.url,
-              textDirection: TextDirection.ltr,
-            ),
+            _buildImageSection(l10n),
             const SizedBox(height: 12),
             Row(
               children: [

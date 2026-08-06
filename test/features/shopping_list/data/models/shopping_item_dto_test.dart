@@ -31,6 +31,7 @@ void main() {
       'imageUrls': ['https://example.com/apple.jpg'],
       'linkUrls': ['https://example.com/store/apple'],
       'attributes': {'store': 'WholeFoods', 'brand': 'Nature'},
+      'suggestions': [],
       'createdAt': '2026-01-01T12:00:00.000',
       'updatedAt': '2026-01-01T12:00:00.000',
     };

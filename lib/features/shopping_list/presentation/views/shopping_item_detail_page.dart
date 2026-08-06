@@ -7,12 +7,14 @@ import '../widgets/shopping_item_editor_modal.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../widgets/product_suggestion_card.dart';
 import '../widgets/add_suggestion_modal.dart';
+import '../../../../core/services/image_storage_service.dart';
 
 class ShoppingItemDetailPage extends StatefulWidget {
   final ShoppingItem initialItem;
   final String listId;
   final ShoppingListController controller;
   final List<String> availableEmails;
+  final ImageStorageService imageStorageService;
 
   const ShoppingItemDetailPage({
     super.key,
@@ -20,6 +22,7 @@ class ShoppingItemDetailPage extends StatefulWidget {
     required this.listId,
     required this.controller,
     required this.availableEmails,
+    required this.imageStorageService,
   });
 
   @override
@@ -82,6 +85,7 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
       context: context,
       isScrollControlled: true,
       builder: (_) => AddSuggestionModal(
+        imageStorageService: widget.imageStorageService,
         onSave: (suggestion) {
           final updatedSuggestions = List<ProductSuggestion>.from(item.suggestions)..add(suggestion);
           final updatedItem = item.copyWith(suggestions: updatedSuggestions);
@@ -154,6 +158,7 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
                           context: context,
                           isScrollControlled: true,
                           builder: (context) => AddSuggestionModal(
+                            imageStorageService: widget.imageStorageService,
                             initialSuggestion: suggestion,
                             onSave: (updatedSuggestion) {
                               final updatedSuggestions = List<ProductSuggestion>.from(item.suggestions);
