@@ -294,29 +294,36 @@ class _ShoppingListViewState extends State<ShoppingListView> {
         ),
 
         // Grid of list cards
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverGrid(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final list = lists[index];
-                return ShoppingListCard(
-                  shoppingList: list,
-                  onTap: () => _openListDetail(context, list),
-                  onDelete: () {
-                    widget.controller.deleteList(list.id);
+        SliverLayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.crossAxisExtent <= 0) {
+              return const SliverToBoxAdapter(child: SizedBox.shrink());
+            }
+            return SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final list = lists[index];
+                    return ShoppingListCard(
+                      shoppingList: list,
+                      onTap: () => _openListDetail(context, list),
+                      onDelete: () {
+                        widget.controller.deleteList(list.id);
+                      },
+                    );
                   },
-                );
-              },
-              childCount: lists.length,
-            ),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 320,
-              childAspectRatio: 0.9,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-          ),
+                  childCount: lists.length,
+                ),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 320,
+                  childAspectRatio: 0.9,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+              ),
+            );
+          },
         ),
 
         // Bottom padding for FAB
