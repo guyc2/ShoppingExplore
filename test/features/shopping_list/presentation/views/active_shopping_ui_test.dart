@@ -159,12 +159,12 @@ void main() {
       await tester.tap(find.text('Edit Item'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Friend'), findsOneWidget);
+      expect(find.text('Taylor Friend'), findsOneWidget);
 
       // Scroll into view before tapping
-      await tester.ensureVisible(find.text('Friend'));
+      await tester.ensureVisible(find.text('Taylor Friend'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Friend'));
+      await tester.tap(find.text('Taylor Friend'));
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(find.text('Save Changes'));

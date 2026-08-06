@@ -9,11 +9,17 @@ String getDisplayNameForEmail(String? email) {
   final cleanEmail = email.trim().toLowerCase();
 
   // Known mapping for demo/debug accounts
-  if (cleanEmail == 'guy@shoppingexplore.com' || cleanEmail == 'guyc2@shoppingexplore.com') {
+  if (cleanEmail == 'guy@shoppingexplore.com' || cleanEmail == 'guyc@shoppingexplore.com' || cleanEmail == 'guyc2@shoppingexplore.com') {
     return 'Guy C';
   }
+  if (cleanEmail == 'user@shoppingexplore.com') {
+    return 'Alex User';
+  }
   if (cleanEmail == 'friend@shoppingexplore.com') {
-    return 'Friend';
+    return 'Taylor Friend';
+  }
+  if (cleanEmail == 'admin@shoppingexplore.com') {
+    return 'Admin Manager';
   }
   if (cleanEmail == 'colleague@shoppingexplore.com') {
     return 'Colleague';
