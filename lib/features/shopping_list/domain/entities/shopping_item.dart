@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'product_suggestion.dart';
 
 enum Priority { low, medium, high }
 
@@ -14,6 +15,7 @@ class ShoppingItem extends Equatable {
   final List<String> imageUrls;
   final List<String> linkUrls;
   final Map<String, String> attributes;
+  final List<ProductSuggestion> suggestions;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -29,6 +31,7 @@ class ShoppingItem extends Equatable {
     this.imageUrls = const [],
     this.linkUrls = const [],
     this.attributes = const {},
+    this.suggestions = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -45,6 +48,7 @@ class ShoppingItem extends Equatable {
     List<String>? imageUrls,
     List<String>? linkUrls,
     Map<String, String>? attributes,
+    List<ProductSuggestion>? suggestions,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -60,6 +64,7 @@ class ShoppingItem extends Equatable {
       imageUrls: imageUrls ?? this.imageUrls,
       linkUrls: linkUrls ?? this.linkUrls,
       attributes: attributes ?? this.attributes,
+      suggestions: suggestions ?? this.suggestions,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -78,6 +83,7 @@ class ShoppingItem extends Equatable {
         imageUrls,
         linkUrls,
         attributes,
+        suggestions,
         createdAt,
         updatedAt,
       ];

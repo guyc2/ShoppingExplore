@@ -23,6 +23,10 @@ dependencies:
   # Architecture & Utility
   equatable: ^2.0.5
 
+  url_launcher: any
+  uuid: any
+  image_picker: ^1.1.2
+  path_provider: ^2.1.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

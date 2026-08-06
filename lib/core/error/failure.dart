@@ -15,3 +15,7 @@ class CacheFailure extends Failure {
 class ValidationFailure extends Failure {
   const ValidationFailure(super.message);
 }
+
+class StorageFailure extends Failure {
+  const StorageFailure(super.message);
+}

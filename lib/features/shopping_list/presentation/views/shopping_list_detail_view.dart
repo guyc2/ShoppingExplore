@@ -7,8 +7,8 @@ import '../controllers/shopping_list_controller.dart';
 import '../controllers/shopping_list_state.dart';
 import '../widgets/add_item_input.dart';
 import '../widgets/active_shoppers_banner.dart';
-import '../widgets/shopping_item_editor_modal.dart';
 import '../widgets/shopping_item_tile.dart';
+import 'shopping_item_detail_page.dart';
 import '../widgets/shopping_list_share_modal.dart';
 import '../widgets/start_shopping_modal.dart';
 
@@ -64,18 +64,15 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
   }
 
   void _openEditor(BuildContext context, ShoppingItem item, [List<String> availableEmails = const []]) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => ShoppingItemEditorModal(
-        item: item,
-        availableEmails: availableEmails,
-        onSave: (updatedItem) {
-          widget.controller.updateItem(widget.listId, updatedItem);
-        },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ShoppingItemDetailPage(
+          initialItem: item,
+          listId: widget.listId,
+          controller: widget.controller,
+          availableEmails: availableEmails,
+        ),
       ),
     );
   }

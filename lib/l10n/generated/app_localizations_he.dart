@@ -232,4 +232,62 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get liveSyncing => 'סנכרון חי';
+
+  @override
+  String get itemDetails => 'פרטי פריט';
+
+  @override
+  String get suggestions => 'הצעות / אפשרויות';
+
+  @override
+  String get addSuggestion => 'הוסף הצעה';
+
+  @override
+  String get noSuggestionsYet => 'אין עדיין הצעות';
+
+  @override
+  String get addSuggestionToHelp =>
+      'הוסף הצעה כדי לעזור לאחרים לדעת בדיוק מה לקנות.';
+
+  @override
+  String get pros => 'יתרונות';
+
+  @override
+  String get cons => 'חסרונות';
+
+  @override
+  String get deleteSuggestion => 'מחק הצעה';
+
+  @override
+  String get productPage => 'עמוד המוצר';
+
+  @override
+  String get nameExample => 'שם (למשל: נעלי ריצה)';
+
+  @override
+  String get description => 'תיאור';
+
+  @override
+  String get imageUrl => 'קישור לתמונה';
+
+  @override
+  String get prosComma => 'יתרונות (מופרדים בפסיק)';
+
+  @override
+  String get consComma => 'חסרונות (מופרדים בפסיק)';
+
+  @override
+  String get storeName => 'שם החנות';
+
+  @override
+  String get price => 'מחיר';
+
+  @override
+  String get productPageLink => 'קישור לעמוד המוצר';
+
+  @override
+  String get saveSuggestion => 'שמור הצעה';
+
+  @override
+  String get editSuggestion => 'ערוך הצעה';
 }

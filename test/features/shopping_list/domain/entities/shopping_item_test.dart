@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopping_explore/features/shopping_list/domain/entities/shopping_item.dart';
+import 'package:shopping_explore/features/shopping_list/domain/entities/product_suggestion.dart';
 
 void main() {
   group('ShoppingItem Entity', () {
     final now = DateTime(2026, 1, 1);
+    final suggestion = ProductSuggestion(id: 's1', name: 'Suggestion 1');
     final item = ShoppingItem(
       id: '1',
       title: 'Apples',
@@ -14,6 +16,7 @@ void main() {
       imageUrls: const ['https://example.com/apple.jpg'],
       linkUrls: const ['https://example.com/store/apple'],
       attributes: const {'store': 'WholeFoods', 'brand': 'Nature'},
+      suggestions: [suggestion],
       createdAt: now,
       updatedAt: now,
     );
@@ -29,6 +32,7 @@ void main() {
         imageUrls: const ['https://example.com/apple.jpg'],
         linkUrls: const ['https://example.com/store/apple'],
         attributes: const {'store': 'WholeFoods', 'brand': 'Nature'},
+        suggestions: [suggestion],
         createdAt: now,
         updatedAt: now,
       );
@@ -41,11 +45,13 @@ void main() {
         title: 'Green Apples',
         isCompleted: true,
         priority: Priority.low,
+        suggestions: [],
       );
 
       expect(updatedItem.title, equals('Green Apples'));
       expect(updatedItem.isCompleted, isTrue);
       expect(updatedItem.priority, equals(Priority.low));
+      expect(updatedItem.suggestions, isEmpty);
       expect(updatedItem.id, equals(item.id));
       expect(updatedItem.quantity, equals(item.quantity));
       expect(updatedItem.attributes, equals(item.attributes));

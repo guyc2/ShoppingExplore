@@ -541,6 +541,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Live Sync'**
   String get liveSyncing;
+
+  /// No description provided for @itemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Details'**
+  String get itemDetails;
+
+  /// No description provided for @suggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get suggestions;
+
+  /// No description provided for @addSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Suggestion'**
+  String get addSuggestion;
+
+  /// No description provided for @noSuggestionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No suggestions yet'**
+  String get noSuggestionsYet;
+
+  /// No description provided for @addSuggestionToHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a suggestion to help others know exactly what to buy.'**
+  String get addSuggestionToHelp;
+
+  /// No description provided for @pros.
+  ///
+  /// In en, this message translates to:
+  /// **'Pros'**
+  String get pros;
+
+  /// No description provided for @cons.
+  ///
+  /// In en, this message translates to:
+  /// **'Cons'**
+  String get cons;
+
+  /// No description provided for @deleteSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Suggestion'**
+  String get deleteSuggestion;
+
+  /// No description provided for @productPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Page'**
+  String get productPage;
+
+  /// No description provided for @nameExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (e.g. Nike Pegasus)'**
+  String get nameExample;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @imageUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Image URL'**
+  String get imageUrl;
+
+  /// No description provided for @prosComma.
+  ///
+  /// In en, this message translates to:
+  /// **'Pros (comma separated)'**
+  String get prosComma;
+
+  /// No description provided for @consComma.
+  ///
+  /// In en, this message translates to:
+  /// **'Cons (comma separated)'**
+  String get consComma;
+
+  /// No description provided for @storeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Store Name'**
+  String get storeName;
+
+  /// No description provided for @price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get price;
+
+  /// No description provided for @productPageLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Page Link'**
+  String get productPageLink;
+
+  /// No description provided for @saveSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Suggestion'**
+  String get saveSuggestion;
+
+  /// No description provided for @editSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Suggestion'**
+  String get editSuggestion;
 }
 
 class _AppLocalizationsDelegate

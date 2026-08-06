@@ -1,4 +1,5 @@
 import '../../domain/entities/shopping_item.dart';
+import 'product_suggestion_dto.dart';
 
 class ShoppingItemDto extends ShoppingItem {
   const ShoppingItemDto({
@@ -13,6 +14,7 @@ class ShoppingItemDto extends ShoppingItem {
     super.imageUrls = const [],
     super.linkUrls = const [],
     super.attributes = const {},
+    super.suggestions = const [],
     required super.createdAt,
     required super.updatedAt,
   });
@@ -32,7 +34,11 @@ class ShoppingItemDto extends ShoppingItem {
       assignedToEmail: json['assignedToEmail'] as String?,
       imageUrls: (json['imageUrls'] as List<dynamic>?)?.cast<String>() ?? const [],
       linkUrls: (json['linkUrls'] as List<dynamic>?)?.cast<String>() ?? const [],
-      attributes: (json['attributes'] as Map<String, dynamic>?)?.cast<String, String>() ?? const {},
+      attributes: (json['attributes'] as Map?)?.cast<String, String>() ?? const {},
+      suggestions: (json['suggestions'] as List<dynamic>?)
+              ?.map((e) => ProductSuggestionDto.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          const [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -51,6 +57,7 @@ class ShoppingItemDto extends ShoppingItem {
       'imageUrls': imageUrls,
       'linkUrls': linkUrls,
       'attributes': attributes,
+      'suggestions': suggestions.map((s) => ProductSuggestionDto.fromDomain(s).toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -69,6 +76,7 @@ class ShoppingItemDto extends ShoppingItem {
       imageUrls: item.imageUrls,
       linkUrls: item.linkUrls,
       attributes: item.attributes,
+      suggestions: item.suggestions,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     );
@@ -87,6 +95,7 @@ class ShoppingItemDto extends ShoppingItem {
       imageUrls: imageUrls,
       linkUrls: linkUrls,
       attributes: attributes,
+      suggestions: suggestions,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

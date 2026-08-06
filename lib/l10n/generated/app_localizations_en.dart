@@ -232,4 +232,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get liveSyncing => 'Live Sync';
+
+  @override
+  String get itemDetails => 'Item Details';
+
+  @override
+  String get suggestions => 'Suggestions';
+
+  @override
+  String get addSuggestion => 'Add Suggestion';
+
+  @override
+  String get noSuggestionsYet => 'No suggestions yet';
+
+  @override
+  String get addSuggestionToHelp =>
+      'Add a suggestion to help others know exactly what to buy.';
+
+  @override
+  String get pros => 'Pros';
+
+  @override
+  String get cons => 'Cons';
+
+  @override
+  String get deleteSuggestion => 'Delete Suggestion';
+
+  @override
+  String get productPage => 'Product Page';
+
+  @override
+  String get nameExample => 'Name (e.g. Nike Pegasus)';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get imageUrl => 'Image URL';
+
+  @override
+  String get prosComma => 'Pros (comma separated)';
+
+  @override
+  String get consComma => 'Cons (comma separated)';
+
+  @override
+  String get storeName => 'Store Name';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get productPageLink => 'Product Page Link';
+
+  @override
+  String get saveSuggestion => 'Save Suggestion';
+
+  @override
+  String get editSuggestion => 'Edit Suggestion';
 }

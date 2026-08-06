@@ -25,7 +25,10 @@ aliases: [Shopping List, Advanced Shopping List]
 - [shopping_list/presentation/widgets/shopping_item_editor_modal.dart](../lib/features/shopping_list/presentation/widgets/shopping_item_editor_modal.dart) — Modal bottom sheet for editing complex rich item properties.
 - [shopping_list/presentation/widgets/shopping_list_share_modal.dart](../lib/features/shopping_list/presentation/widgets/shopping_list_share_modal.dart) — Dialog modal for managing list owner and adding new collaborator emails.
 - [shopping_list/presentation/widgets/add_item_input.dart](../lib/features/shopping_list/presentation/widgets/add_item_input.dart) — Quick inline checklist entry bar.
-
+- [shopping_list/domain/entities/product_suggestion.dart](../lib/features/shopping_list/domain/entities/product_suggestion.dart) — Domain entity for product variants or suggestions inside a shopping item (pros, cons, price, link, image).
+- [shopping_list/presentation/views/shopping_item_detail_page.dart](../lib/features/shopping_list/presentation/views/shopping_item_detail_page.dart) — Full-screen page for viewing item details, editing, and managing `ProductSuggestion` instances.
+- [shopping_list/presentation/widgets/product_suggestion_card.dart](../lib/features/shopping_list/presentation/widgets/product_suggestion_card.dart) — Visually rich card displaying a single product suggestion.
+- [shopping_list/presentation/widgets/add_suggestion_modal.dart](../lib/features/shopping_list/presentation/widgets/add_suggestion_modal.dart) — Form modal for adding new suggestions to an item.
 **Dependencies** — Depends on [[core|Core Infrastructure]] (`Failure`, `Result`, `AppLogger`, Material 3 theme tokens) for error handling, telemetry, and styling, and [[auth|Authentication Module]] for user session identification.
 
 **Flow** —

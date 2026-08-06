@@ -109,6 +109,15 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     super.dispose();
   }
 
+  ShoppingList? getList(String listId) {
+    if (value is ShoppingListLoaded) {
+      final lists = (value as ShoppingListLoaded).lists;
+      final idx = lists.indexWhere((l) => l.id == listId);
+      if (idx >= 0) return lists[idx];
+    }
+    return null;
+  }
+
   Future<void> loadShoppingLists() async {
     AppLogger.i('Loading shopping lists...', tag: 'ShoppingListController');
     value = const ShoppingListLoading();
