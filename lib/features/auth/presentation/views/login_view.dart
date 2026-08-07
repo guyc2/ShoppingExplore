@@ -212,6 +212,18 @@ class _LoginViewState extends State<LoginView> {
                 contentPadding: EdgeInsets.zero,
               ),
               const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: _handleGoogleSignIn,
+                icon: const Icon(Icons.g_mobiledata_rounded, size: 28, color: Colors.red),
+                label: Text(l10n?.continueWithGoogle ?? 'Continue with Google'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 44),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -235,5 +247,17 @@ class _LoginViewState extends State<LoginView> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _errorMessage = null);
+    final success = await widget.authController.signInWithGoogle(rememberMe: _rememberMe);
+    if (success && mounted) {
+      Navigator.of(context).pop();
+    } else if (mounted && widget.authController.state is AuthError) {
+      setState(() {
+        _errorMessage = (widget.authController.state as AuthError).message;
+      });
+    }
   }
 }

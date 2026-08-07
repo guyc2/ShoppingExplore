@@ -6,6 +6,7 @@ import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
 import '../../domain/usecases/restore_persistent_session_usecase.dart';
+import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../../domain/usecases/update_user_profile_usecase.dart';
 
 abstract class AuthState {
@@ -41,6 +42,7 @@ class AuthController extends ChangeNotifier {
   final GetCurrentUserUseCase getCurrentUserUseCase;
   final UpdateUserProfileUseCase? updateUserProfileUseCase;
   final RestorePersistentSessionUseCase? restorePersistentSessionUseCase;
+  final SignInWithGoogleUseCase? signInWithGoogleUseCase;
 
   AuthState _state = const AuthInitial();
   AuthState get state => _state;
@@ -52,6 +54,7 @@ class AuthController extends ChangeNotifier {
     required this.getCurrentUserUseCase,
     this.updateUserProfileUseCase,
     this.restorePersistentSessionUseCase,
+    this.signInWithGoogleUseCase,
   });
 
   Future<void> checkAuthStatus() async {
@@ -125,6 +128,26 @@ class AuthController extends ChangeNotifier {
       return true;
     } else {
       AppLogger.w('Registration failed: ${result.error.message}', tag: 'AuthController');
+      _setState(AuthError(result.error.message));
+      return false;
+    }
+  }
+
+  Future<bool> signInWithGoogle({bool rememberMe = false}) async {
+    if (signInWithGoogleUseCase == null) {
+      AppLogger.w('SignInWithGoogleUseCase is not configured', tag: 'AuthController');
+      return false;
+    }
+    _setState(const AuthLoading());
+    AppLogger.d('Attempting Google Sign-In (rememberMe: $rememberMe)', tag: 'AuthController');
+    final result = await signInWithGoogleUseCase!.execute(rememberMe: rememberMe);
+    if (result.isSuccess) {
+      final user = result.value;
+      AppLogger.i('Google Sign-In successful: ${user.email}', tag: 'AuthController');
+      _setState(Authenticated(user));
+      return true;
+    } else {
+      AppLogger.w('Google Sign-In failed: ${result.error.message}', tag: 'AuthController');
       _setState(AuthError(result.error.message));
       return false;
     }

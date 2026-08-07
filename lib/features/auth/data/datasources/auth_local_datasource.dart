@@ -63,6 +63,18 @@ class InMemoryAuthDataSource implements AuthRemoteDataSource {
 
   UserDto? _currentUserDto;
 
+  @override
+  Future<UserDto> signInWithGoogle() async {
+    const googleUser = UserDto(
+      id: 'google-user-1',
+      email: 'google.user@example.com',
+      displayName: 'Google User',
+      createdAt: '2026-08-07T10:00:00.000Z',
+    );
+    _currentUserDto = googleUser;
+    return googleUser;
+  }
+
   InMemoryAuthDataSource({bool startAuthenticated = true}) {
     if (startAuthenticated) {
       _currentUserDto = _users['guy@shoppingexplore.com']?.dto;

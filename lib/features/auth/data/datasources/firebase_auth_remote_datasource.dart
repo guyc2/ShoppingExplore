@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/utils/logger.dart';
 import '../models/user_dto.dart';
@@ -6,10 +7,41 @@ import 'auth_remote_datasource.dart';
 
 class FirebaseAuthRemoteDataSource implements AuthRemoteDataSource {
   final firebase_auth.FirebaseAuth _firebaseAuth;
+  final GoogleSignIn? _googleSignIn;
 
   FirebaseAuthRemoteDataSource({
     required firebase_auth.FirebaseAuth firebaseAuth,
-  })  : _firebaseAuth = firebaseAuth;
+    GoogleSignIn? googleSignIn,
+  })  : _firebaseAuth = firebaseAuth,
+        _googleSignIn = googleSignIn;
+
+  @override
+  Future<UserDto> signInWithGoogle() async {
+    try {
+      final googleSignIn = _googleSignIn ?? GoogleSignIn();
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        throw const AuthFailure('Google sign-in was canceled.');
+      }
+      final googleAuth = await googleUser.authentication;
+      final credential = firebase_auth.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCredential = await _firebaseAuth.signInWithCredential(credential);
+      final user = userCredential.user;
+      if (user == null) {
+        throw const AuthFailure('Failed to retrieve user after Google sign-in.');
+      }
+      return UserDto.fromFirebaseUser(user);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      AppLogger.e('FirebaseAuthException during Google sign-in: ${e.code}', tag: 'FirebaseAuthRemoteDataSource');
+      throw _mapFirebaseAuthException(e);
+    } catch (e, stack) {
+      AppLogger.e('Unknown error during Google sign-in', tag: 'FirebaseAuthRemoteDataSource', error: e, stackTrace: stack);
+      throw AuthFailure(e.toString());
+    }
+  }
 
   @override
   Future<UserDto> login(String email, String password) async {

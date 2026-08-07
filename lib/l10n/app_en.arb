@@ -96,14 +96,6 @@
   "consComma": "Cons (comma separated)",
   "storeName": "Store Name",
   "price": "Price",
-  "productPage": "Product Page",
-  "nameExample": "Name (e.g. Nike Pegasus)",
-  "description": "Description",
-  "imageUrl": "Image URL",
-  "prosComma": "Pros (comma separated)",
-  "consComma": "Cons (comma separated)",
-  "storeName": "Store Name",
-  "price": "Price",
   "productPageLink": "Product Page Link",
   "saveSuggestion": "Save Suggestion",
   "editSuggestion": "Edit Suggestion",
@@ -120,5 +112,6 @@
   "saveChanges": "Save Changes",
   "assignedToUser": "Assigned To (responsible user)",
   "expandImage": "Expand Image",
-  "collapseImage": "Collapse Image"
+  "collapseImage": "Collapse Image",
+  "continueWithGoogle": "Continue with Google"
 }

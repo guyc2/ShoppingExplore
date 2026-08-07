@@ -13,6 +13,7 @@ abstract class AuthRepository {
     required String displayName,
     bool rememberMe = false,
   });
+  Future<Result<User>> signInWithGoogle({bool rememberMe = false});
   Future<Result<void>> logout();
   Future<Result<User?>> getCurrentUser();
   Future<Result<User?>> restoreSession();

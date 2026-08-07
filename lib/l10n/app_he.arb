@@ -89,14 +89,6 @@
   "consComma": "חסרונות (מופרדים בפסיק)",
   "storeName": "שם החנות",
   "price": "מחיר",
-  "productPage": "עמוד המוצר",
-  "nameExample": "שם (למשל: נעלי ריצה)",
-  "description": "תיאור",
-  "imageUrl": "קישור לתמונה",
-  "prosComma": "יתרונות (מופרדים בפסיק)",
-  "consComma": "חסרונות (מופרדים בפסיק)",
-  "storeName": "שם החנות",
-  "price": "מחיר",
   "productPageLink": "קישור לעמוד המוצר",
   "saveSuggestion": "שמור הצעה",
   "editSuggestion": "ערוך הצעה",
@@ -113,5 +105,6 @@
   "saveChanges": "שמור שינויים",
   "assignedToUser": "מוקצה ל- (משתמש אחראי)",
   "expandImage": "הצג תמונה",
-  "collapseImage": "הסתר תמונה"
+  "collapseImage": "הסתר תמונה",
+  "continueWithGoogle": "המשך עם Google"
 }

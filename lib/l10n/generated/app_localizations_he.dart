@@ -332,4 +332,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get collapseImage => 'הסתר תמונה';
+
+  @override
+  String get continueWithGoogle => 'המשך עם Google';
 }

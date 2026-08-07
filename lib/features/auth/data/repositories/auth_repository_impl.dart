@@ -75,6 +75,33 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Result<User>> signInWithGoogle({bool rememberMe = false}) async {
+    try {
+      AppLogger.d('Google Sign-In requested (rememberMe: $rememberMe)', tag: 'AuthRepositoryImpl');
+      final dto = await remoteDataSource.signInWithGoogle();
+
+      await firestore.collection('users').doc(dto.id).set({
+        'uid': dto.id,
+        'email': dto.email,
+        'displayName': dto.displayName,
+        'avatarUrl': dto.avatarUrl,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastLoginAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      final user = dto.toDomain();
+      AppLogger.i('Google Sign-In successful for ${user.email}', tag: 'AuthRepositoryImpl');
+      return Success(user);
+    } on Failure catch (failure) {
+      AppLogger.w('Google Sign-In failure: ${failure.message}', tag: 'AuthRepositoryImpl');
+      return Error(failure);
+    } catch (e, stackTrace) {
+      AppLogger.e('Unexpected Google Sign-In error', tag: 'AuthRepositoryImpl', error: e, stackTrace: stackTrace);
+      return Error(NetworkFailure('Google Sign-In error: $e'));
+    }
+  }
+
+  @override
   Future<Result<void>> logout() async {
     try {
       AppLogger.d('Logout requested', tag: 'AuthRepositoryImpl');
