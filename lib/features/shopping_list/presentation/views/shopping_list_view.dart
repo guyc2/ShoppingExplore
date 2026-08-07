@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../../../../core/utils/logger.dart';
@@ -589,19 +590,21 @@ class _ShoppingListViewState extends State<ShoppingListView> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              ActionChip(
-                avatar: const Icon(Icons.bug_report_rounded, size: 18),
-                label: Text(l10n?.quickDebugGuyC ?? 'Quick Debug Login as Guy C'),
-                backgroundColor: colorScheme.secondaryContainer,
-                labelStyle: TextStyle(
-                  color: colorScheme.onSecondaryContainer,
-                  fontWeight: FontWeight.bold,
+              if (kDebugMode) ...[
+                const SizedBox(height: 20),
+                ActionChip(
+                  avatar: const Icon(Icons.bug_report_rounded, size: 18),
+                  label: Text(l10n?.quickDebugGuyC ?? 'Quick Debug Login as Guy C'),
+                  backgroundColor: colorScheme.secondaryContainer,
+                  labelStyle: TextStyle(
+                    color: colorScheme.onSecondaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onPressed: () {
+                    widget.authController?.login('guy@shoppingexplore.com', 'password123', rememberMe: true);
+                  },
                 ),
-                onPressed: () {
-                  widget.authController?.login('guy@shoppingexplore.com', 'password123', rememberMe: true);
-                },
-              ),
+              ],
             ],
           ),
         ),

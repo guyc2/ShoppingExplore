@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../controllers/auth_controller.dart';
@@ -119,17 +120,19 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 12),
-              ActionChip(
-                avatar: const Icon(Icons.bug_report_rounded, size: 18),
-                label: Text(l10n?.quickDebugGuyC ?? 'Quick Debug Login as Guy C'),
-                backgroundColor: colorScheme.secondaryContainer,
-                labelStyle: TextStyle(
-                  color: colorScheme.onSecondaryContainer,
-                  fontWeight: FontWeight.bold,
+              if (kDebugMode) ...[
+                const SizedBox(height: 12),
+                ActionChip(
+                  avatar: const Icon(Icons.bug_report_rounded, size: 18),
+                  label: Text(l10n?.quickDebugGuyC ?? 'Quick Debug Login as Guy C'),
+                  backgroundColor: colorScheme.secondaryContainer,
+                  labelStyle: TextStyle(
+                    color: colorScheme.onSecondaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onPressed: _debugLoginGuyC,
                 ),
-                onPressed: _debugLoginGuyC,
-              ),
+              ],
               const SizedBox(height: 12),
               const SizedBox(height: 16),
               SegmentedButton<bool>(
