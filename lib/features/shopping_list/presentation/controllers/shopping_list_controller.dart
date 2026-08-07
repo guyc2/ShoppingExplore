@@ -133,13 +133,30 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
 
   Future<void> addItem(String listId, ShoppingItem item) async {
     AppLogger.d('Adding item to list $listId: ${item.title}', tag: 'ShoppingListController');
+
+    // Optimistic update: immediately append item to local state
+    final previousState = value;
+    if (value is ShoppingListLoaded) {
+      final currentLists = (value as ShoppingListLoaded).lists;
+      final listIndex = currentLists.indexWhere((l) => l.id == listId);
+      if (listIndex >= 0) {
+        final targetList = currentLists[listIndex];
+        final updatedItems = List<ShoppingItem>.from(targetList.items)..add(item);
+        final updatedList = targetList.copyWith(items: updatedItems);
+        final updatedLists = List<ShoppingList>.from(currentLists);
+        updatedLists[listIndex] = updatedList;
+        value = ShoppingListLoaded(updatedLists);
+      }
+    }
+
     final result = await createShoppingItem.execute(listId: listId, item: item);
     if (result.isSuccess) {
       AppLogger.i('Item added successfully', tag: 'ShoppingListController');
       await loadShoppingLists();
     } else {
       AppLogger.w('Failed to add item: ${result.error.message}', tag: 'ShoppingListController');
-      value = ShoppingListError(result.error);
+      // Revert optimistic update on failure — preserve loaded state, avoid full error screen
+      value = previousState;
     }
   }
 

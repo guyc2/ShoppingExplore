@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
 import 'package:shopping_explore/features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
 import 'package:shopping_explore/features/shopping_list/domain/entities/product_suggestion.dart';
+import 'package:shopping_explore/features/shopping_list/domain/entities/shopping_item.dart';
+
 import 'package:shopping_explore/features/shopping_list/domain/usecases/create_shopping_list.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/create_shopping_item.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/delete_shopping_item.dart';
@@ -57,6 +59,58 @@ void main() {
       final success = await deleteFuture;
       expect(success, isTrue);
     });
+
+    test('Optimistic addItem instantly appends item to controller state', () async {
+      await controller.loadShoppingLists();
+      expect(controller.value, isA<ShoppingListLoaded>());
+      final loadedLists = (controller.value as ShoppingListLoaded).lists;
+      final targetList = loadedLists.first;
+      final initialItemCount = targetList.items.length;
+
+      final now = DateTime.now();
+      final newItem = ShoppingItem(
+        id: 'test-new-item-${now.millisecondsSinceEpoch}',
+        title: 'Test Optimistic Item',
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      // Invoke addItem (do NOT await — check optimistic state immediately)
+      final addFuture = controller.addItem(targetList.id, newItem);
+      final stateAfterOptimistic = (controller.value as ShoppingListLoaded).lists
+          .firstWhere((l) => l.id == targetList.id);
+      expect(stateAfterOptimistic.items.length, initialItemCount + 1);
+      expect(stateAfterOptimistic.items.any((i) => i.title == 'Test Optimistic Item'), isTrue);
+
+      await addFuture;
+      // After completion, item should still be present
+      final stateAfterComplete = (controller.value as ShoppingListLoaded).lists
+          .firstWhere((l) => l.id == targetList.id);
+      expect(stateAfterComplete.items.any((i) => i.title == 'Test Optimistic Item'), isTrue);
+    });
+
+    test('addItem failure reverts to previous loaded state, not ShoppingListError', () async {
+      await controller.loadShoppingLists();
+      expect(controller.value, isA<ShoppingListLoaded>());
+
+      // Use a non-existent list id to force a CacheFailure
+      final now = DateTime.now();
+      final newItem = ShoppingItem(
+        id: 'fail-item',
+        title: 'Should Fail',
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      final previousState = controller.value;
+      await controller.addItem('non-existent-list-id', newItem);
+
+      // State should be reverted to the previous loaded state, NOT ShoppingListError
+      expect(controller.value, isA<ShoppingListLoaded>());
+      expect(controller.value, equals(previousState));
+    });
+
+
 
     testWidgets('3-dots menu on ShoppingListCard shows Edit and Delete options', (WidgetTester tester) async {
       final list = (InMemoryShoppingListRemoteDataSource.withDefaultData()
