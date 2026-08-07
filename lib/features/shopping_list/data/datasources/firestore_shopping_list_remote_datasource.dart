@@ -21,7 +21,9 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
       
       if (cleanEmail.isEmpty) {
         final snapshot = await _firestore.collection('shopping_lists').get();
-        return snapshot.docs.map((doc) => ShoppingListDto.fromFirestore(doc.data())).toList();
+        return snapshot.docs
+            .map((doc) => ShoppingListDto.fromFirestore(doc.data(), docId: doc.id))
+            .toList();
       }
 
       final ownedIdQuery = _firestore.collection('shopping_lists').where('ownerId', isEqualTo: cleanEmail).get();
@@ -34,7 +36,7 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
       
       for (final snapshot in results) {
         for (final doc in snapshot.docs) {
-          uniqueLists[doc.id] = ShoppingListDto.fromFirestore(doc.data());
+          uniqueLists[doc.id] = ShoppingListDto.fromFirestore(doc.data(), docId: doc.id);
         }
       }
       
@@ -56,7 +58,7 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
       if (!doc.exists || doc.data() == null) {
         throw CacheFailure('Shopping list not found: $id');
       }
-      return ShoppingListDto.fromFirestore(doc.data()!);
+      return ShoppingListDto.fromFirestore(doc.data()!, docId: doc.id);
     } on FirebaseException catch (e) {
       AppLogger.e('Firebase error getting shopping list', tag: 'FirestoreShoppingListRemoteDataSource', error: e);
       throw NetworkFailure('Failed to get shopping list: ${e.message}');
@@ -133,7 +135,7 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
-          .map((doc) => ShoppingListDto.fromFirestore(doc.data()))
+          .map((doc) => ShoppingListDto.fromFirestore(doc.data(), docId: doc.id))
           .toList();
     });
   }
@@ -147,33 +149,42 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
         .snapshots()
         .map((doc) {
       if (!doc.exists || doc.data() == null) return null;
-      return ShoppingListDto.fromFirestore(doc.data()!);
+      return ShoppingListDto.fromFirestore(doc.data()!, docId: doc.id);
     });
   }
 
   @override
   Future<void> saveShoppingItem(String listId, ShoppingItemDto item) async {
     try {
+      AppLogger.d('Saving item ${item.id} to list $listId', tag: 'FirestoreShoppingListRemoteDataSource');
       final docRef = _firestore.collection('shopping_lists').doc(listId);
-      await _firestore.runTransaction((transaction) async {
-        final doc = await transaction.get(docRef);
-        if (!doc.exists) throw const CacheFailure('List not found');
-        
-        final listDto = ShoppingListDto.fromFirestore(doc.data()!);
-        final items = listDto.items.map((i) => ShoppingItemDto.fromDomain(i)).toList();
-        final idx = items.indexWhere((i) => i.id == item.id);
-        
-        if (idx >= 0) {
-          items[idx] = item;
-        } else {
-          items.add(item);
-        }
-        
-        transaction.update(docRef, {
-          'items': items.map((i) => i.toFirestore()).toList(),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+
+      // Read current items directly from the raw Firestore array field,
+      // avoiding a full document re-parse that could fail if 'id' is absent.
+      final doc = await docRef.get();
+      if (!doc.exists) throw const CacheFailure('List not found');
+
+      final rawItems = (doc.data()?['items'] as List<dynamic>?) ?? [];
+      final items = rawItems
+          .map((e) => ShoppingItemDto.fromFirestore(e as Map<String, dynamic>))
+          .toList();
+
+      final idx = items.indexWhere((i) => i.id == item.id);
+      if (idx >= 0) {
+        items[idx] = item;
+      } else {
+        items.add(item);
+      }
+
+      await docRef.update({
+        'items': items.map((i) => i.toFirestore()).toList(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
+
+      AppLogger.i('Successfully saved item ${item.id} in list $listId', tag: 'FirestoreShoppingListRemoteDataSource');
+    } on FirebaseException catch (e) {
+      AppLogger.e('Firebase error saving item', error: e, tag: 'FirestoreShoppingListRemoteDataSource');
+      throw NetworkFailure('Failed to save shopping item: ${e.message}');
     } catch (e) {
       AppLogger.e('Failed to save shopping item', error: e, tag: 'FirestoreShoppingListRemoteDataSource');
       throw NetworkFailure('Failed to save shopping item: $e');
@@ -183,19 +194,27 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
   @override
   Future<void> deleteShoppingItem(String listId, String itemId) async {
     try {
+      AppLogger.d('Deleting item $itemId from list $listId', tag: 'FirestoreShoppingListRemoteDataSource');
       final docRef = _firestore.collection('shopping_lists').doc(listId);
-      await _firestore.runTransaction((transaction) async {
-        final doc = await transaction.get(docRef);
-        if (!doc.exists) throw const CacheFailure('List not found');
-        
-        final listDto = ShoppingListDto.fromFirestore(doc.data()!);
-        final items = listDto.items.map((i) => ShoppingItemDto.fromDomain(i)).where((i) => i.id != itemId).toList();
-        
-        transaction.update(docRef, {
-          'items': items.map((i) => i.toFirestore()).toList(),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+
+      final doc = await docRef.get();
+      if (!doc.exists) throw const CacheFailure('List not found');
+
+      final rawItems = (doc.data()?['items'] as List<dynamic>?) ?? [];
+      final items = rawItems
+          .map((e) => ShoppingItemDto.fromFirestore(e as Map<String, dynamic>))
+          .where((i) => i.id != itemId)
+          .toList();
+
+      await docRef.update({
+        'items': items.map((i) => i.toFirestore()).toList(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
+
+      AppLogger.i('Successfully deleted item $itemId from list $listId', tag: 'FirestoreShoppingListRemoteDataSource');
+    } on FirebaseException catch (e) {
+      AppLogger.e('Firebase error deleting item', error: e, tag: 'FirestoreShoppingListRemoteDataSource');
+      throw NetworkFailure('Failed to delete shopping item: ${e.message}');
     } catch (e) {
       AppLogger.e('Failed to delete shopping item', error: e, tag: 'FirestoreShoppingListRemoteDataSource');
       throw NetworkFailure('Failed to delete shopping item: $e');

@@ -63,9 +63,10 @@ class ShoppingListDto extends ShoppingList {
     };
   }
 
-  factory ShoppingListDto.fromFirestore(Map<String, dynamic> data) {
+  factory ShoppingListDto.fromFirestore(Map<String, dynamic> data, {String? docId}) {
+    final id = docId ?? data['id'] as String;
     return ShoppingListDto(
-      id: data['id'] as String,
+      id: id,
       title: data['title'] as String,
       shortDescription: data['shortDescription'] as String?,
       description: data['description'] as String?,
