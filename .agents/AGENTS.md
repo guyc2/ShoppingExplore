@@ -120,3 +120,13 @@ For every new feature or major enhancement, the following workflow is mandatory:
    - Upon finishing a Sprint (code implementation + test coverage + review verification), execution MUST STOP.
    - The agent MUST present the Sprint summary to the user and wait for explicit permission before resuming to the next Sprint.
 
+---
+
+## 7. Environment Variables & Secret Key Policy
+
+- **Zero Hardcoded Secrets Policy**: ALL API keys, secret credentials, access tokens, and project keys MUST be stored in `.env` (which MUST remain ignored by Git via `.gitignore`).
+- **Source Code Purity**: NEVER commit or hardcode raw API key strings in `.dart` source files, configuration classes (such as `firebase_options.dart`), or docs.
+- **Dynamic Config Loading**: Use `flutter_dotenv` (`dotenv.env[...]`) or `const String.fromEnvironment` to load configuration values dynamically at runtime/build time.
+- **Template Synchronization**: Always maintain a clean `.env.example` template file in Git containing placeholder values for team onboarding.
+
+
