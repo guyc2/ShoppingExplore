@@ -62,7 +62,9 @@ scratch/
 # Environment Variables & Secrets
 .env
 .env.*
+!.env.example
 *.env
+
 
 # Windows system files
 Thumbs.db
