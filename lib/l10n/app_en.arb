@@ -113,5 +113,14 @@
   "assignedToUser": "Assigned To (responsible user)",
   "expandImage": "Expand Image",
   "collapseImage": "Collapse Image",
-  "continueWithGoogle": "Continue with Google"
+  "continueWithGoogle": "Continue with Google",
+  "authErrorInvalidEmail": "The email address is badly formatted.",
+  "authErrorUserDisabled": "This user account has been disabled.",
+  "authErrorUserNotFound": "No user found for that email.",
+  "authErrorWrongPassword": "Wrong password provided for that user.",
+  "authErrorEmailAlreadyInUse": "The email address is already in use by another account.",
+  "authErrorWeakPassword": "The password is not strong enough.",
+  "authErrorNetworkFailed": "A network error occurred. Please check your connection.",
+  "authErrorInvalidCredential": "Invalid login credentials.",
+  "authErrorOperationNotAllowed": "Email/password accounts are not enabled."
 }

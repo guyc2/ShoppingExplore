@@ -106,5 +106,14 @@
   "assignedToUser": "מוקצה ל- (משתמש אחראי)",
   "expandImage": "הצג תמונה",
   "collapseImage": "הסתר תמונה",
-  "continueWithGoogle": "המשך עם Google"
+  "continueWithGoogle": "המשך עם Google",
+  "authErrorInvalidEmail": "כתובת הדוא\"ל אינה תקינה.",
+  "authErrorUserDisabled": "חשבון משתמש זה הושבת.",
+  "authErrorUserNotFound": "לא נמצא משתמש עם כתובת דוא\"ל זו.",
+  "authErrorWrongPassword": "הסיסמה שהוזנה שגויה.",
+  "authErrorEmailAlreadyInUse": "כתובת הדוא\"ל כבר נמצאת בשימוש בחשבון אחר.",
+  "authErrorWeakPassword": "הסיסמה חלשה מדי. יש להזין סיסמה חזקה יותר.",
+  "authErrorNetworkFailed": "התרחשה שגיאת רשת. אנא בדוק את החיבור לאינטרנט.",
+  "authErrorInvalidCredential": "פרטי ההתחברות אינם נכונים.",
+  "authErrorOperationNotAllowed": "התחברות באימייל/סיסמה אינה מופעלת."
 }

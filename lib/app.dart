@@ -115,11 +115,24 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       signInWithGoogleUseCase: SignInWithGoogleUseCase(authRepository),
     );
 
-    _controller.subscribeToShoppingLists(null);
+    _authController.addListener(_onAuthStateChanged);
+    _onAuthStateChanged();
+  }
+
+  void _onAuthStateChanged() {
+    final state = _authController.state;
+    if (state is Authenticated) {
+      _controller.subscribeToShoppingLists(state.user.email);
+      _controller.loadShoppingLists();
+    } else if (state is Unauthenticated) {
+      _controller.subscribeToShoppingLists(null);
+      _controller.loadShoppingLists();
+    }
   }
 
   @override
   void dispose() {
+    _authController.removeListener(_onAuthStateChanged);
     _authController.dispose();
     _controller.dispose();
     super.dispose();

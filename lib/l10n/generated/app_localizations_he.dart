@@ -335,4 +335,35 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get continueWithGoogle => 'המשך עם Google';
+
+  @override
+  String get authErrorInvalidEmail => 'כתובת הדוא\"ל אינה תקינה.';
+
+  @override
+  String get authErrorUserDisabled => 'חשבון משתמש זה הושבת.';
+
+  @override
+  String get authErrorUserNotFound => 'לא נמצא משתמש עם כתובת דוא\"ל זו.';
+
+  @override
+  String get authErrorWrongPassword => 'הסיסמה שהוזנה שגויה.';
+
+  @override
+  String get authErrorEmailAlreadyInUse =>
+      'כתובת הדוא\"ל כבר נמצאת בשימוש בחשבון אחר.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'הסיסמה חלשה מדי. יש להזין סיסמה חזקה יותר.';
+
+  @override
+  String get authErrorNetworkFailed =>
+      'התרחשה שגיאת רשת. אנא בדוק את החיבור לאינטרנט.';
+
+  @override
+  String get authErrorInvalidCredential => 'פרטי ההתחברות אינם נכונים.';
+
+  @override
+  String get authErrorOperationNotAllowed =>
+      'התחברות באימייל/סיסמה אינה מופעלת.';
 }

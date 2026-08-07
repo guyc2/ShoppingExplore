@@ -54,8 +54,14 @@ graph LR
    - **`AuthRepositoryImpl`**: Implements domain repository contract with centralized `AppLogger` telemetry and typed `Failure` mapping.
 
 3. **Presentation & State**:
-   - **`AuthController`**: `ChangeNotifier` managing `AuthState` (`AuthInitial`, `AuthLoading`, `Authenticated`, `Unauthenticated`, `AuthError`). Wired at the root in `ShoppingExploreApp` (`lib/app.dart`). Uses `RestorePersistentSessionUseCase` during `checkAuthStatus()` to automatically restore saved sessions.
-   - **`LoginView`**: Material 3 modal dialog supporting both Sign In and Sign Up modes via a prominent `SegmentedButton` toggle, localized Hebrew (`'he'`) / English (`'en'`) strings, a **"Remember me on this device"** checkbox for persistent sessions, and a 1-click **"Quick Debug Login as Guy C"** chip for rapid testing.
+   - **`AuthController`**: `ChangeNotifier` managing `AuthState` (`AuthInitial`, `AuthLoading`, `Authenticated`, `Unauthenticated`, `AuthError`). Wired at the root in `ShoppingExploreApp` (`lib/app.dart`), with an active listener that automatically re-subscribes and reloads `ShoppingListController` when state changes to `Authenticated` or `Unauthenticated`.
+   - **`AuthErrorMapper`**: Presentation utility (`lib/features/auth/presentation/utils/auth_error_mapper.dart`) mapping raw Firebase Auth exception codes (`invalid-email`, `user-disabled`, `user-not-found`, `wrong-password`, `email-already-in-use`, `weak-password`, `network-request-failed`, `invalid-credential`, `operation-not-allowed`) into localized Hebrew (`'he'`) and English (`'en'`) messages via `AppLocalizations`.
+   - **`LoginView`**: Refactored Material 3 modal card layout:
+     - **Pinned Action Button Bar**: Action buttons (`Cancel`, `Register` / `Sign In`, `Continue with Google`) are pinned at the bottom and remain 100% visible above the virtual keyboard.
+     - **Scrollable Field Container**: Input fields container is wrapped in a `SingleChildScrollView` inside `Expanded` to prevent keyboard overflow issues.
+     - **Auto-Clearing Password Field**: Password `TextField` uses a `FocusNode` and `onTap` handler that automatically clears the password field on first focus/tap during Sign-Up mode.
+     - **Registration Auto-Login**: Upon successful registration, closes the modal and immediately transitions the user into their authenticated account dashboard.
    - **`AccountProfileModal`**: Displayed from `AuthUserButton` menu; shows user statistics (total lists, total items, shared lists) and includes an inline **Profile Editing Mode** allowing users to update their Display Name and select an Avatar Style badge.
    - **`AuthUserButton` & Auth Guard**: Responsive header widget displaying authentication buttons when unauthenticated, and user avatar with profile/logout menu when authenticated. When unauthenticated, `ShoppingListView` renders a stylish **Auth Guard** card with lock badge and authentication actions, protecting list contents until signed in.
+
 

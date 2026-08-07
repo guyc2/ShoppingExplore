@@ -335,4 +335,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get authErrorInvalidEmail => 'The email address is badly formatted.';
+
+  @override
+  String get authErrorUserDisabled => 'This user account has been disabled.';
+
+  @override
+  String get authErrorUserNotFound => 'No user found for that email.';
+
+  @override
+  String get authErrorWrongPassword => 'Wrong password provided for that user.';
+
+  @override
+  String get authErrorEmailAlreadyInUse =>
+      'The email address is already in use by another account.';
+
+  @override
+  String get authErrorWeakPassword => 'The password is not strong enough.';
+
+  @override
+  String get authErrorNetworkFailed =>
+      'A network error occurred. Please check your connection.';
+
+  @override
+  String get authErrorInvalidCredential => 'Invalid login credentials.';
+
+  @override
+  String get authErrorOperationNotAllowed =>
+      'Email/password accounts are not enabled.';
 }
