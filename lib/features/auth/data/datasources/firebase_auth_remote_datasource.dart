@@ -134,7 +134,8 @@ class FirebaseAuthRemoteDataSource implements AuthRemoteDataSource {
       case 'email-already-in-use':
         return const ValidationFailure('The email address is already in use by another account.');
       case 'operation-not-allowed':
-        return const AuthFailure('Email/password accounts are not enabled.');
+      case 'configuration-not-found':
+        return const AuthFailure('Email/password accounts are not enabled in Firebase Console.');
       case 'weak-password':
         return const ValidationFailure('The password is not strong enough.');
       case 'network-request-failed':
@@ -142,6 +143,9 @@ class FirebaseAuthRemoteDataSource implements AuthRemoteDataSource {
       case 'invalid-credential':
         return const ValidationFailure('Invalid login credentials.');
       default:
+        if (e.message != null && e.message!.contains('CONFIGURATION_NOT_FOUND')) {
+          return const AuthFailure('Email/password auth is not enabled in Firebase Console.');
+        }
         return AuthFailure(e.message ?? 'Authentication failed.');
     }
   }

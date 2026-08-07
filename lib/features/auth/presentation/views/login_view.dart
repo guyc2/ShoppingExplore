@@ -17,8 +17,8 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final _emailController = TextEditingController(text: 'user@shoppingexplore.com');
-  final _passwordController = TextEditingController(text: 'password123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   late bool _isRegistering;
   bool _rememberMe = false;
@@ -183,6 +183,7 @@ class _LoginViewState extends State<LoginView> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: l10n?.emailAddress ?? 'Email Address',
+                  hintText: 'e.g. user@example.com',
                   border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
@@ -192,6 +193,7 @@ class _LoginViewState extends State<LoginView> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: l10n?.password ?? 'Password',
+                  hintText: '••••••••',
                   border: const OutlineInputBorder(),
                 ),
                 obscureText: true,

@@ -73,12 +73,11 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
             ],
           ),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Header (fixed at top)
             Row(
               children: [
                 Container(
@@ -110,130 +109,143 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-
-            // Title field
-            TextField(
-              controller: _titleController,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: l10n?.titleLabel ?? 'Title',
-                hintText: l10n?.newListTitleHint ?? 'e.g., Birthday Party Supplies',
-                prefixIcon: const Icon(Icons.edit_outlined, size: 20),
-              ),
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            const SizedBox(height: 12),
-
-            // Short description field
-            TextField(
-              controller: _descController,
-              decoration: InputDecoration(
-                labelText: l10n?.shortDescriptionLabel ?? 'Short Description',
-                hintText: l10n?.newListDescHint ?? 'Optional brief description',
-                prefixIcon: const Icon(Icons.notes_rounded, size: 20),
-              ),
-              textCapitalization: TextCapitalization.sentences,
-              maxLines: 2,
-            ),
             const SizedBox(height: 16),
 
-            // Category icon selector
-            Text(
-              l10n?.categoryLabel ?? 'Category',
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _iconOptions.entries.map((entry) {
-                final isSelected = _selectedIcon == entry.key;
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedIcon = entry.key),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? colorScheme.primary.withValues(alpha: 0.15)
-                          : colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(10),
-                      border: isSelected
-                          ? Border.all(color: colorScheme.primary, width: 2)
-                          : null,
+            // Scrollable Form Fields
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title field
+                    TextField(
+                      controller: _titleController,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: l10n?.titleLabel ?? 'Title',
+                        hintText: l10n?.newListTitleHint ?? 'e.g., Birthday Party Supplies',
+                        prefixIcon: const Icon(Icons.edit_outlined, size: 20),
+                      ),
+                      textCapitalization: TextCapitalization.sentences,
                     ),
-                    child: Icon(
-                      entry.value,
-                      size: 20,
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
-            // Color selector
-            Text(
-              l10n?.colorLabel ?? 'Color',
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _colorOptions.map((hex) {
-                final color = _parseHex(hex);
-                final isSelected = _selectedColor == hex;
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedColor = hex),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: isSelected
-                          ? Border.all(
-                              color: colorScheme.onSurface,
-                              width: 3,
-                            )
-                          : Border.all(
-                              color: color.withValues(alpha: 0.5),
-                              width: 1,
+                    // Short description field
+                    TextField(
+                      controller: _descController,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _handleCreate(),
+                      decoration: InputDecoration(
+                        labelText: l10n?.shortDescriptionLabel ?? 'Short Description',
+                        hintText: l10n?.newListDescHint ?? 'Optional brief description',
+                        prefixIcon: const Icon(Icons.notes_rounded, size: 20),
+                      ),
+                      textCapitalization: TextCapitalization.sentences,
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Category icon selector
+                    Text(
+                      l10n?.categoryLabel ?? 'Category',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _iconOptions.entries.map((entry) {
+                        final isSelected = _selectedIcon == entry.key;
+                        return GestureDetector(
+                          onTap: () => setState(() => _selectedIcon = entry.key),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? colorScheme.primary.withValues(alpha: 0.15)
+                                  : colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                              borderRadius: BorderRadius.circular(10),
+                              border: isSelected
+                                  ? Border.all(color: colorScheme.primary, width: 2)
+                                  : null,
                             ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: color.withValues(alpha: 0.4),
-                                blurRadius: 8,
-                              ),
-                            ]
-                          : null,
+                            child: Icon(
+                              entry.value,
+                              size: 20,
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                    child: isSelected
-                        ? Icon(
-                            Icons.check,
-                            size: 16,
-                            color: colorScheme.onPrimary,
-                          )
-                        : null,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
-            // Create button
+                    // Color selector
+                    Text(
+                      l10n?.colorLabel ?? 'Color',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _colorOptions.map((hex) {
+                        final color = _parseHex(hex);
+                        final isSelected = _selectedColor == hex;
+                        return GestureDetector(
+                          onTap: () => setState(() => _selectedColor = hex),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                              border: isSelected
+                                  ? Border.all(
+                                      color: colorScheme.onSurface,
+                                      width: 3,
+                                    )
+                                  : Border.all(
+                                      color: color.withValues(alpha: 0.5),
+                                      width: 1,
+                                    ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: color.withValues(alpha: 0.4),
+                                        blurRadius: 8,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: isSelected
+                                ? Icon(
+                                    Icons.check,
+                                    size: 16,
+                                    color: colorScheme.onPrimary,
+                                  )
+                                : null,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Create button (pinned at bottom)
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
@@ -251,9 +263,8 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
           ],
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   void _handleCreate() {
     final title = _titleController.text.trim();
