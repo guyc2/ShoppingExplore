@@ -9,12 +9,14 @@ class ProductSuggestionCard extends StatefulWidget {
   final ProductSuggestion suggestion;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onToggleFavorite;
 
   const ProductSuggestionCard({
     super.key,
     required this.suggestion,
     this.onEdit,
     this.onDelete,
+    this.onToggleFavorite,
   });
 
   @override
@@ -111,6 +113,16 @@ class _ProductSuggestionCardState extends State<ProductSuggestionCard> {
                         style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
+                    if (widget.onToggleFavorite != null)
+                      IconButton(
+                        icon: Icon(
+                          suggestion.isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
+                          color: suggestion.isFavorite ? Colors.amber.shade700 : theme.colorScheme.outline,
+                          size: 26,
+                        ),
+                        onPressed: widget.onToggleFavorite,
+                        tooltip: suggestion.isFavorite ? 'Remove Favorite' : 'Mark as Favorite',
+                      ),
                     if (hasImage)
                       IconButton(
                         icon: Icon(
@@ -140,6 +152,31 @@ class _ProductSuggestionCardState extends State<ProductSuggestionCard> {
                       ),
                   ],
                 ),
+                if (suggestion.isFavorite) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade100,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.amber.shade600),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star_rounded, size: 16, color: Colors.amber.shade900),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Favorite Choice',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: Colors.amber.shade900,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (suggestion.description != null && suggestion.description!.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(

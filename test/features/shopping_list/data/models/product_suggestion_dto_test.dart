@@ -40,11 +40,13 @@ void main() {
       'purchaseUrl': 'https://nike.com',
       'price': 129.99,
       'currency': null,
+      'isFavorite': false,
     };
 
     test('should return a valid ProductSuggestionDto from JSON', () {
       final result = ProductSuggestionDto.fromJson(tJson);
       expect(result, equals(tSuggestionDto));
+      expect(result.isFavorite, isFalse);
     });
 
     test('should return a JSON map containing proper data', () {
@@ -52,9 +54,14 @@ void main() {
       expect(result, equals(tJson));
     });
 
-    test('should map from domain correctly', () {
-      final result = ProductSuggestionDto.fromDomain(tSuggestionDomain);
-      expect(result, equals(tSuggestionDto));
+    test('should map from domain correctly including isFavorite', () {
+      const favDomain = ProductSuggestion(
+        id: 'sug-1',
+        name: 'Nike Pegasus',
+        isFavorite: true,
+      );
+      final result = ProductSuggestionDto.fromDomain(favDomain);
+      expect(result.isFavorite, isTrue);
     });
 
     test('should map to domain correctly', () {

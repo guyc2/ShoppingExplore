@@ -12,6 +12,7 @@ class ProductSuggestionDto extends ProductSuggestion {
     super.purchaseUrl,
     super.price,
     super.currency,
+    super.isFavorite = false,
   });
 
   factory ProductSuggestionDto.fromJson(Map<String, dynamic> json) {
@@ -26,6 +27,7 @@ class ProductSuggestionDto extends ProductSuggestion {
       purchaseUrl: json['purchaseUrl'] as String?,
       price: (json['price'] as num?)?.toDouble(),
       currency: json['currency'] as String?,
+      isFavorite: json['isFavorite'] as bool? ?? false,
     );
   }
 
@@ -41,6 +43,7 @@ class ProductSuggestionDto extends ProductSuggestion {
       'purchaseUrl': purchaseUrl,
       'price': price,
       'currency': currency,
+      'isFavorite': isFavorite,
     };
   }
 
@@ -56,6 +59,7 @@ class ProductSuggestionDto extends ProductSuggestion {
       purchaseUrl: entity.purchaseUrl,
       price: entity.price,
       currency: entity.currency,
+      isFavorite: entity.isFavorite,
     );
   }
 
@@ -71,6 +75,7 @@ class ProductSuggestionDto extends ProductSuggestion {
       purchaseUrl: purchaseUrl,
       price: price,
       currency: currency,
+      isFavorite: isFavorite,
     );
   }
 }

@@ -156,6 +156,18 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ProductSuggestionCard(
                       suggestion: suggestion,
+                      onToggleFavorite: () {
+                        final newFavState = !suggestion.isFavorite;
+                        final updatedSuggestions = item.suggestions.map((s) {
+                          if (s.id == suggestion.id) {
+                            return s.copyWith(isFavorite: newFavState);
+                          } else if (newFavState) {
+                            return s.copyWith(isFavorite: false);
+                          }
+                          return s;
+                        }).toList();
+                        widget.controller.updateItem(widget.listId, item.copyWith(suggestions: updatedSuggestions));
+                      },
                       onEdit: () {
                         showModalBottomSheet<void>(
                           context: context,

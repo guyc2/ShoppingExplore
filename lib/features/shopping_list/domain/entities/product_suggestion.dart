@@ -11,6 +11,7 @@ class ProductSuggestion extends Equatable {
   final String? purchaseUrl;
   final double? price;
   final String? currency;
+  final bool isFavorite;
 
   const ProductSuggestion({
     required this.id,
@@ -23,6 +24,7 @@ class ProductSuggestion extends Equatable {
     this.purchaseUrl,
     this.price,
     this.currency,
+    this.isFavorite = false,
   });
 
   ProductSuggestion copyWith({
@@ -36,6 +38,7 @@ class ProductSuggestion extends Equatable {
     String? purchaseUrl,
     double? price,
     String? currency,
+    bool? isFavorite,
   }) {
     return ProductSuggestion(
       id: id ?? this.id,
@@ -48,6 +51,7 @@ class ProductSuggestion extends Equatable {
       purchaseUrl: purchaseUrl ?? this.purchaseUrl,
       price: price ?? this.price,
       currency: currency ?? this.currency,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -63,5 +67,6 @@ class ProductSuggestion extends Equatable {
         purchaseUrl,
         price,
         currency,
+        isFavorite,
       ];
 }
