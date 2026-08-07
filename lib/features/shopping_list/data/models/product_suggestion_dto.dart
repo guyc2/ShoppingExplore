@@ -31,6 +31,11 @@ class ProductSuggestionDto extends ProductSuggestion {
     );
   }
 
+  factory ProductSuggestionDto.fromFirestore(Map<String, dynamic> data) =>
+      ProductSuggestionDto.fromJson(data);
+
+  Map<String, dynamic> toFirestore() => toJson();
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

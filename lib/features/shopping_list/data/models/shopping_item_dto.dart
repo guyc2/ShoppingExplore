@@ -85,8 +85,16 @@ class ShoppingItemDto extends ShoppingItem {
               ?.map((e) => ProductSuggestionDto.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList() ??
           const [],
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      createdAt: data['createdAt'] is Timestamp
+          ? (data['createdAt'] as Timestamp).toDate()
+          : (data['createdAt'] is String
+              ? DateTime.parse(data['createdAt'] as String)
+              : DateTime.now()),
+      updatedAt: data['updatedAt'] is Timestamp
+          ? (data['updatedAt'] as Timestamp).toDate()
+          : (data['updatedAt'] is String
+              ? DateTime.parse(data['updatedAt'] as String)
+              : DateTime.now()),
     );
   }
 

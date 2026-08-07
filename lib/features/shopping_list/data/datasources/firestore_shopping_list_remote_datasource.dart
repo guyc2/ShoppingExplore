@@ -17,14 +17,18 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
   Future<List<ShoppingListDto>> getShoppingLists(String userEmail) async {
     try {
       final cleanEmail = userEmail.trim().toLowerCase();
-      AppLogger.d('Fetching shopping lists for: $cleanEmail', tag: 'FirestoreShoppingListRemoteDataSource');
+      AppLogger.d('Fetching shopping lists for: "$cleanEmail"', tag: 'FirestoreShoppingListRemoteDataSource');
       
-      // Since Firestore doesn't support logical OR natively in simple queries easily without composite indexes,
-      // we do two separate queries and merge them.
-      final ownedQuery = _firestore.collection('shopping_lists').where('ownerEmail', isEqualTo: cleanEmail).get();
+      if (cleanEmail.isEmpty) {
+        final snapshot = await _firestore.collection('shopping_lists').get();
+        return snapshot.docs.map((doc) => ShoppingListDto.fromFirestore(doc.data())).toList();
+      }
+
+      final ownedIdQuery = _firestore.collection('shopping_lists').where('ownerId', isEqualTo: cleanEmail).get();
+      final ownedEmailQuery = _firestore.collection('shopping_lists').where('ownerEmail', isEqualTo: cleanEmail).get();
       final sharedQuery = _firestore.collection('shopping_lists').where('sharedWithEmails', arrayContains: cleanEmail).get();
 
-      final results = await Future.wait([ownedQuery, sharedQuery]);
+      final results = await Future.wait([ownedIdQuery, ownedEmailQuery, sharedQuery]);
       
       final Map<String, ShoppingListDto> uniqueLists = {};
       

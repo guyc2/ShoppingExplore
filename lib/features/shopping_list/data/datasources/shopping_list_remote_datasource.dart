@@ -176,10 +176,13 @@ class InMemoryShoppingListRemoteDataSource implements ShoppingListRemoteDataSour
   @override
   Future<List<ShoppingListDto>> getShoppingLists(String userEmail) async {
     final cleanEmail = userEmail.trim().toLowerCase();
+    if (cleanEmail.isEmpty) {
+      return _cloudStorage.values.toList();
+    }
     return _cloudStorage.values.where((list) {
       final owner = list.ownerId?.toLowerCase() ?? '';
       final shared = list.sharedWithEmails.map((e) => e.toLowerCase()).toList();
-      return owner == cleanEmail || shared.contains(cleanEmail);
+      return owner.isEmpty || owner == cleanEmail || shared.contains(cleanEmail);
     }).toList();
   }
 

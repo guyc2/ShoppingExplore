@@ -33,7 +33,9 @@ class ShoppingSessionDto {
     return ShoppingSessionDto(
       userEmail: data['userEmail'] as String,
       locationName: data['locationName'] as String?,
-      startedAt: (data['startedAt'] as Timestamp).toDate().toIso8601String(),
+      startedAt: data['startedAt'] is Timestamp
+          ? (data['startedAt'] as Timestamp).toDate().toIso8601String()
+          : (data['startedAt'] as String? ?? DateTime.now().toIso8601String()),
     );
   }
 
