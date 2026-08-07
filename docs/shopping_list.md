@@ -39,18 +39,25 @@ flowchart TD
     Dashboard --> Controller
     Controller --> UseCases[Domain UseCases]
     UseCases --> RepoInterface[ShoppingListRepository]
-    RepoImpl[ShoppingListRepositoryImpl] -. implements .-> RepoInterface
-    RepoImpl --> LocalDS[ShoppingListLocalDataSource]
-    RepoImpl --> RemoteDS[ShoppingListRemoteDataSource]
-    RepoImpl --> ItemDto[ShoppingItemDto]
+    subgraph Data [Data Layer]
+        ItemDto[ShoppingItemDto]
+        ListDto[ShoppingListDto]
+        FirebaseDS[FirestoreShoppingListRemoteDataSource]
+        LocalDS[InMemoryShoppingListRemoteDataSource]
+        ListRepoImpl[ShoppingListRepositoryImpl]
+    end
+    ListRepoImpl -. implements .-> RepoInterface
+    ListRepoImpl --> LocalDS
+    ListRepoImpl --> FirebaseDS
+    ListRepoImpl --> ItemDto
     ItemDto --> ItemEntity[ShoppingItem Entity]
-    RepoImpl --> ListDto[ShoppingListDto]
+    ListRepoImpl --> ListDto
     ListDto --> ListEntity[ShoppingList Entity]
 ```
 
 **Notes / gotchas** —
 > [!info] Reactive Real-Time Sync Streams
-> `ShoppingListRepository` and `ShoppingListRepositoryImpl` expose real-time broadcast streams (`watchShoppingLists`, `watchShoppingList`) built on `StreamController` with non-blocking `onListen` and `onCancel` lifecycle handlers that subscribe to `ShoppingListLocalDataSource.changesStream`. `ShoppingListController` manages explicit stream subscriptions (`subscribeToShoppingLists` and `subscribeToShoppingList`) that automatically refresh domain state whenever any data source mutation occurs.
+> `ShoppingListRepository` and `ShoppingListRepositoryImpl` expose real-time broadcast streams (`watchShoppingLists`, `watchShoppingList`) that map to remote data sources like `FirestoreShoppingListRemoteDataSource`. Firestore streams are backed by `.snapshots()` enabling true real-time updates and offline persistence. `ShoppingListController` manages explicit stream subscriptions that automatically refresh domain state whenever any data source mutation occurs.
 
 > [!info] Multi-List & Guy C Seeded Data
 > `InMemoryShoppingListLocalDataSource.withDefaultData()` is seeded with 3 distinct lists owned by Debug User Guy C (`guy@shoppingexplore.com`): *Weekly Groceries*, *Tech & Electronics Wishlist*, and *Weekend BBQ Party*, each with assigned items (`assignedToEmail`) and short descriptions.

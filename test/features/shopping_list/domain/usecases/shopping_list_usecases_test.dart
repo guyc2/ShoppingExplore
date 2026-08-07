@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
+import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
+import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
 import 'package:shopping_explore/features/shopping_list/data/models/shopping_list_dto.dart';
 import 'package:shopping_explore/features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
 import 'package:shopping_explore/features/shopping_list/domain/entities/shopping_item.dart';
@@ -9,9 +10,11 @@ import 'package:shopping_explore/features/shopping_list/domain/usecases/get_shop
 import 'package:shopping_explore/features/shopping_list/domain/usecases/toggle_item_completion.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/update_item_properties.dart';
 
+class FakeStorageRepository extends Fake implements StorageRepository {}
+
 void main() {
   group('ShoppingList UseCases', () {
-    late InMemoryShoppingListLocalDataSource localDataSource;
+    late InMemoryShoppingListRemoteDataSource localDataSource;
     late ShoppingListRepositoryImpl repository;
     late GetShoppingLists getShoppingLists;
     late CreateShoppingItem createShoppingItem;
@@ -23,6 +26,7 @@ void main() {
     final initialList = ShoppingListDto(
       id: 'list-1',
       title: 'Groceries',
+      ownerId: 'test@shoppingexplore.com',
       createdAt: now,
       updatedAt: now,
     );
@@ -35,9 +39,10 @@ void main() {
     );
 
     setUp(() async {
-      localDataSource = InMemoryShoppingListLocalDataSource();
+      localDataSource = InMemoryShoppingListRemoteDataSource();
       await localDataSource.saveShoppingList(initialList);
-      repository = ShoppingListRepositoryImpl(localDataSource: localDataSource);
+      repository = ShoppingListRepositoryImpl(remoteDataSource: localDataSource,
+        storageRepository: FakeStorageRepository());
       getShoppingLists = GetShoppingLists(repository);
       createShoppingItem = CreateShoppingItem(repository);
       toggleItemCompletion = ToggleItemCompletion(repository);

@@ -1,14 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
+import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
 import 'package:shopping_explore/features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
+import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/create_shopping_list.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/delete_shopping_list.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/get_shopping_lists.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/update_shopping_list.dart';
 
+class FakeStorageRepository extends Fake implements StorageRepository {}
+
 void main() {
   group('Shopping List CRUD Domain & Repository Tests', () {
-    late InMemoryShoppingListLocalDataSource localDataSource;
+    late InMemoryShoppingListRemoteDataSource remoteDataSource;
     late ShoppingListRepositoryImpl repository;
     late CreateShoppingList createUseCase;
     late UpdateShoppingList updateUseCase;
@@ -16,8 +19,11 @@ void main() {
     late GetShoppingLists getUseCase;
 
     setUp(() {
-      localDataSource = InMemoryShoppingListLocalDataSource();
-      repository = ShoppingListRepositoryImpl(localDataSource: localDataSource);
+      remoteDataSource = InMemoryShoppingListRemoteDataSource();
+      repository = ShoppingListRepositoryImpl(
+        remoteDataSource: remoteDataSource,
+        storageRepository: FakeStorageRepository(),
+      );
       createUseCase = CreateShoppingList(repository);
       updateUseCase = UpdateShoppingList(repository);
       deleteUseCase = DeleteShoppingList(repository);
@@ -31,7 +37,7 @@ void main() {
         description: 'Full desc',
         colorHex: '#FF0000',
         imageUrl: 'tech',
-        ownerId: 'guy@shoppingexplore.com',
+        ownerId: 'test@shoppingexplore.com',
       );
 
       expect(createResult.isSuccess, isTrue);

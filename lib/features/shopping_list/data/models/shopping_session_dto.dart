@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entities/shopping_session.dart';
 
 class ShoppingSessionDto {
@@ -24,6 +26,22 @@ class ShoppingSessionDto {
       'userEmail': userEmail,
       'locationName': locationName,
       'startedAt': startedAt,
+    };
+  }
+
+  factory ShoppingSessionDto.fromFirestore(Map<String, dynamic> data) {
+    return ShoppingSessionDto(
+      userEmail: data['userEmail'] as String,
+      locationName: data['locationName'] as String?,
+      startedAt: (data['startedAt'] as Timestamp).toDate().toIso8601String(),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'userEmail': userEmail,
+      'locationName': locationName,
+      'startedAt': Timestamp.fromDate(DateTime.parse(startedAt)),
     };
   }
 

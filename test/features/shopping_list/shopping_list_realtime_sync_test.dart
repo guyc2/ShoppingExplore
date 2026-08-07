@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
+import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
+import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
 import 'package:shopping_explore/features/shopping_list/data/models/shopping_list_dto.dart';
 import 'package:shopping_explore/features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
 import 'package:shopping_explore/features/shopping_list/domain/entities/shopping_item.dart';
@@ -16,15 +17,18 @@ import 'package:shopping_explore/features/shopping_list/domain/usecases/watch_sh
 import 'package:shopping_explore/features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/controllers/shopping_list_state.dart';
 
+class FakeStorageRepository extends Fake implements StorageRepository {}
+
 void main() {
   group('ShoppingList Real-Time Reactive Sync Tests', () {
-    late InMemoryShoppingListLocalDataSource dataSource;
+    late InMemoryShoppingListRemoteDataSource dataSource;
     late ShoppingListRepositoryImpl repository;
     late ShoppingListController controller;
 
     setUp(() {
-      dataSource = InMemoryShoppingListLocalDataSource();
-      repository = ShoppingListRepositoryImpl(localDataSource: dataSource);
+      dataSource = InMemoryShoppingListRemoteDataSource();
+      repository = ShoppingListRepositoryImpl(remoteDataSource: dataSource,
+        storageRepository: FakeStorageRepository());
 
       controller = ShoppingListController(
         getShoppingLists: GetShoppingLists(repository),
@@ -61,7 +65,7 @@ void main() {
       final newList = ShoppingListDto(
         id: 'list-1',
         title: 'New Sync List',
-        ownerId: 'guy@shoppingexplore.com',
+        ownerId: 'test@shoppingexplore.com',
         createdAt: now,
         updatedAt: now,
       );
@@ -78,7 +82,7 @@ void main() {
       final initialList = ShoppingListDto(
         id: 'list-2',
         title: 'Grocery Sync',
-        ownerId: 'guy@shoppingexplore.com',
+        ownerId: 'test@shoppingexplore.com',
         createdAt: now,
         updatedAt: now,
       );
@@ -117,7 +121,7 @@ void main() {
 
       await controller.createList(
         title: 'Collaborative BBQ List',
-        ownerId: 'guy@shoppingexplore.com',
+        ownerId: 'test@shoppingexplore.com',
       );
       await Future<void>.delayed(const Duration(milliseconds: 10));
 

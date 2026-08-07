@@ -1,18 +1,9 @@
 import '../../../../core/error/failure.dart';
 import '../models/user_dto.dart';
 
-abstract class AuthLocalDataSource {
-  Future<UserDto> login(String email, String password);
-  Future<UserDto> register(String email, String password, String displayName);
-  Future<void> logout();
-  Future<UserDto?> getCurrentUser();
-  Future<UserDto> updateProfile(String displayName, String? avatarUrl);
-  Future<void> savePersistentSession(String email);
-  Future<UserDto?> restorePersistentSession();
-}
+import 'auth_remote_datasource.dart';
 
-class InMemoryAuthDataSource implements AuthLocalDataSource {
-  static String? _persistentEmail;
+class InMemoryAuthDataSource implements AuthRemoteDataSource {
   final Map<String, _StoredUser> _users = {
     'user@shoppingexplore.com': _StoredUser(
       dto: const UserDto(
@@ -114,7 +105,6 @@ class InMemoryAuthDataSource implements AuthLocalDataSource {
   @override
   Future<void> logout() async {
     _currentUserDto = null;
-    _persistentEmail = null;
   }
 
   @override
@@ -144,20 +134,8 @@ class InMemoryAuthDataSource implements AuthLocalDataSource {
   }
 
   @override
-  Future<void> savePersistentSession(String email) async {
-    _persistentEmail = email.trim().toLowerCase();
-  }
-
-  @override
-  Future<UserDto?> restorePersistentSession() async {
-    if (_persistentEmail != null) {
-      final stored = _users[_persistentEmail];
-      if (stored != null) {
-        _currentUserDto = stored.dto;
-        return stored.dto;
-      }
-    }
-    return null;
+  Future<void> sendPasswordResetEmail(String email) async {
+    // No-op for in-memory mock
   }
 }
 

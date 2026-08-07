@@ -1,15 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
+import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
+import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
 import 'package:shopping_explore/features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/share_shopping_list.dart';
 
+class FakeStorageRepository extends Fake implements StorageRepository {}
+
 void main() {
-  late InMemoryShoppingListLocalDataSource dataSource;
+  late InMemoryShoppingListRemoteDataSource dataSource;
   late ShoppingListRepositoryImpl repository;
 
   setUp(() {
-    dataSource = InMemoryShoppingListLocalDataSource.withDefaultData();
-    repository = ShoppingListRepositoryImpl(localDataSource: dataSource);
+    dataSource = InMemoryShoppingListRemoteDataSource.withDefaultData();
+    repository = ShoppingListRepositoryImpl(remoteDataSource: dataSource,
+        storageRepository: FakeStorageRepository());
   });
 
   group('Shopping List Sharing Tests', () {

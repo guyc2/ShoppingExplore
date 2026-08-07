@@ -19,3 +19,7 @@ class ValidationFailure extends Failure {
 class StorageFailure extends Failure {
   const StorageFailure(super.message);
 }
+
+class AuthFailure extends Failure {
+  const AuthFailure(super.message);
+}

@@ -1,14 +1,25 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
+import '../../../../core/storage/domain/repositories/storage_repository.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_local_datasource.dart';
+import '../datasources/auth_remote_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthLocalDataSource localDataSource;
+  final AuthRemoteDataSource remoteDataSource;
+  final StorageRepository storageRepository;
+  final FirebaseFirestore firestore;
 
-  AuthRepositoryImpl({required this.localDataSource});
+  AuthRepositoryImpl({
+    required this.remoteDataSource,
+    required this.storageRepository,
+    required this.firestore,
+  });
 
   @override
   Future<Result<User>> login({
@@ -18,10 +29,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       AppLogger.d('Login requested for email: $email (rememberMe: $rememberMe)', tag: 'AuthRepositoryImpl');
-      final dto = await localDataSource.login(email, password);
-      if (rememberMe) {
-        await localDataSource.savePersistentSession(email);
-      }
+      final dto = await remoteDataSource.login(email, password);
       final user = dto.toDomain();
       AppLogger.i('User logged in successfully: ${user.email}', tag: 'AuthRepositoryImpl');
       return Success(user);
@@ -43,10 +51,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       AppLogger.d('Register requested for email: $email (rememberMe: $rememberMe)', tag: 'AuthRepositoryImpl');
-      final dto = await localDataSource.register(email, password, displayName);
-      if (rememberMe) {
-        await localDataSource.savePersistentSession(email);
-      }
+      final dto = await remoteDataSource.register(email, password, displayName);
+      
+      await firestore.collection('users').doc(dto.id).set({
+        'uid': dto.id,
+        'email': dto.email,
+        'displayName': dto.displayName,
+        'avatarUrl': dto.avatarUrl,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastLoginAt': FieldValue.serverTimestamp(),
+      });
+
       final user = dto.toDomain();
       AppLogger.i('User registered successfully: ${user.email}', tag: 'AuthRepositoryImpl');
       return Success(user);
@@ -63,9 +78,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<void>> logout() async {
     try {
       AppLogger.d('Logout requested', tag: 'AuthRepositoryImpl');
-      await localDataSource.logout();
+      await remoteDataSource.logout();
       AppLogger.i('User logged out successfully', tag: 'AuthRepositoryImpl');
       return const Success(null);
+    } on Failure catch (failure) {
+      AppLogger.w('Logout failure: ${failure.message}', tag: 'AuthRepositoryImpl');
+      return Error(failure);
     } catch (e, stackTrace) {
       AppLogger.e('Logout error', tag: 'AuthRepositoryImpl', error: e, stackTrace: stackTrace);
       return Error(CacheFailure('Logout error: $e'));
@@ -75,11 +93,14 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<User?>> getCurrentUser() async {
     try {
-      final dto = await localDataSource.getCurrentUser();
+      final dto = await remoteDataSource.getCurrentUser();
       if (dto == null) {
         return const Success(null);
       }
       return Success(dto.toDomain());
+    } on Failure catch (failure) {
+      AppLogger.w('Get current user failure: ${failure.message}', tag: 'AuthRepositoryImpl');
+      return Error(failure);
     } catch (e, stackTrace) {
       AppLogger.e('Get current user error', tag: 'AuthRepositoryImpl', error: e, stackTrace: stackTrace);
       return Error(CacheFailure('Failed to retrieve current user: $e'));
@@ -89,14 +110,17 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<User?>> restoreSession() async {
     try {
-      AppLogger.d('Attempting to restore persistent session', tag: 'AuthRepositoryImpl');
-      final dto = await localDataSource.restorePersistentSession();
+      AppLogger.d('Attempting to restore persistent session via Firebase Auth', tag: 'AuthRepositoryImpl');
+      final dto = await remoteDataSource.getCurrentUser();
       if (dto == null) {
         return const Success(null);
       }
       final user = dto.toDomain();
       AppLogger.i('Persistent session restored successfully: ${user.email}', tag: 'AuthRepositoryImpl');
       return Success(user);
+    } on Failure catch (failure) {
+      AppLogger.w('Restore session failure: ${failure.message}', tag: 'AuthRepositoryImpl');
+      return Error(failure);
     } catch (e, stackTrace) {
       AppLogger.e('Restore session error', tag: 'AuthRepositoryImpl', error: e, stackTrace: stackTrace);
       return Error(CacheFailure('Failed to restore session: $e'));
@@ -110,7 +134,38 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       AppLogger.d('Update profile requested: $displayName', tag: 'AuthRepositoryImpl');
-      final dto = await localDataSource.updateProfile(displayName, avatarUrl);
+      
+      String? finalAvatarUrl = avatarUrl;
+      final currentUserDto = await remoteDataSource.getCurrentUser();
+      
+      if (currentUserDto == null) {
+        return const Error(CacheFailure('No user logged in'));
+      }
+      final userId = currentUserDto.id;
+
+      if (avatarUrl != null && !avatarUrl.startsWith('http')) {
+        final file = File(avatarUrl);
+        final bytes = await file.readAsBytes();
+        final ext = avatarUrl.split('.').last;
+        final uploadResult = await storageRepository.uploadAvatar(
+          userId: userId,
+          imageBytes: bytes,
+          extension: ext,
+        );
+        if (uploadResult is Success<String>) {
+          finalAvatarUrl = uploadResult.value;
+        } else if (uploadResult is Error<String>) {
+          return Error(uploadResult.failure);
+        }
+      }
+
+      final dto = await remoteDataSource.updateProfile(displayName, finalAvatarUrl);
+
+      await firestore.collection('users').doc(userId).update({
+        'displayName': displayName,
+        'avatarUrl': finalAvatarUrl,
+      });
+
       final user = dto.toDomain();
       AppLogger.i('User profile updated successfully: ${user.displayName}', tag: 'AuthRepositoryImpl');
       return Success(user);

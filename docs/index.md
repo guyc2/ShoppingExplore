@@ -52,6 +52,7 @@ graph TD
 - [[core|Core Infrastructure]] — Shared network client, theme tokens, error definitions, localization (`l10n`, RTL support), image storage services (`image_picker`, `path_provider`), and utility helpers.
 - [[auth|Authentication Module]] — User authentication domain entities, login/registration usecases, local/remote data sources seeded with Debug User **Guy C**, Account & Profile modal with live statistics, and UI view controllers wired at the composition root (`app.dart`).
 - [[catalog|Catalog Module]] — Product catalog business entities, data sources, repositories, and UI view controllers.
+- [[storage|Storage Module]] — Centralized media uploading capabilities using Firebase Storage.
 - [[shopping_list|Shopping List Module]] — Stylish multi-list dashboard with greeting banner, responsive card grid (`ShoppingListCard`), Shopping Cart brand icon, `CreateShoppingListModal`, `ShoppingListDetailView` with metadata header and 2-section Active Shopping Mode checklist, real-time reactive sync streams (`watchShoppingLists`, `watchShoppingList`) with automatic live sync, collaborative sharing, item assignment, product suggestion images (camera/gallery integration via local storage), and CRUD use cases.
 - [[workflow|Development & Sprint Workflow]] — Mandatory architecture and maintenance governance, sprint planning, multi-agent code reviews, testing subagent rules, and execution gates.
 

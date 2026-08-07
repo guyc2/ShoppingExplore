@@ -70,7 +70,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
   void _openEditor(BuildContext context, ShoppingItem item, [List<String> availableEmails = const []]) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => ShoppingItemDetailPage(
           initialItem: item,
           listId: widget.listId,

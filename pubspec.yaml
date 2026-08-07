@@ -27,11 +27,18 @@ dependencies:
   uuid: any
   image_picker: ^1.1.2
   path_provider: ^2.1.4
+  firebase_core: ^4.13.0
+  firebase_auth: ^6.5.7
+  cloud_firestore: ^6.8.0
+  firebase_storage: ^13.4.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  build_runner: ^2.15.1
+  mockito: ^5.7.0
 
+  firebase_auth_platform_interface: any
 flutter:
   uses-material-design: true
   generate: true

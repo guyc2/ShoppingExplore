@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entities/shopping_item.dart';
 import 'product_suggestion_dto.dart';
 
@@ -60,6 +62,50 @@ class ShoppingItemDto extends ShoppingItem {
       'suggestions': suggestions.map((s) => ProductSuggestionDto.fromDomain(s).toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  factory ShoppingItemDto.fromFirestore(Map<String, dynamic> data) {
+    return ShoppingItemDto(
+      id: data['id'] as String,
+      title: data['title'] as String,
+      isCompleted: data['isCompleted'] as bool? ?? false,
+      quantity: (data['quantity'] as num?)?.toDouble() ?? 1.0,
+      unit: data['unit'] as String?,
+      priority: Priority.values.firstWhere(
+        (e) => e.name == data['priority'],
+        orElse: () => Priority.medium,
+      ),
+      notes: data['notes'] as String?,
+      assignedToEmail: data['assignedToEmail'] as String?,
+      imageUrls: (data['imageUrls'] as List<dynamic>?)?.cast<String>() ?? const [],
+      linkUrls: (data['linkUrls'] as List<dynamic>?)?.cast<String>() ?? const [],
+      attributes: (data['attributes'] as Map?)?.cast<String, String>() ?? const {},
+      suggestions: (data['suggestions'] as List<dynamic>?)
+              ?.map((e) => ProductSuggestionDto.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          const [],
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'title': title,
+      'isCompleted': isCompleted,
+      'quantity': quantity,
+      'unit': unit,
+      'priority': priority.name,
+      'notes': notes,
+      'assignedToEmail': assignedToEmail,
+      'imageUrls': imageUrls,
+      'linkUrls': linkUrls,
+      'attributes': attributes,
+      'suggestions': suggestions.map((s) => ProductSuggestionDto.fromDomain(s).toJson()).toList(),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 

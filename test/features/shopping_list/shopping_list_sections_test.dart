@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
+import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
+import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
 import 'package:shopping_explore/features/shopping_list/data/models/shopping_item_dto.dart';
 import 'package:shopping_explore/features/shopping_list/data/models/shopping_list_dto.dart';
 import 'package:shopping_explore/features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
@@ -20,8 +21,9 @@ import 'package:shopping_explore/features/shopping_list/presentation/controllers
 import 'package:shopping_explore/features/shopping_list/presentation/views/shopping_list_detail_view.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import 'package:shopping_explore/core/services/image_storage_service.dart';
-import 'package:shopping_explore/core/error/failure.dart';
 import 'package:shopping_explore/core/error/result.dart';
+
+class FakeStorageRepository extends Fake implements StorageRepository {}
 
 class FakeImageStorageService implements ImageStorageService {
   @override
@@ -32,13 +34,14 @@ class FakeImageStorageService implements ImageStorageService {
 
 void main() {
   group('ShoppingList 2-Section Checklist Widget Tests', () {
-    late InMemoryShoppingListLocalDataSource dataSource;
+    late InMemoryShoppingListRemoteDataSource dataSource;
     late ShoppingListRepositoryImpl repository;
     late ShoppingListController controller;
 
     setUp(() async {
-      dataSource = InMemoryShoppingListLocalDataSource();
-      repository = ShoppingListRepositoryImpl(localDataSource: dataSource);
+      dataSource = InMemoryShoppingListRemoteDataSource.withDefaultData();
+      repository = ShoppingListRepositoryImpl(remoteDataSource: dataSource,
+        storageRepository: FakeStorageRepository());
 
       controller = ShoppingListController(
         getShoppingLists: GetShoppingLists(repository),

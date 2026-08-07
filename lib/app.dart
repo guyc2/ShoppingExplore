@@ -3,8 +3,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shopping_explore/core/utils/logger.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/data/datasources/auth_local_datasource.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'features/auth/data/datasources/firebase_auth_remote_datasource.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shopping_explore/core/storage/data/repositories/storage_repository_impl.dart';
+import 'package:shopping_explore/core/storage/data/datasources/firebase_storage_datasource.dart';
+import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
+import 'features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
+import 'features/shopping_list/data/datasources/firestore_shopping_list_remote_datasource.dart';
 import 'features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/logout_usecase.dart';
@@ -12,7 +19,6 @@ import 'features/auth/domain/usecases/register_usecase.dart';
 import 'features/auth/domain/usecases/restore_persistent_session_usecase.dart';
 import 'features/auth/domain/usecases/update_user_profile_usecase.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
-import 'features/shopping_list/data/datasources/shopping_list_local_datasource.dart';
 import 'features/shopping_list/data/repositories/shopping_list_repository_impl.dart';
 import 'features/shopping_list/domain/usecases/create_shopping_item.dart';
 import 'features/shopping_list/domain/usecases/create_shopping_list.dart';
@@ -34,7 +40,18 @@ import 'core/services/image_storage_service.dart';
 
 /// The root application widget for ShoppingExplore.
 class ShoppingExploreApp extends StatefulWidget {
-  const ShoppingExploreApp({super.key});
+  final FirebaseAuth? firebaseAuthOverride;
+  final FirebaseFirestore? firestoreOverride;
+  final StorageRepository? storageRepositoryOverride;
+  final ShoppingListRemoteDataSource? shoppingListRemoteDataSourceOverride;
+
+  const ShoppingExploreApp({
+    super.key,
+    this.firebaseAuthOverride,
+    this.firestoreOverride,
+    this.storageRepositoryOverride,
+    this.shoppingListRemoteDataSourceOverride,
+  });
 
   @override
   State<ShoppingExploreApp> createState() => _ShoppingExploreAppState();
@@ -52,9 +69,16 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
     super.initState();
     AppLogger.i('Initializing ShoppingExploreApp state', tag: 'App');
     _imageStorageService = LocalImageStorageServiceImpl();
-    final dataSource = InMemoryShoppingListLocalDataSource.withDefaultData();
-    final repository =
-        ShoppingListRepositoryImpl(localDataSource: dataSource);
+    final storageRepository = widget.storageRepositoryOverride ?? StorageRepositoryImpl(
+      remoteDataSource: FirebaseStorageDataSource(),
+    );
+    final dataSource = widget.shoppingListRemoteDataSourceOverride ?? FirestoreShoppingListRemoteDataSource(
+      firestore: widget.firestoreOverride ?? FirebaseFirestore.instance,
+    );
+    final repository = ShoppingListRepositoryImpl(
+      remoteDataSource: dataSource,
+      storageRepository: storageRepository,
+    );
 
     _controller = ShoppingListController(
       getShoppingLists: GetShoppingLists(repository),
@@ -72,8 +96,14 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       endShoppingSessionUseCase: EndShoppingSession(repository),
     );
 
-    final authDataSource = InMemoryAuthDataSource(startAuthenticated: false);
-    final authRepository = AuthRepositoryImpl(localDataSource: authDataSource);
+    final authDataSource = FirebaseAuthRemoteDataSource(
+      firebaseAuth: widget.firebaseAuthOverride ?? FirebaseAuth.instance,
+    );
+    final authRepository = AuthRepositoryImpl(
+      remoteDataSource: authDataSource,
+      storageRepository: storageRepository,
+      firestore: widget.firestoreOverride ?? FirebaseFirestore.instance,
+    );
     _authController = AuthController(
       loginUseCase: LoginUseCase(authRepository),
       registerUseCase: RegisterUseCase(authRepository),

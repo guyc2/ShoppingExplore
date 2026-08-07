@@ -3,17 +3,52 @@ import 'package:shopping_explore/features/auth/data/datasources/auth_local_datas
 import 'package:shopping_explore/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:shopping_explore/features/auth/domain/usecases/login_usecase.dart';
 import 'package:shopping_explore/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
+
+// ignore: subtype_of_sealed_class
+class FakeQuery<T> extends Fake implements Query<T> {}
+
+// ignore: subtype_of_sealed_class
+class FakeFirebaseFirestore extends Fake implements FirebaseFirestore {
+  @override
+  CollectionReference<Map<String, dynamic>> collection(String collectionPath) {
+    return FakeCollectionReference();
+  }
+}
+
+// ignore: subtype_of_sealed_class
+class FakeCollectionReference extends Fake implements CollectionReference<Map<String, dynamic>> {
+  @override
+  DocumentReference<Map<String, dynamic>> doc([String? path]) {
+    return FakeDocumentReference();
+  }
+}
+
+// ignore: subtype_of_sealed_class
+class FakeDocumentReference<T> extends Fake implements DocumentReference<T> {
+  @override
+  Future<void> set(T? data, [SetOptions? options]) async {}
+  @override
+  Future<void> update(Map<Object, Object?> data) async {}
+}
+
+class FakeStorageRepository extends Fake implements StorageRepository {}
 
 void main() {
   group('Guy C Debug User Auth Tests', () {
-    late InMemoryAuthDataSource localDataSource;
+    late InMemoryAuthDataSource remoteDataSource;
     late AuthRepositoryImpl repository;
     late LoginUseCase loginUseCase;
     late GetCurrentUserUseCase getCurrentUserUseCase;
 
     setUp(() {
-      localDataSource = InMemoryAuthDataSource(startAuthenticated: false);
-      repository = AuthRepositoryImpl(localDataSource: localDataSource);
+      remoteDataSource = InMemoryAuthDataSource(startAuthenticated: false);
+      repository = AuthRepositoryImpl(
+        remoteDataSource: remoteDataSource,
+        storageRepository: FakeStorageRepository(),
+        firestore: FakeFirebaseFirestore(),
+      );
       loginUseCase = LoginUseCase(repository);
       getCurrentUserUseCase = GetCurrentUserUseCase(repository);
     });

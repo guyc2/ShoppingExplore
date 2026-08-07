@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../domain/entities/user.dart';
 
 class UserDto {
@@ -42,6 +43,16 @@ class UserDto {
       displayName: displayName,
       avatarUrl: avatarUrl,
       createdAt: DateTime.tryParse(createdAt) ?? DateTime.now(),
+    );
+  }
+
+  factory UserDto.fromFirebaseUser(firebase_auth.User user) {
+    return UserDto(
+      id: user.uid,
+      email: user.email ?? '',
+      displayName: user.displayName ?? '',
+      avatarUrl: user.photoURL,
+      createdAt: user.metadata.creationTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
     );
   }
 

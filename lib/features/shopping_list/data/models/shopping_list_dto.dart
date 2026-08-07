@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entities/shopping_list.dart';
 import 'shopping_item_dto.dart';
 import 'shopping_session_dto.dart';
@@ -58,6 +60,49 @@ class ShoppingListDto extends ShoppingList {
       'activeSessions': activeSessions.map((session) => ShoppingSessionDto.fromDomain(session).toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  factory ShoppingListDto.fromFirestore(Map<String, dynamic> data) {
+    return ShoppingListDto(
+      id: data['id'] as String,
+      title: data['title'] as String,
+      shortDescription: data['shortDescription'] as String?,
+      description: data['description'] as String?,
+      colorHex: data['colorHex'] as String?,
+      imageUrl: data['imageUrl'] as String?,
+      ownerId: data['ownerId'] as String?,
+      sharedWithEmails: (data['sharedWithEmails'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      items: (data['items'] as List<dynamic>?)
+              ?.map((item) => ShoppingItemDto.fromFirestore(item as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      activeSessions: (data['activeSessions'] as List<dynamic>?)
+              ?.map((session) => ShoppingSessionDto.fromFirestore(session as Map<String, dynamic>).toDomain())
+              .toList() ??
+          const [],
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'title': title,
+      'shortDescription': shortDescription,
+      'description': description,
+      'colorHex': colorHex,
+      'imageUrl': imageUrl,
+      'ownerId': ownerId,
+      'sharedWithEmails': sharedWithEmails,
+      'items': items.map((item) => ShoppingItemDto.fromDomain(item).toFirestore()).toList(),
+      'activeSessions': activeSessions.map((session) => ShoppingSessionDto.fromDomain(session).toFirestore()).toList(),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 

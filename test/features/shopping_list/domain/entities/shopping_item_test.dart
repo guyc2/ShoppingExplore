@@ -5,7 +5,7 @@ import 'package:shopping_explore/features/shopping_list/domain/entities/product_
 void main() {
   group('ShoppingItem Entity', () {
     final now = DateTime(2026, 1, 1);
-    final suggestion = ProductSuggestion(id: 's1', name: 'Suggestion 1');
+    const suggestion = ProductSuggestion(id: 's1', name: 'Suggestion 1');
     final item = ShoppingItem(
       id: '1',
       title: 'Apples',
@@ -16,7 +16,7 @@ void main() {
       imageUrls: const ['https://example.com/apple.jpg'],
       linkUrls: const ['https://example.com/store/apple'],
       attributes: const {'store': 'WholeFoods', 'brand': 'Nature'},
-      suggestions: [suggestion],
+      suggestions: const [suggestion],
       createdAt: now,
       updatedAt: now,
     );
@@ -32,7 +32,7 @@ void main() {
         imageUrls: const ['https://example.com/apple.jpg'],
         linkUrls: const ['https://example.com/store/apple'],
         attributes: const {'store': 'WholeFoods', 'brand': 'Nature'},
-        suggestions: [suggestion],
+        suggestions: const [suggestion],
         createdAt: now,
         updatedAt: now,
       );

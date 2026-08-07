@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../shared_fakes.dart';
+import 'package:shopping_explore/features/shopping_list/data/datasources/shopping_list_remote_datasource.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopping_explore/app.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
@@ -56,7 +58,13 @@ void main() {
     });
 
     testWidgets('Language toggle button in ShoppingExploreApp switches between Hebrew and English', (tester) async {
-      await tester.pumpWidget(const ShoppingExploreApp());
+      final mockFirebaseAuth = FakeFirebaseAuth();
+      await tester.pumpWidget(ShoppingExploreApp(
+        firebaseAuthOverride: mockFirebaseAuth,
+        firestoreOverride: FakeFirebaseFirestore(),
+        storageRepositoryOverride: FakeStorageRepository(),
+        shoppingListRemoteDataSourceOverride: InMemoryShoppingListRemoteDataSource.withDefaultData(),
+      ));
       await tester.pumpAndSettle();
 
       expect(find.text('HE'), findsOneWidget);

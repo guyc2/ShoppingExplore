@@ -9,7 +9,6 @@ import 'package:shopping_explore/features/shopping_list/presentation/views/shopp
 import 'package:shopping_explore/features/shopping_list/presentation/widgets/product_suggestion_card.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import 'package:shopping_explore/core/services/image_storage_service.dart';
-import 'package:shopping_explore/core/error/failure.dart';
 import 'package:shopping_explore/core/error/result.dart';
 
 class FakeImageStorageService implements ImageStorageService {
@@ -44,7 +43,7 @@ void main() {
       id: '1',
       title: 'Apples',
       priority: Priority.high,
-      suggestions: [
+      suggestions: const [
         ProductSuggestion(id: 's1', name: 'Suggestion 1', pros: ['Good']),
       ],
       createdAt: DateTime.now(),

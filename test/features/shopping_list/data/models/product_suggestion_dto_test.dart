@@ -72,9 +72,10 @@ void main() {
         'priority': 'medium',
         'notes': null,
         'assignedToEmail': null,
-        'imageUrls': [],
-        'linkUrls': [],
-        'attributes': {},
+        'imageUrls': <String>[],
+        'linkUrls': <String>[],
+        'attributes': <String, String>{},
+        'frequentLocations': <String>[],
         'suggestions': [tJson],
         'createdAt': DateTime(2023).toIso8601String(),
         'updatedAt': DateTime(2023).toIso8601String(),
@@ -86,8 +87,8 @@ void main() {
       expect(dto.suggestions.first.name, equals('Nike Pegasus'));
 
       final outJson = dto.toJson();
-      expect(outJson['suggestions'], isA<List>());
-      expect((outJson['suggestions'] as List).first['name'], equals('Nike Pegasus'));
+      expect(outJson['suggestions'], isA<List<dynamic>>());
+      expect((outJson['suggestions'] as List<dynamic>).first['name'], equals('Nike Pegasus'));
     });
   });
 }
