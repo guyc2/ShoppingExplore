@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shopping_explore/core/storage/domain/repositories/storage_repository.dart';
+import 'package:shopping_explore/core/services/image_storage_service.dart';
+import 'package:shopping_explore/core/error/result.dart';
 
 class FakeFirebaseFirestore extends Fake implements FirebaseFirestore {
   @override
@@ -34,4 +36,11 @@ class FakeFirebaseAuth extends Fake implements FirebaseAuth {
   User? get currentUser => null;
   @override
   Stream<User?> authStateChanges() => const Stream.empty();
+}
+
+class FakeImageStorageService extends Fake implements ImageStorageService {
+  @override
+  Future<Result<String?>> pickAndCompressImage(ImagePickerSource source) async {
+    return const Success('fake_image_path.jpg');
+  }
 }

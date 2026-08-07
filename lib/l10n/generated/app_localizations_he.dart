@@ -310,6 +310,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get editItemDetails => 'ערוך פרטי פריט';
 
   @override
+  String get editListInfo => 'ערוך פרטי רשימה';
+
+  @override
   String get priorityLow => 'נמוכה';
 
   @override

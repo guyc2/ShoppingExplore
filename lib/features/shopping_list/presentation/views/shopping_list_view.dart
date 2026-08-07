@@ -88,6 +88,26 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     );
   }
 
+  void _openEditListModal(BuildContext context, ShoppingList list) {
+    AppLogger.d('Opening edit list modal for list ${list.id}', tag: 'ShoppingListView');
+    showDialog<void>(
+      context: context,
+      builder: (_) => CreateShoppingListModal(
+        initialList: list,
+        onCreate: (title, shortDesc, colorHex, imageUrl) async {
+          final updatedList = list.copyWith(
+            title: title,
+            shortDescription: shortDesc,
+            colorHex: colorHex,
+            imageUrl: imageUrl,
+            updatedAt: DateTime.now(),
+          );
+          await widget.controller.updateList(updatedList);
+        },
+      ),
+    );
+  }
+
   void _openAccountProfile(BuildContext context, List<ShoppingList> lists) {
     AppLogger.d('Opening account profile modal', tag: 'ShoppingListView');
     final totalItems =
@@ -312,6 +332,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
                     return ShoppingListCard(
                       shoppingList: list,
                       onTap: () => _openListDetail(context, list),
+                      onEdit: () => _openEditListModal(context, list),
                       onDelete: () {
                         widget.controller.deleteList(list.id);
                       },

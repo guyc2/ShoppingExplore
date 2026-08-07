@@ -92,6 +92,9 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
         onSave: (suggestion) {
           final updatedSuggestions = List<ProductSuggestion>.from(item.suggestions)..add(suggestion);
           final updatedItem = item.copyWith(suggestions: updatedSuggestions);
+          setState(() {
+            item = updatedItem;
+          });
           widget.controller.updateItem(widget.listId, updatedItem);
         },
       ),
@@ -101,6 +104,9 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
   void _deleteSuggestion(String suggestionId) {
     final updatedSuggestions = item.suggestions.where((s) => s.id != suggestionId).toList();
     final updatedItem = item.copyWith(suggestions: updatedSuggestions);
+    setState(() {
+      item = updatedItem;
+    });
     widget.controller.updateItem(widget.listId, updatedItem);
   }
 
@@ -166,7 +172,11 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
                           }
                           return s;
                         }).toList();
-                        widget.controller.updateItem(widget.listId, item.copyWith(suggestions: updatedSuggestions));
+                        final updatedItem = item.copyWith(suggestions: updatedSuggestions);
+                        setState(() {
+                          item = updatedItem;
+                        });
+                        widget.controller.updateItem(widget.listId, updatedItem);
                       },
                       onEdit: () {
                         showModalBottomSheet<void>(
@@ -182,7 +192,11 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
                               if (idx >= 0) {
                                 updatedSuggestions[idx] = updatedSuggestion;
                               }
-                              widget.controller.updateItem(widget.listId, item.copyWith(suggestions: updatedSuggestions));
+                              final updatedItem = item.copyWith(suggestions: updatedSuggestions);
+                              setState(() {
+                                item = updatedItem;
+                              });
+                              widget.controller.updateItem(widget.listId, updatedItem);
                             },
                           ),
                         );

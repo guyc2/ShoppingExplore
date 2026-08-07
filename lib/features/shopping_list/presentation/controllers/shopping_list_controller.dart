@@ -157,25 +157,57 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
 
   Future<void> updateItem(String listId, ShoppingItem item) async {
     AppLogger.d('Updating rich properties for item: ${item.title}', tag: 'ShoppingListController');
+    final previousState = value;
+    if (value is ShoppingListLoaded) {
+      final currentLists = (value as ShoppingListLoaded).lists;
+      final listIndex = currentLists.indexWhere((l) => l.id == listId);
+      if (listIndex >= 0) {
+        final targetList = currentLists[listIndex];
+        final itemIndex = targetList.items.indexWhere((i) => i.id == item.id);
+        final updatedItems = List<ShoppingItem>.from(targetList.items);
+        if (itemIndex >= 0) {
+          updatedItems[itemIndex] = item;
+        } else {
+          updatedItems.add(item);
+        }
+        final updatedList = targetList.copyWith(items: updatedItems);
+        final updatedLists = List<ShoppingList>.from(currentLists);
+        updatedLists[listIndex] = updatedList;
+        value = ShoppingListLoaded(updatedLists);
+      }
+    }
     final result = await updateItemProperties.execute(listId: listId, updatedItem: item);
     if (result.isSuccess) {
       AppLogger.i('Item updated successfully', tag: 'ShoppingListController');
       await loadShoppingLists();
     } else {
       AppLogger.w('Failed to update item: ${result.error.message}', tag: 'ShoppingListController');
-      value = ShoppingListError(result.error);
+      value = previousState;
     }
   }
 
   Future<void> deleteItem(String listId, String itemId) async {
     AppLogger.d('Deleting item $itemId from list $listId', tag: 'ShoppingListController');
+    final previousState = value;
+    if (value is ShoppingListLoaded) {
+      final currentLists = (value as ShoppingListLoaded).lists;
+      final listIndex = currentLists.indexWhere((l) => l.id == listId);
+      if (listIndex >= 0) {
+        final targetList = currentLists[listIndex];
+        final updatedItems = targetList.items.where((i) => i.id != itemId).toList();
+        final updatedList = targetList.copyWith(items: updatedItems);
+        final updatedLists = List<ShoppingList>.from(currentLists);
+        updatedLists[listIndex] = updatedList;
+        value = ShoppingListLoaded(updatedLists);
+      }
+    }
     final result = await deleteShoppingItem.execute(listId: listId, itemId: itemId);
     if (result.isSuccess) {
       AppLogger.i('Item deleted successfully', tag: 'ShoppingListController');
       await loadShoppingLists();
     } else {
       AppLogger.w('Failed to delete item: ${result.error.message}', tag: 'ShoppingListController');
-      value = ShoppingListError(result.error);
+      value = previousState;
     }
   }
 
@@ -222,6 +254,10 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     );
     if (result.isSuccess) {
       AppLogger.i('Shopping list created successfully: ${result.value.id}', tag: 'ShoppingListController');
+      if (value is ShoppingListLoaded) {
+        final currentLists = (value as ShoppingListLoaded).lists;
+        value = ShoppingListLoaded([...currentLists, result.value]);
+      }
       await loadShoppingLists();
       return result.value;
     } else {
@@ -237,6 +273,16 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       AppLogger.w('UpdateShoppingList usecase not configured', tag: 'ShoppingListController');
       return false;
     }
+    final previousState = value;
+    if (value is ShoppingListLoaded) {
+      final currentLists = (value as ShoppingListLoaded).lists;
+      final idx = currentLists.indexWhere((l) => l.id == list.id);
+      if (idx >= 0) {
+        final updatedLists = List<ShoppingList>.from(currentLists);
+        updatedLists[idx] = list;
+        value = ShoppingListLoaded(updatedLists);
+      }
+    }
     final result = await updateShoppingList!.execute(list);
     if (result.isSuccess) {
       AppLogger.i('Shopping list updated successfully', tag: 'ShoppingListController');
@@ -244,7 +290,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       return true;
     } else {
       AppLogger.w('Failed to update shopping list: ${result.error.message}', tag: 'ShoppingListController');
-      value = ShoppingListError(result.error);
+      value = previousState;
       return false;
     }
   }
@@ -255,6 +301,12 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       AppLogger.w('DeleteShoppingList usecase not configured', tag: 'ShoppingListController');
       return false;
     }
+    final previousState = value;
+    if (value is ShoppingListLoaded) {
+      final currentLists = (value as ShoppingListLoaded).lists;
+      final updatedLists = currentLists.where((l) => l.id != listId).toList();
+      value = ShoppingListLoaded(updatedLists);
+    }
     final result = await deleteShoppingList!.execute(listId);
     if (result.isSuccess) {
       AppLogger.i('Shopping list deleted successfully', tag: 'ShoppingListController');
@@ -262,7 +314,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       return true;
     } else {
       AppLogger.w('Failed to delete shopping list: ${result.error.message}', tag: 'ShoppingListController');
-      value = ShoppingListError(result.error);
+      value = previousState;
       return false;
     }
   }

@@ -310,6 +310,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editItemDetails => 'Edit Item Details';
 
   @override
+  String get editListInfo => 'Edit List Information';
+
+  @override
   String get priorityLow => 'Low';
 
   @override

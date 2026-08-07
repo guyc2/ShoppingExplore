@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../../../../core/utils/logger.dart';
+import '../../domain/entities/shopping_list.dart';
 
-/// A modal dialog for creating a new shopping list. Captures the
+/// A modal dialog for creating or editing a shopping list. Captures the
 /// title, optional short description, optional color selection,
 /// and a category icon selector.
 class CreateShoppingListModal extends StatefulWidget {
   final void Function(String title, String? shortDescription, String? colorHex, String? imageUrl) onCreate;
+  final ShoppingList? initialList;
 
-  const CreateShoppingListModal({super.key, required this.onCreate});
+  const CreateShoppingListModal({
+    super.key,
+    required this.onCreate,
+    this.initialList,
+  });
 
   @override
   State<CreateShoppingListModal> createState() => _CreateShoppingListModalState();
@@ -19,6 +25,17 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
   final _descController = TextEditingController();
   String _selectedColor = '#6366F1';
   String _selectedIcon = 'grocery';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialList != null) {
+      _titleController.text = widget.initialList!.title;
+      _descController.text = widget.initialList!.shortDescription ?? '';
+      _selectedColor = widget.initialList!.colorHex ?? '#6366F1';
+      _selectedIcon = widget.initialList!.imageUrl ?? 'grocery';
+    }
+  }
 
   static const _colorOptions = [
     '#4CAF50', // Green
@@ -88,7 +105,7 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.add_shopping_cart,
+                    widget.initialList != null ? Icons.edit_outlined : Icons.add_shopping_cart,
                     color: colorScheme.primary,
                     size: 22,
                   ),
@@ -96,7 +113,9 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    l10n?.newShoppingList ?? 'New Shopping List',
+                    widget.initialList != null
+                        ? (l10n?.editListInfo ?? 'Edit List Information')
+                        : (l10n?.newShoppingList ?? 'New Shopping List'),
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -245,13 +264,20 @@ class _CreateShoppingListModalState extends State<CreateShoppingListModal> {
             ),
             const SizedBox(height: 16),
 
-            // Create button (pinned at bottom)
+            // Save/Create button (pinned at bottom)
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: _handleCreate,
-                icon: const Icon(Icons.add_shopping_cart, size: 20),
-                label: Text(l10n?.createList ?? 'Create List'),
+                icon: Icon(
+                  widget.initialList != null ? Icons.check_circle_outline : Icons.add_shopping_cart,
+                  size: 20,
+                ),
+                label: Text(
+                  widget.initialList != null
+                      ? (l10n?.saveChanges ?? 'Save Changes')
+                      : (l10n?.createList ?? 'Create List'),
+                ),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(

@@ -105,6 +105,7 @@
   "imagePickError": "Failed to pick image",
   "addItemHint": "Add an item...",
   "editItemDetails": "Edit Item Details",
+  "editListInfo": "Edit List Information",
   "priorityLow": "Low",
   "priorityMedium": "Medium",
   "priorityHigh": "High",

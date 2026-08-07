@@ -692,6 +692,12 @@ abstract class AppLocalizations {
   /// **'Edit Item Details'**
   String get editItemDetails;
 
+  /// No description provided for @editListInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit List Information'**
+  String get editListInfo;
+
   /// No description provided for @priorityLow.
   ///
   /// In en, this message translates to:

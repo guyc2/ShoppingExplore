@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/shopping_list.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 
 /// A stylish card widget for displaying a shopping list summary on the
 /// multi-list dashboard. Shows category icon, title, short description,
@@ -7,12 +8,14 @@ import '../../domain/entities/shopping_list.dart';
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList shoppingList;
   final VoidCallback onTap;
+  final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
   const ShoppingListCard({
     super.key,
     required this.shoppingList,
     required this.onTap,
+    this.onEdit,
     this.onDelete,
   });
 
@@ -20,6 +23,7 @@ class ShoppingListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     final completedCount = shoppingList.items
         .where((i) => i.isCompleted)
@@ -30,39 +34,38 @@ class ShoppingListCard extends StatelessWidget {
     final listColor = _parseHexColor(shoppingList.colorHex) ?? colorScheme.primary;
 
     return Card(
-      elevation: 3,
-      shadowColor: listColor.withValues(alpha: 0.25),
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: listColor.withValues(alpha: 0.3),
-          width: 1,
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
-      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                listColor.withValues(alpha: 0.06),
-                colorScheme.surface,
-              ],
-            ),
-          ),
+        child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top row: icon badge + delete
+              // Header row with Icon, Title, and 3-dot Menu
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildCategoryIcon(listColor, colorScheme),
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: listColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      _getCategoryIcon(shoppingList.imageUrl),
+                      color: listColor,
+                      size: 22,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -91,20 +94,55 @@ class ShoppingListCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (onDelete != null)
-                    IconButton(
+                  if (onEdit != null || onDelete != null)
+                    PopupMenuButton<String>(
                       icon: Icon(
                         Icons.more_vert,
                         size: 20,
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      onPressed: () => _showDeleteConfirmation(context),
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 28,
-                        minHeight: 28,
-                      ),
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          onEdit?.call();
+                        } else if (value == 'delete') {
+                          _showDeleteConfirmation(context);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        if (onEdit != null)
+                          PopupMenuItem<String>(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit_outlined, size: 20, color: colorScheme.onSurface),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    l10n?.editListInfo ?? 'Edit List Information',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (onDelete != null)
+                          PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete_outline, size: 20, color: colorScheme.error),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    l10n?.deleteList ?? 'Delete List',
+                                    style: TextStyle(color: colorScheme.error),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
                 ],
               ),
@@ -127,22 +165,6 @@ class ShoppingListCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryIcon(Color listColor, ColorScheme colorScheme) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: listColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Icon(
-        _getCategoryIcon(shoppingList.imageUrl),
-        color: listColor,
-        size: 22,
       ),
     );
   }
@@ -265,15 +287,16 @@ class ShoppingListCard extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete List?'),
-        content: Text('Are you sure you want to delete "${shoppingList.title}"?'),
+        title: Text(l10n?.deleteList ?? 'Delete List'),
+        content: Text(l10n?.deleteListConfirm ?? 'Are you sure you want to delete this list?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n?.cancel ?? 'Cancel'),
           ),
           FilledButton(
             onPressed: () {
@@ -283,7 +306,7 @@ class ShoppingListCard extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n?.deleteList ?? 'Delete'),
           ),
         ],
       ),
