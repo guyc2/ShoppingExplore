@@ -48,3 +48,23 @@ build/
 
 # Obsidian related
 .obsidian/
+
+# Firebase CLI & Deployment
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Temporary Scratch & Deployment Scripts
+deploy.ps1
+scratch/
+
+# Environment Variables & Secrets
+.env
+.env.*
+*.env
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+
