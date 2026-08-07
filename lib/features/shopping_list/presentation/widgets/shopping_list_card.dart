@@ -49,68 +49,41 @@ class ShoppingListCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header: Icon + Title/description, 3-dot menu overlaid top-right
-              Stack(
+              // Top row: title/description + 3-dot menu
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: listColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          _getCategoryIcon(shoppingList.imageUrl),
-                          color: listColor,
-                          size: 22,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Padding(
-                          // Leave enough room on the trailing edge for the menu button
-                          padding: EdgeInsets.only(
-                            right: (onEdit != null || onDelete != null) ? 28 : 0,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          shoppingList.title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                shoppingList.title,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              if (shoppingList.shortDescription != null &&
-                                  shoppingList.shortDescription!.isNotEmpty) ...[
-                                const SizedBox(height: 2),
-                                Text(
-                                  shoppingList.shortDescription!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ],
-                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                        if (shoppingList.shortDescription != null &&
+                            shoppingList.shortDescription!.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            shoppingList.shortDescription!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                  // 3-dot menu pinned to top-right, not in the Row flow
                   if (onEdit != null || onDelete != null)
-                    Positioned(
-                      top: -8,
-                      right: -8,
-                      child: PopupMenuButton<String>(
-                        icon: Icon(
+                    PopupMenuButton<String>(
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
                           Icons.more_vert,
                           size: 20,
                           color: colorScheme.onSurfaceVariant,
@@ -158,19 +131,41 @@ class ShoppingListCard extends StatelessWidget {
                             ),
                         ],
                       ),
-                    ),
-                ],
-              ),
+                  ],
+                ),
 
               const Spacer(),
 
-              // Progress bar
-              _buildProgressSection(
-                context,
-                progress,
-                completedCount,
-                totalCount,
-                listColor,
+              // Bottom row: small category icon (left) + progress bar (right)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Small icon badge — bottom-left
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: listColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      _getCategoryIcon(shoppingList.imageUrl),
+                      color: listColor,
+                      size: 16,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Progress section fills the rest
+                  Expanded(
+                    child: _buildProgressSection(
+                      context,
+                      progress,
+                      completedCount,
+                      totalCount,
+                      listColor,
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 10),
