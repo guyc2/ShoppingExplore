@@ -49,100 +49,115 @@ class ShoppingListCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row with Icon, Title, and 3-dot Menu
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Header: Icon + Title/description, 3-dot menu overlaid top-right
+              Stack(
                 children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: listColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      _getCategoryIcon(shoppingList.imageUrl),
-                      color: listColor,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          shoppingList.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: listColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        if (shoppingList.shortDescription != null &&
-                            shoppingList.shortDescription!.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            shoppingList.shortDescription!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (onEdit != null || onDelete != null)
-                    PopupMenuButton<String>(
-                      icon: Icon(
-                        Icons.more_vert,
-                        size: 20,
-                        color: colorScheme.onSurfaceVariant,
+                        child: Icon(
+                          _getCategoryIcon(shoppingList.imageUrl),
+                          color: listColor,
+                          size: 22,
+                        ),
                       ),
-                      onSelected: (value) {
-                        if (value == 'edit') {
-                          onEdit?.call();
-                        } else if (value == 'delete') {
-                          _showDeleteConfirmation(context);
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        if (onEdit != null)
-                          PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit_outlined, size: 20, color: colorScheme.onSurface),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    l10n?.editListInfo ?? 'Edit List Information',
-                                    overflow: TextOverflow.ellipsis,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Padding(
+                          // Leave enough room on the trailing edge for the menu button
+                          padding: EdgeInsets.only(
+                            right: (onEdit != null || onDelete != null) ? 28 : 0,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                shoppingList.title,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (shoppingList.shortDescription != null &&
+                                  shoppingList.shortDescription!.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  shoppingList.shortDescription!,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
-                            ),
+                            ],
                           ),
-                        if (onDelete != null)
-                          PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete_outline, size: 20, color: colorScheme.error),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    l10n?.deleteList ?? 'Delete List',
-                                    style: TextStyle(color: colorScheme.error),
-                                    overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  // 3-dot menu pinned to top-right, not in the Row flow
+                  if (onEdit != null || onDelete != null)
+                    Positioned(
+                      top: -8,
+                      right: -8,
+                      child: PopupMenuButton<String>(
+                        icon: Icon(
+                          Icons.more_vert,
+                          size: 20,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            onEdit?.call();
+                          } else if (value == 'delete') {
+                            _showDeleteConfirmation(context);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          if (onEdit != null)
+                            PopupMenuItem<String>(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit_outlined, size: 20, color: colorScheme.onSurface),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      l10n?.editListInfo ?? 'Edit List Information',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                      ],
+                          if (onDelete != null)
+                            PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete_outline, size: 20, color: colorScheme.error),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      l10n?.deleteList ?? 'Delete List',
+                                      style: TextStyle(color: colorScheme.error),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                 ],
               ),
