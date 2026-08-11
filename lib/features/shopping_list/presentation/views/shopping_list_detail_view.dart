@@ -419,7 +419,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                     padding: EdgeInsets.zero,
                     labelPadding: const EdgeInsets.symmetric(horizontal: 6),
                     label: Text(
-                      getDisplayNameForEmail(email),
+                      getDisplayNameForEmail(email, list: list),
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontSize: 10,
                       ),

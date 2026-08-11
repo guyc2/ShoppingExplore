@@ -17,6 +17,7 @@ import '../../domain/usecases/watch_shopping_list.dart';
 import '../../domain/usecases/watch_shopping_lists.dart';
 import '../../domain/usecases/start_shopping_session.dart';
 import '../../domain/usecases/end_shopping_session.dart';
+import '../../../../core/utils/user_utils.dart';
 import 'shopping_list_state.dart';
 
 class ShoppingListController extends ValueNotifier<ShoppingListState> {
@@ -231,13 +232,16 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     }
   }
 
-  Future<bool> shareList(String listId, String email) async {
-    AppLogger.d('Sharing list $listId with $email', tag: 'ShoppingListController');
+  Future<bool> shareList(String listId, String email, {String? displayName}) async {
+    AppLogger.d('Sharing list $listId with $email (displayName: $displayName)', tag: 'ShoppingListController');
+    if (displayName != null && displayName.trim().isNotEmpty) {
+      registerUserDisplayName(email, displayName);
+    }
     if (shareShoppingList == null) {
       AppLogger.w('ShareShoppingList usecase not configured', tag: 'ShoppingListController');
       return false;
     }
-    final result = await shareShoppingList!.execute(listId, email);
+    final result = await shareShoppingList!.execute(listId, email, displayName: displayName);
     if (result.isSuccess) {
       AppLogger.i('List shared successfully with $email', tag: 'ShoppingListController');
       await loadShoppingLists();

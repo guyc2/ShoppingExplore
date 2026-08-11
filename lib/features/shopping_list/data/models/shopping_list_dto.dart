@@ -14,6 +14,7 @@ class ShoppingListDto extends ShoppingList {
     super.imageUrl,
     super.ownerId,
     super.sharedWithEmails = const [],
+    super.collaboratorDisplayNames = const {},
     super.items = const [],
     super.activeSessions = const [],
     required super.createdAt,
@@ -33,6 +34,9 @@ class ShoppingListDto extends ShoppingList {
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      collaboratorDisplayNames: (json['collaboratorDisplayNames'] as Map<String, dynamic>?)
+              ?.map((k, v) => MapEntry(k, v as String)) ??
+          const {},
       items: (json['items'] as List<dynamic>?)
               ?.map((item) => ShoppingItemDto.fromJson(item as Map<String, dynamic>))
               .toList() ??
@@ -56,6 +60,7 @@ class ShoppingListDto extends ShoppingList {
       'imageUrl': imageUrl,
       'ownerId': ownerId,
       'sharedWithEmails': sharedWithEmails,
+      'collaboratorDisplayNames': collaboratorDisplayNames,
       'items': items.map((item) => ShoppingItemDto.fromDomain(item).toJson()).toList(),
       'activeSessions': activeSessions.map((session) => ShoppingSessionDto.fromDomain(session).toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
@@ -77,6 +82,9 @@ class ShoppingListDto extends ShoppingList {
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      collaboratorDisplayNames: (data['collaboratorDisplayNames'] as Map<String, dynamic>?)
+              ?.map((k, v) => MapEntry(k, v as String)) ??
+          const {},
       items: (data['items'] as List<dynamic>?)
               ?.map((item) => ShoppingItemDto.fromFirestore(item as Map<String, dynamic>))
               .toList() ??
@@ -109,6 +117,7 @@ class ShoppingListDto extends ShoppingList {
       'ownerId': ownerId,
       'ownerEmail': ownerId,
       'sharedWithEmails': sharedWithEmails,
+      'collaboratorDisplayNames': collaboratorDisplayNames,
       'items': items.map((item) => ShoppingItemDto.fromDomain(item).toFirestore()).toList(),
       'activeSessions': activeSessions.map((session) => ShoppingSessionDto.fromDomain(session).toFirestore()).toList(),
       'createdAt': Timestamp.fromDate(createdAt),
@@ -126,6 +135,7 @@ class ShoppingListDto extends ShoppingList {
       imageUrl: list.imageUrl,
       ownerId: list.ownerId,
       sharedWithEmails: list.sharedWithEmails,
+      collaboratorDisplayNames: list.collaboratorDisplayNames,
       items: list.items,
       activeSessions: list.activeSessions,
       createdAt: list.createdAt,
@@ -143,6 +153,7 @@ class ShoppingListDto extends ShoppingList {
       imageUrl: imageUrl,
       ownerId: ownerId,
       sharedWithEmails: sharedWithEmails,
+      collaboratorDisplayNames: collaboratorDisplayNames,
       items: items.map((item) => ShoppingItemDto.fromDomain(item).toDomain()).toList(),
       activeSessions: activeSessions,
       createdAt: createdAt,

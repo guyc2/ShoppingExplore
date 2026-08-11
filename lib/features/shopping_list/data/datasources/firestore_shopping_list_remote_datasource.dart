@@ -78,10 +78,10 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
   }
 
   @override
-  Future<ShoppingListDto> shareShoppingList(String listId, String email) async {
+  Future<ShoppingListDto> shareShoppingList(String listId, String email, {String? displayName}) async {
     try {
       final cleanEmail = email.trim().toLowerCase();
-      AppLogger.d('Sharing shopping list $listId with $cleanEmail', tag: 'FirestoreShoppingListRemoteDataSource');
+      AppLogger.d('Sharing shopping list $listId with $cleanEmail ($displayName)', tag: 'FirestoreShoppingListRemoteDataSource');
       
       final docRef = _firestore.collection('shopping_lists').doc(listId);
       
@@ -92,12 +92,22 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
         }
         
         final List<dynamic> shared = (doc.data()?['sharedWithEmails'] as List<dynamic>?) ?? [];
+        final Map<String, dynamic> names = Map<String, dynamic>.from((doc.data()?['collaboratorDisplayNames'] as Map<String, dynamic>?) ?? {});
+        
+        final updates = <String, dynamic>{
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+        
         if (!shared.contains(cleanEmail)) {
-          transaction.update(docRef, {
-            'sharedWithEmails': FieldValue.arrayUnion([cleanEmail]),
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
+          updates['sharedWithEmails'] = FieldValue.arrayUnion([cleanEmail]);
         }
+        
+        if (displayName != null && displayName.trim().isNotEmpty) {
+          names[cleanEmail] = displayName.trim();
+          updates['collaboratorDisplayNames'] = names;
+        }
+        
+        transaction.update(docRef, updates);
       });
       
       return await getShoppingList(listId);

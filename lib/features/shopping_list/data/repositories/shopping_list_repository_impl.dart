@@ -80,10 +80,10 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
   }
 
   @override
-  Future<Result<ShoppingList>> shareShoppingList(String listId, String email) async {
-    AppLogger.d('shareShoppingList requested for list $listId with email $email', tag: 'ShoppingListRepository');
+  Future<Result<ShoppingList>> shareShoppingList(String listId, String email, {String? displayName}) async {
+    AppLogger.d('shareShoppingList requested for list $listId with email $email (displayName: $displayName)', tag: 'ShoppingListRepository');
     try {
-      final updatedDto = await remoteDataSource.shareShoppingList(listId, email);
+      final updatedDto = await remoteDataSource.shareShoppingList(listId, email, displayName: displayName);
       final domainList = updatedDto.toDomain();
       AppLogger.i('Successfully shared list $listId with $email', tag: 'ShoppingListRepository');
       return Success(domainList);

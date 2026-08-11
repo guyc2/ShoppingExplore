@@ -19,17 +19,20 @@ class ShoppingListShareModal extends StatefulWidget {
 
 class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
   final _emailController = TextEditingController();
+  final _nameController = TextEditingController();
   String? _errorMessage;
   bool _isSharing = false;
 
   @override
   void dispose() {
     _emailController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
   Future<void> _share() async {
     final email = _emailController.text.trim();
+    final displayName = _nameController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
       setState(() => _errorMessage = 'Please enter a valid email address');
       return;
@@ -39,12 +42,17 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
       _isSharing = true;
     });
 
-    final success = await widget.controller.shareList(widget.shoppingList.id, email);
+    final success = await widget.controller.shareList(
+      widget.shoppingList.id,
+      email,
+      displayName: displayName.isNotEmpty ? displayName : null,
+    );
 
     if (mounted) {
       setState(() => _isSharing = false);
       if (success) {
         _emailController.clear();
+        _nameController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('List shared with $email')),
         );
@@ -73,11 +81,14 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Share "${list.title}"',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+                  Expanded(
+                    child: Text(
+                      'Share "${list.title}"',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   IconButton(
@@ -89,7 +100,7 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
               const SizedBox(height: 16),
               if (list.ownerId != null) ...[
                 Text(
-                  'Owner: ${list.ownerId}',
+                  'Owner: ${getDisplayNameForEmail(list.ownerId, list: list)}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -117,17 +128,20 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
                   runSpacing: 8,
                   children: list.sharedWithEmails
                       .map(
-                        (email) => Chip(
-                          avatar: CircleAvatar(
-                            backgroundColor: colorScheme.primary,
-                            child: Text(
-                              getDisplayNameForEmail(email)[0].toUpperCase(),
-                              style: TextStyle(color: colorScheme.onPrimary, fontSize: 11),
+                        (email) {
+                          final name = getDisplayNameForEmail(email, list: list);
+                          return Chip(
+                            avatar: CircleAvatar(
+                              backgroundColor: colorScheme.primary,
+                              child: Text(
+                                name.isNotEmpty ? name[0].toUpperCase() : 'C',
+                                style: TextStyle(color: colorScheme.onPrimary, fontSize: 11),
+                              ),
                             ),
-                          ),
-                          label: Text(getDisplayNameForEmail(email)),
-                          backgroundColor: colorScheme.surfaceContainerHighest,
-                        ),
+                            label: Text(name),
+                            backgroundColor: colorScheme.surfaceContainerHighest,
+                          );
+                        },
                       )
                       .toList(),
                 ),
@@ -139,18 +153,28 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
                 ),
                 const SizedBox(height: 8),
               ],
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Add collaborator email *',
+                  hintText: 'friend@shoppingexplore.com',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _emailController,
+                      controller: _nameController,
                       decoration: const InputDecoration(
-                        labelText: 'Add collaborator email',
-                        hintText: 'friend@shoppingexplore.com',
+                        labelText: 'Display name (optional)',
+                        hintText: 'e.g. Taylor',
                         border: OutlineInputBorder(),
                         isDense: true,
                       ),
-                      keyboardType: TextInputType.emailAddress,
                     ),
                   ),
                   const SizedBox(width: 8),

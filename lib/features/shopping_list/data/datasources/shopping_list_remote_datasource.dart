@@ -9,7 +9,7 @@ abstract class ShoppingListRemoteDataSource {
   Future<List<ShoppingListDto>> getShoppingLists(String userEmail);
   Future<ShoppingListDto> getShoppingList(String id);
   Future<ShoppingListDto> saveShoppingList(ShoppingListDto dto);
-  Future<ShoppingListDto> shareShoppingList(String listId, String email);
+  Future<ShoppingListDto> shareShoppingList(String listId, String email, {String? displayName});
   Future<void> deleteShoppingList(String id);
   Future<void> saveShoppingItem(String listId, ShoppingItemDto item);
   Future<void> deleteShoppingItem(String listId, String itemId);
@@ -203,23 +203,32 @@ class InMemoryShoppingListRemoteDataSource implements ShoppingListRemoteDataSour
   }
 
   @override
-  Future<ShoppingListDto> shareShoppingList(String listId, String email) async {
+  Future<ShoppingListDto> shareShoppingList(String listId, String email, {String? displayName}) async {
     final list = _cloudStorage[listId];
     if (list == null) {
       throw CacheFailure('Cannot share non-existent list: $listId');
     }
     final cleanEmail = email.trim().toLowerCase();
-    if (list.sharedWithEmails.contains(cleanEmail)) {
-      return list;
+    final updatedEmails = List<String>.from(list.sharedWithEmails);
+    if (!updatedEmails.contains(cleanEmail)) {
+      updatedEmails.add(cleanEmail);
     }
-    final updatedEmails = List<String>.from(list.sharedWithEmails)..add(cleanEmail);
+    final updatedDisplayNames = Map<String, String>.from(list.collaboratorDisplayNames);
+    if (displayName != null && displayName.trim().isNotEmpty) {
+      updatedDisplayNames[cleanEmail] = displayName.trim();
+    }
     final updatedDto = ShoppingListDto(
       id: list.id,
       title: list.title,
       description: list.description,
+      shortDescription: list.shortDescription,
+      colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
       ownerId: list.ownerId,
       sharedWithEmails: updatedEmails,
+      collaboratorDisplayNames: updatedDisplayNames,
       items: list.items,
+      activeSessions: list.activeSessions,
       createdAt: list.createdAt,
       updatedAt: DateTime.now(),
     );

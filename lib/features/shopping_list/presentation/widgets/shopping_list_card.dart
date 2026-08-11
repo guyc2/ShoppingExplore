@@ -246,7 +246,7 @@ class ShoppingListCard extends StatelessWidget {
           height: 26,
           child: Stack(
             children: List.generate(displayCount, (i) {
-              final displayName = getDisplayNameForEmail(allEmails[i]);
+              final displayName = getDisplayNameForEmail(allEmails[i], list: shoppingList);
               final initial = displayName.isNotEmpty
                   ? displayName[0].toUpperCase()
                   : '?';

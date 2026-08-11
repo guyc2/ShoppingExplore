@@ -11,6 +11,7 @@ class ShoppingList extends Equatable {
   final String? imageUrl;
   final String? ownerId;
   final List<String> sharedWithEmails;
+  final Map<String, String> collaboratorDisplayNames;
   final List<ShoppingItem> items;
   final List<ShoppingSession> activeSessions;
   final DateTime createdAt;
@@ -25,6 +26,7 @@ class ShoppingList extends Equatable {
     this.imageUrl,
     this.ownerId,
     this.sharedWithEmails = const [],
+    this.collaboratorDisplayNames = const {},
     this.items = const [],
     this.activeSessions = const [],
     required this.createdAt,
@@ -40,6 +42,7 @@ class ShoppingList extends Equatable {
     String? imageUrl,
     String? ownerId,
     List<String>? sharedWithEmails,
+    Map<String, String>? collaboratorDisplayNames,
     List<ShoppingItem>? items,
     List<ShoppingSession>? activeSessions,
     DateTime? createdAt,
@@ -54,6 +57,8 @@ class ShoppingList extends Equatable {
       imageUrl: imageUrl ?? this.imageUrl,
       ownerId: ownerId ?? this.ownerId,
       sharedWithEmails: sharedWithEmails ?? this.sharedWithEmails,
+      collaboratorDisplayNames:
+          collaboratorDisplayNames ?? this.collaboratorDisplayNames,
       items: items ?? this.items,
       activeSessions: activeSessions ?? this.activeSessions,
       createdAt: createdAt ?? this.createdAt,
@@ -71,6 +76,7 @@ class ShoppingList extends Equatable {
         imageUrl,
         ownerId,
         sharedWithEmails,
+        collaboratorDisplayNames,
         items,
         activeSessions,
         createdAt,

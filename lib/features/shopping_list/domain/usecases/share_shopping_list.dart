@@ -7,7 +7,7 @@ class ShareShoppingList {
 
   const ShareShoppingList(this.repository);
 
-  Future<Result<ShoppingList>> execute(String listId, String email) {
-    return repository.shareShoppingList(listId, email);
+  Future<Result<ShoppingList>> execute(String listId, String email, {String? displayName}) {
+    return repository.shareShoppingList(listId, email, displayName: displayName);
   }
 }
