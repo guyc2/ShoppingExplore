@@ -175,9 +175,6 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                 currentUserEmail: 'guy@shoppingexplore.com',
               ),
 
-              // Shopping mode controls
-              _buildShoppingModeControls(context, list),
-
               // Item checklist
               Expanded(
                 child: list.items.isEmpty
@@ -208,6 +205,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
     final completedCount = list.items.where((i) => i.isCompleted).length;
     final totalCount = list.items.length;
     final progress = totalCount > 0 ? completedCount / totalCount : 0.0;
+    final isShoppingMode = widget.controller.isShoppingMode(list.id);
 
     return Container(
       width: double.infinity,
@@ -225,17 +223,122 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Short description
-          if (list.shortDescription != null &&
-              list.shortDescription!.isNotEmpty) ...[
-            Text(
-              list.shortDescription!,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
+          // Top header row: Compact Start Shopping button + Short description
+          if (!isShoppingMode)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ActionChip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  avatar: Icon(
+                    Icons.shopping_cart_checkout,
+                    size: 14,
+                    color: colorScheme.primary,
+                  ),
+                  label: Text(
+                    l10n?.startShopping ?? 'Start Shopping',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                  onPressed: () {
+                    StartShoppingModal.show(
+                      context,
+                      listTitle: list.title,
+                      onStart: (locationName) {
+                        widget.controller.enterShoppingMode(
+                          list.id,
+                          userEmail: 'guy@shoppingexplore.com',
+                          locationName: locationName,
+                        );
+                        setState(() {});
+                      },
+                    );
+                  },
+                ),
+                if (list.shortDescription != null && list.shortDescription!.isNotEmpty) ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      list.shortDescription!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ],
+            )
+          else ...[
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Chip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  avatar: Icon(
+                    Icons.shopping_cart,
+                    size: 14,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                  label: Text(
+                    l10n?.activeShoppingMode ?? 'Active Shopping Mode',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimaryContainer,
+                      fontSize: 11,
+                    ),
+                  ),
+                  backgroundColor: colorScheme.primaryContainer,
+                ),
+                ActionChip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  avatar: Icon(Icons.check_circle_outline, size: 14, color: colorScheme.primary),
+                  label: Text(l10n?.completeShopping ?? 'Complete Shopping', style: const TextStyle(fontSize: 11)),
+                  onPressed: () {
+                    widget.controller.completeShoppingMode(
+                      list.id,
+                      userEmail: 'guy@shoppingexplore.com',
+                    );
+                    setState(() {});
+                  },
+                ),
+                ActionChip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  avatar: Icon(Icons.cancel_outlined, size: 14, color: colorScheme.error),
+                  label: Text(l10n?.cancelShopping ?? 'Cancel Shopping', style: const TextStyle(fontSize: 11)),
+                  onPressed: () {
+                    widget.controller.cancelShoppingMode(
+                      list.id,
+                      userEmail: 'guy@shoppingexplore.com',
+                    );
+                    setState(() {});
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
+            if (list.shortDescription != null && list.shortDescription!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                list.shortDescription!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ],
+          const SizedBox(height: 8),
 
           // Full description
           if (list.description != null && list.description!.isNotEmpty) ...[
@@ -326,93 +429,6 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
     );
   }
 
-  Widget _buildShoppingModeControls(BuildContext context, ShoppingList list) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final isShoppingMode = widget.controller.isShoppingMode(list.id);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: !isShoppingMode
-          ? ActionChip(
-              avatar: Icon(
-                Icons.shopping_cart_checkout,
-                size: 16,
-                color: colorScheme.primary,
-              ),
-              label: Text(l10n?.startShopping ?? 'Start Shopping'),
-              onPressed: () {
-                StartShoppingModal.show(
-                  context,
-                  listTitle: list.title,
-                  onStart: (locationName) {
-                    widget.controller.enterShoppingMode(
-                      list.id,
-                      userEmail: 'guy@shoppingexplore.com',
-                      locationName: locationName,
-                    );
-                    setState(() {});
-                  },
-                );
-              },
-            )
-          : Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Chip(
-                  avatar: Icon(
-                    Icons.shopping_cart,
-                    size: 16,
-                    color: colorScheme.onPrimaryContainer,
-                  ),
-                  label: Text(
-                    l10n?.activeShoppingMode ?? 'Active Shopping Mode',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimaryContainer,
-                      fontSize: 12,
-                    ),
-                  ),
-                  backgroundColor: colorScheme.primaryContainer,
-                ),
-                ActionChip(
-                  avatar: Icon(
-                    Icons.check_circle_outline,
-                    size: 16,
-                    color: colorScheme.primary,
-                  ),
-                  label: Text(l10n?.completeShopping ?? 'Complete Shopping'),
-                  onPressed: () {
-                    widget.controller.completeShoppingMode(
-                      list.id,
-                      userEmail: 'guy@shoppingexplore.com',
-                    );
-                    setState(() {});
-                  },
-                ),
-                ActionChip(
-                  avatar: Icon(
-                    Icons.cancel_outlined,
-                    size: 16,
-                    color: colorScheme.error,
-                  ),
-                  label: Text(l10n?.cancelShopping ?? 'Cancel Shopping'),
-                  onPressed: () {
-                    widget.controller.cancelShoppingMode(
-                      list.id,
-                      userEmail: 'guy@shoppingexplore.com',
-                    );
-                    setState(() {});
-                  },
-                ),
-              ],
-            ),
-    );
-  }
-
   Widget _buildItemsList(BuildContext context, ShoppingList list) {
     final isShoppingMode = widget.controller.isShoppingMode(list.id);
     final removedIds = widget.controller.removedCartItemIds(list.id);
@@ -445,6 +461,10 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
               onToggle: () => widget.controller.toggleItem(list.id, item),
               onDelete: () => _removeItem(item.id),
               onTap: () => _openEditor(context, item, availableEmails),
+              onUpdateQuantity: (newQty) {
+                final updated = item.copyWith(quantity: newQty);
+                widget.controller.updateItem(list.id, updated);
+              },
             ),
           ),
           if (markedItems.isNotEmpty) ...[
@@ -465,6 +485,10 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                 onToggle: () => widget.controller.toggleItem(list.id, item),
                 onDelete: () => _removeItem(item.id),
                 onTap: () => _openEditor(context, item, availableEmails),
+                onUpdateQuantity: (newQty) {
+                  final updated = item.copyWith(quantity: newQty);
+                  widget.controller.updateItem(list.id, updated);
+                },
               ),
             ),
           ],
@@ -496,6 +520,10 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
             onToggle: () => widget.controller.toggleItem(list.id, item),
             onDelete: () => _removeItem(item.id),
             onTap: () => _openEditor(context, item, availableEmails),
+            onUpdateQuantity: (newQty) {
+              final updated = item.copyWith(quantity: newQty);
+              widget.controller.updateItem(list.id, updated);
+            },
           ),
         ),
         if (removedItems.isNotEmpty) ...[
@@ -519,6 +547,10 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                   widget.controller.deleteItem(list.id, item.id),
               onRestore: () => _restoreItem(item.id),
               onTap: () => _openEditor(context, item, availableEmails),
+              onUpdateQuantity: (newQty) {
+                final updated = item.copyWith(quantity: newQty);
+                widget.controller.updateItem(list.id, updated);
+              },
             ),
           ),
         ],

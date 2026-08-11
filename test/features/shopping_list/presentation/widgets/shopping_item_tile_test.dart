@@ -31,8 +31,8 @@ void main() {
       );
 
       expect(find.text('Organic Bananas'), findsOneWidget);
-      expect(find.text('x2'), findsOneWidget);
-      expect(find.text('High Priority'), findsOneWidget);
+      expect(find.textContaining('x2'), findsOneWidget);
+      expect(find.text('High'), findsOneWidget);
       expect(find.byType(Checkbox), findsOneWidget);
     });
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_explore/core/utils/user_utils.dart';
+import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import '../../domain/entities/shopping_item.dart';
+import 'quantity_picker_modal.dart';
 
 class ShoppingItemTile extends StatelessWidget {
   final ShoppingItem item;
@@ -9,6 +11,7 @@ class ShoppingItemTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool isRemovedInShoppingMode;
   final VoidCallback? onRestore;
+  final ValueChanged<double>? onUpdateQuantity;
 
   const ShoppingItemTile({
     super.key,
@@ -18,6 +21,7 @@ class ShoppingItemTile extends StatelessWidget {
     required this.onTap,
     this.isRemovedInShoppingMode = false,
     this.onRestore,
+    this.onUpdateQuantity,
   });
 
   @override
@@ -27,7 +31,7 @@ class ShoppingItemTile extends StatelessWidget {
 
     return Card(
       elevation: (item.isCompleted || isRemovedInShoppingMode) ? 0 : 2,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
@@ -40,7 +44,7 @@ class ShoppingItemTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -108,6 +112,7 @@ class ShoppingItemTile extends StatelessWidget {
   Widget _buildBadges(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
     final badges = <Widget>[];
 
     if (item.assignedToEmail != null && item.assignedToEmail!.isNotEmpty) {
@@ -120,21 +125,35 @@ class ShoppingItemTile extends StatelessWidget {
       );
     }
 
-    if (item.quantity != 1.0) {
-      badges.add(
-        _BadgePill(
-          label: 'x${item.quantity.toStringAsFixed(item.quantity.truncateToDouble() == item.quantity ? 0 : 1)}',
+    final qtyStr = item.quantity.toStringAsFixed(item.quantity.truncateToDouble() == item.quantity ? 0 : 1);
+    badges.add(
+      InkWell(
+        onTap: onUpdateQuantity != null
+            ? () {
+                QuantityPickerModal.show(
+                  context,
+                  initialQuantity: item.quantity,
+                  onQuantitySelected: onUpdateQuantity!,
+                );
+              }
+            : null,
+        borderRadius: BorderRadius.circular(16),
+        child: _BadgePill(
+          label: 'x$qtyStr ▾',
           color: colorScheme.primaryContainer,
           textColor: colorScheme.onPrimaryContainer,
         ),
-      );
-    }
+      ),
+    );
 
     if (item.priority != Priority.low) {
       final isHigh = item.priority == Priority.high;
+      final priorityText = isHigh
+          ? (l10n?.priorityHigh ?? 'High')
+          : (l10n?.priorityMedium ?? 'Medium');
       badges.add(
         _BadgePill(
-          label: isHigh ? 'High Priority' : 'Medium Priority',
+          label: priorityText,
           color: isHigh ? colorScheme.errorContainer : colorScheme.tertiaryContainer,
           textColor: isHigh ? colorScheme.onErrorContainer : colorScheme.onTertiaryContainer,
         ),
