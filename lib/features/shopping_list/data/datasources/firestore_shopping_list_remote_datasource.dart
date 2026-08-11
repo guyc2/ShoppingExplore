@@ -82,34 +82,29 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
     try {
       final cleanEmail = email.trim().toLowerCase();
       AppLogger.d('Sharing shopping list $listId with $cleanEmail ($displayName)', tag: 'FirestoreShoppingListRemoteDataSource');
-      
+
       final docRef = _firestore.collection('shopping_lists').doc(listId);
-      
-      await _firestore.runTransaction((transaction) async {
-        final doc = await transaction.get(docRef);
+
+      // Build updates — arrayUnion is atomic, no transaction needed
+      final updates = <String, dynamic>{
+        'sharedWithEmails': FieldValue.arrayUnion([cleanEmail]),
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+
+      if (displayName != null && displayName.trim().isNotEmpty) {
+        // For the map field we need to read first so we can merge
+        final doc = await docRef.get();
         if (!doc.exists) {
           throw const CacheFailure('List does not exist');
         }
-        
-        final List<dynamic> shared = (doc.data()?['sharedWithEmails'] as List<dynamic>?) ?? [];
-        final Map<String, dynamic> names = Map<String, dynamic>.from((doc.data()?['collaboratorDisplayNames'] as Map<String, dynamic>?) ?? {});
-        
-        final updates = <String, dynamic>{
-          'updatedAt': FieldValue.serverTimestamp(),
-        };
-        
-        if (!shared.contains(cleanEmail)) {
-          updates['sharedWithEmails'] = FieldValue.arrayUnion([cleanEmail]);
-        }
-        
-        if (displayName != null && displayName.trim().isNotEmpty) {
-          names[cleanEmail] = displayName.trim();
-          updates['collaboratorDisplayNames'] = names;
-        }
-        
-        transaction.update(docRef, updates);
-      });
-      
+        final Map<String, dynamic> names = Map<String, dynamic>.from(
+          (doc.data()?['collaboratorDisplayNames'] as Map<String, dynamic>?) ?? {},
+        );
+        names[cleanEmail] = displayName.trim();
+        updates['collaboratorDisplayNames'] = names;
+      }
+
+      await docRef.update(updates);
       return await getShoppingList(listId);
     } on FirebaseException catch (e) {
       AppLogger.e('Firebase error sharing shopping list', tag: 'FirestoreShoppingListRemoteDataSource', error: e);
@@ -123,30 +118,26 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
       final cleanEmail = email.trim().toLowerCase();
       AppLogger.d('Removing collaborator $cleanEmail from list $listId', tag: 'FirestoreShoppingListRemoteDataSource');
       final docRef = _firestore.collection('shopping_lists').doc(listId);
-      
-      await _firestore.runTransaction((transaction) async {
-        final snapshot = await transaction.get(docRef);
-        if (!snapshot.exists) {
-          throw CacheFailure('Cannot remove collaborator from non-existent list: $listId');
-        }
-        
-        final data = snapshot.data() ?? {};
-        final sharedRaw = data['sharedWithEmails'];
-        final shared = sharedRaw is List ? List<String>.from(sharedRaw) : <String>[];
-        final namesRaw = data['collaboratorDisplayNames'];
-        final names = namesRaw is Map ? Map<String, dynamic>.from(namesRaw) : <String, dynamic>{};
-        
-        shared.removeWhere((e) => e.trim().toLowerCase() == cleanEmail);
-        names.remove(cleanEmail);
-        names.remove(email.trim());
-        
-        transaction.update(docRef, {
-          'sharedWithEmails': shared,
-          'collaboratorDisplayNames': names,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+
+      // Read the document first to update the collaboratorDisplayNames map
+      final snapshot = await docRef.get();
+      if (!snapshot.exists) {
+        throw CacheFailure('Cannot remove collaborator from non-existent list: $listId');
+      }
+
+      final data = snapshot.data() ?? {};
+      final namesRaw = data['collaboratorDisplayNames'];
+      final names = namesRaw is Map ? Map<String, dynamic>.from(namesRaw) : <String, dynamic>{};
+      names.remove(cleanEmail);
+      names.remove(email.trim());
+
+      // arrayRemove is atomic for the array field; combine with the map update
+      await docRef.update({
+        'sharedWithEmails': FieldValue.arrayRemove([cleanEmail]),
+        'collaboratorDisplayNames': names,
+        'updatedAt': FieldValue.serverTimestamp(),
       });
-      
+
       return await getShoppingList(listId);
     } on FirebaseException catch (e) {
       AppLogger.e('Firebase error removing collaborator', tag: 'FirestoreShoppingListRemoteDataSource', error: e);
