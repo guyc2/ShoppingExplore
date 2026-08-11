@@ -11,6 +11,7 @@ import '../widgets/active_shoppers_banner.dart';
 import '../widgets/shopping_item_tile.dart';
 import 'shopping_item_detail_page.dart';
 import '../widgets/shopping_list_share_modal.dart';
+import '../widgets/animated_shopping_list.dart';
 import '../widgets/start_shopping_modal.dart';
 import '../../../../core/services/image_storage_service.dart';
 
@@ -455,64 +456,18 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
     ];
 
     if (!isShoppingMode) {
-      final unmarkedItems = list.items.where((i) => !i.isCompleted).toList();
-      final markedItems = list.items.where((i) => i.isCompleted).toList();
-
-      return ListView(
-        key: PageStorageKey<String>('shopping_list_items_${widget.listId}'),
-        controller: _scrollController,
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            child: Text(
-              '${l10n?.toBuySection ?? 'To Buy'} (${unmarkedItems.length})',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-            ),
-          ),
-          ...unmarkedItems.map(
-            (item) => ShoppingItemTile(
-              key: ValueKey('item_${item.id}'),
-              item: item,
-              onToggle: () => widget.controller.toggleItem(list.id, item),
-              onDelete: () => _removeItem(item.id),
-              onTap: () => _openEditor(context, item, availableEmails),
-              onUpdateQuantity: (newQty) {
-                final updated = item.copyWith(quantity: newQty);
-                widget.controller.updateItem(list.id, updated);
-              },
-            ),
-          ),
-          if (markedItems.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Text(
-                '${l10n?.completedSection ?? 'Completed'} (${markedItems.length})',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-              ),
-            ),
-            ...markedItems.map(
-              (item) => ShoppingItemTile(
-                key: ValueKey('item_${item.id}'),
-                item: item,
-                onToggle: () => widget.controller.toggleItem(list.id, item),
-                onDelete: () => _removeItem(item.id),
-                onTap: () => _openEditor(context, item, availableEmails),
-                onUpdateQuantity: (newQty) {
-                  final updated = item.copyWith(quantity: newQty);
-                  widget.controller.updateItem(list.id, updated);
-                },
-              ),
-            ),
-          ],
-        ],
+      return AnimatedShoppingList(
+        key: ValueKey('asl_${widget.listId}'),
+        items: list.items,
+        listId: widget.listId,
+        scrollController: _scrollController,
+        onToggle: (item) => () => widget.controller.toggleItem(list.id, item),
+        onDelete: (item) => () => _removeItem(item.id),
+        onTap: (item) => () => _openEditor(context, item, availableEmails),
+        onUpdateQuantity: (item, qty) {
+          final updated = item.copyWith(quantity: qty);
+          widget.controller.updateItem(list.id, updated);
+        },
       );
     }
 
