@@ -62,6 +62,45 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
     }
   }
 
+  Future<void> _removeCollaborator(String email) async {
+    final name = getDisplayNameForEmail(email, list: widget.shoppingList);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remove Collaborator'),
+        content: Text('Are you sure you want to remove $name from this list?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      setState(() => _isSharing = true);
+      final success = await widget.controller.removeCollaborator(
+        widget.shoppingList.id,
+        email,
+      );
+      if (mounted) {
+        setState(() => _isSharing = false);
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Removed $name from list')),
+          );
+        } else {
+          setState(() => _errorMessage = 'Failed to remove collaborator');
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -139,6 +178,8 @@ class _ShoppingListShareModalState extends State<ShoppingListShareModal> {
                               ),
                             ),
                             label: Text(name),
+                            onDeleted: () => _removeCollaborator(email),
+                            deleteButtonTooltipMessage: 'Remove $name',
                             backgroundColor: colorScheme.surfaceContainerHighest,
                           );
                         },

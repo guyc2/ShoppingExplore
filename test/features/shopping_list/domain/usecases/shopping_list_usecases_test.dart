@@ -7,6 +7,8 @@ import 'package:shopping_explore/features/shopping_list/domain/entities/shopping
 import 'package:shopping_explore/features/shopping_list/domain/usecases/create_shopping_item.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/delete_shopping_item.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/get_shopping_lists.dart';
+import 'package:shopping_explore/features/shopping_list/domain/usecases/share_shopping_list.dart';
+import 'package:shopping_explore/features/shopping_list/domain/usecases/remove_collaborator.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/toggle_item_completion.dart';
 import 'package:shopping_explore/features/shopping_list/domain/usecases/update_item_properties.dart';
 
@@ -94,6 +96,21 @@ void main() {
 
       final listResult = await getShoppingLists.execute();
       expect(listResult.value.first.items, isEmpty);
+    });
+
+    test('ShareShoppingList and RemoveCollaborator manage list collaborators', () async {
+      final share = ShareShoppingList(repository);
+      final remove = RemoveCollaborator(repository);
+
+      final shareResult = await share.execute('list-1', 'friend@shoppingexplore.com', displayName: 'Taylor');
+      expect(shareResult.isSuccess, isTrue);
+      expect(shareResult.value.sharedWithEmails, contains('friend@shoppingexplore.com'));
+      expect(shareResult.value.collaboratorDisplayNames['friend@shoppingexplore.com'], equals('Taylor'));
+
+      final removeResult = await remove.execute('list-1', 'friend@shoppingexplore.com');
+      expect(removeResult.isSuccess, isTrue);
+      expect(removeResult.value.sharedWithEmails, isNot(contains('friend@shoppingexplore.com')));
+      expect(removeResult.value.collaboratorDisplayNames.containsKey('friend@shoppingexplore.com'), isFalse);
     });
   });
 }

@@ -27,6 +27,7 @@ import 'features/shopping_list/domain/usecases/delete_shopping_item.dart';
 import 'features/shopping_list/domain/usecases/delete_shopping_list.dart';
 import 'features/shopping_list/domain/usecases/get_shopping_lists.dart';
 import 'features/shopping_list/domain/usecases/share_shopping_list.dart';
+import 'features/shopping_list/domain/usecases/remove_collaborator.dart';
 import 'features/shopping_list/domain/usecases/toggle_item_completion.dart';
 import 'features/shopping_list/domain/usecases/update_item_properties.dart';
 import 'features/shopping_list/domain/usecases/update_shopping_list.dart';
@@ -88,6 +89,7 @@ class _ShoppingExploreAppState extends State<ShoppingExploreApp> {
       updateItemProperties: UpdateItemProperties(repository),
       deleteShoppingItem: DeleteShoppingItem(repository),
       shareShoppingList: ShareShoppingList(repository),
+      removeCollaboratorUseCase: RemoveCollaborator(repository),
       createShoppingList: CreateShoppingList(repository),
       updateShoppingList: UpdateShoppingList(repository),
       deleteShoppingList: DeleteShoppingList(repository),

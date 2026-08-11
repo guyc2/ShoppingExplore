@@ -10,6 +10,7 @@ import '../../domain/usecases/delete_shopping_item.dart';
 import '../../domain/usecases/delete_shopping_list.dart';
 import '../../domain/usecases/get_shopping_lists.dart';
 import '../../domain/usecases/share_shopping_list.dart';
+import '../../domain/usecases/remove_collaborator.dart';
 import '../../domain/usecases/toggle_item_completion.dart';
 import '../../domain/usecases/update_item_properties.dart';
 import '../../domain/usecases/update_shopping_list.dart';
@@ -27,6 +28,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
   final UpdateItemProperties updateItemProperties;
   final DeleteShoppingItem deleteShoppingItem;
   final ShareShoppingList? shareShoppingList;
+  final RemoveCollaborator? removeCollaboratorUseCase;
   final CreateShoppingList? createShoppingList;
   final UpdateShoppingList? updateShoppingList;
   final DeleteShoppingList? deleteShoppingList;
@@ -48,6 +50,7 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
     required this.updateItemProperties,
     required this.deleteShoppingItem,
     this.shareShoppingList,
+    this.removeCollaboratorUseCase,
     this.createShoppingList,
     this.updateShoppingList,
     this.deleteShoppingList,
@@ -248,6 +251,24 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       return true;
     } else {
       AppLogger.w('Failed to share list: ${result.error.message}', tag: 'ShoppingListController');
+      value = ShoppingListError(result.error);
+      return false;
+    }
+  }
+
+  Future<bool> removeCollaborator(String listId, String email) async {
+    AppLogger.d('Removing collaborator $email from list $listId', tag: 'ShoppingListController');
+    if (removeCollaboratorUseCase == null) {
+      AppLogger.w('RemoveCollaborator usecase not configured', tag: 'ShoppingListController');
+      return false;
+    }
+    final result = await removeCollaboratorUseCase!.execute(listId, email);
+    if (result.isSuccess) {
+      AppLogger.i('Collaborator $email removed successfully', tag: 'ShoppingListController');
+      await loadShoppingLists();
+      return true;
+    } else {
+      AppLogger.w('Failed to remove collaborator: ${result.error.message}', tag: 'ShoppingListController');
       value = ShoppingListError(result.error);
       return false;
     }

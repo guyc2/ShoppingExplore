@@ -10,6 +10,7 @@ abstract class ShoppingListRemoteDataSource {
   Future<ShoppingListDto> getShoppingList(String id);
   Future<ShoppingListDto> saveShoppingList(ShoppingListDto dto);
   Future<ShoppingListDto> shareShoppingList(String listId, String email, {String? displayName});
+  Future<ShoppingListDto> removeCollaborator(String listId, String email);
   Future<void> deleteShoppingList(String id);
   Future<void> saveShoppingItem(String listId, ShoppingItemDto item);
   Future<void> deleteShoppingItem(String listId, String itemId);
@@ -238,6 +239,39 @@ class InMemoryShoppingListRemoteDataSource implements ShoppingListRemoteDataSour
     if (displayName != null && displayName.trim().isNotEmpty) {
       updatedDisplayNames[cleanEmail] = displayName.trim();
     }
+    final updatedDto = ShoppingListDto(
+      id: list.id,
+      title: list.title,
+      description: list.description,
+      shortDescription: list.shortDescription,
+      colorHex: list.colorHex,
+      imageUrl: list.imageUrl,
+      ownerId: list.ownerId,
+      sharedWithEmails: updatedEmails,
+      collaboratorDisplayNames: updatedDisplayNames,
+      items: list.items,
+      activeSessions: list.activeSessions,
+      createdAt: list.createdAt,
+      updatedAt: DateTime.now(),
+    );
+    _cloudStorage[listId] = updatedDto;
+    notifyChanges();
+    return updatedDto;
+  }
+
+  @override
+  Future<ShoppingListDto> removeCollaborator(String listId, String email) async {
+    final list = _cloudStorage[listId];
+    if (list == null) {
+      throw CacheFailure('Cannot remove collaborator from non-existent list: $listId');
+    }
+    final cleanEmail = email.trim().toLowerCase();
+    final updatedEmails = List<String>.from(list.sharedWithEmails)
+      ..removeWhere((e) => e.trim().toLowerCase() == cleanEmail);
+    final updatedDisplayNames = Map<String, String>.from(list.collaboratorDisplayNames)
+      ..remove(cleanEmail)
+      ..remove(email.trim());
+
     final updatedDto = ShoppingListDto(
       id: list.id,
       title: list.title,

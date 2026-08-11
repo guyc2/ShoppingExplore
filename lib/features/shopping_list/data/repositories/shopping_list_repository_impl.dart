@@ -97,6 +97,23 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
   }
 
   @override
+  Future<Result<ShoppingList>> removeCollaborator(String listId, String email) async {
+    AppLogger.d('removeCollaborator requested for list $listId with email $email', tag: 'ShoppingListRepository');
+    try {
+      final updatedDto = await remoteDataSource.removeCollaborator(listId, email);
+      final domainList = updatedDto.toDomain();
+      AppLogger.i('Successfully removed collaborator $email from list $listId', tag: 'ShoppingListRepository');
+      return Success(domainList);
+    } on Failure catch (f) {
+      AppLogger.w('removeCollaborator failure: ${f.message}', tag: 'ShoppingListRepository');
+      return Error(f);
+    } catch (e, stackTrace) {
+      AppLogger.e('removeCollaborator unexpected error', error: e, stackTrace: stackTrace, tag: 'ShoppingListRepository');
+      return Error(CacheFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<void>> deleteShoppingList(String id) async {
     AppLogger.d('deleteShoppingList requested for id $id', tag: 'ShoppingListRepository');
     try {

@@ -118,6 +118,43 @@ class FirestoreShoppingListRemoteDataSource implements ShoppingListRemoteDataSou
   }
 
   @override
+  Future<ShoppingListDto> removeCollaborator(String listId, String email) async {
+    try {
+      final cleanEmail = email.trim().toLowerCase();
+      AppLogger.d('Removing collaborator $cleanEmail from list $listId', tag: 'FirestoreShoppingListRemoteDataSource');
+      final docRef = _firestore.collection('shopping_lists').doc(listId);
+      
+      await _firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(docRef);
+        if (!snapshot.exists) {
+          throw CacheFailure('Cannot remove collaborator from non-existent list: $listId');
+        }
+        
+        final data = snapshot.data() ?? {};
+        final sharedRaw = data['sharedWithEmails'];
+        final shared = sharedRaw is List ? List<String>.from(sharedRaw) : <String>[];
+        final namesRaw = data['collaboratorDisplayNames'];
+        final names = namesRaw is Map ? Map<String, dynamic>.from(namesRaw) : <String, dynamic>{};
+        
+        shared.removeWhere((e) => e.trim().toLowerCase() == cleanEmail);
+        names.remove(cleanEmail);
+        names.remove(email.trim());
+        
+        transaction.update(docRef, {
+          'sharedWithEmails': shared,
+          'collaboratorDisplayNames': names,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+      
+      return await getShoppingList(listId);
+    } on FirebaseException catch (e) {
+      AppLogger.e('Firebase error removing collaborator', tag: 'FirestoreShoppingListRemoteDataSource', error: e);
+      throw NetworkFailure('Failed to remove collaborator: ${e.message}');
+    }
+  }
+
+  @override
   Future<void> deleteShoppingList(String id) async {
     try {
       AppLogger.d('Deleting shopping list: $id', tag: 'FirestoreShoppingListRemoteDataSource');
