@@ -198,7 +198,9 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
 
               // Quick-add bar
               AddItemInput(
+                completedItems: list.items.where((i) => i.isCompleted).toList(),
                 onAdd: (title) => _onAddItem(title),
+                onSelectSuggestion: (item) => widget.controller.toggleItem(list.id, item),
               ),
             ],
           ),
