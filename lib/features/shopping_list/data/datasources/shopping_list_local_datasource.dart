@@ -46,6 +46,13 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       imageUrl: 'grocery',
       ownerId: 'guy@shoppingexplore.com',
       sharedWithEmails: const ['user@shoppingexplore.com', 'friend@shoppingexplore.com'],
+      collaboratorDisplayNames: const {
+        'guy@shoppingexplore.com': 'Guy C',
+        'test@shoppingexplore.com': 'Guy C',
+        'user@shoppingexplore.com': 'Alex User',
+        'friend@shoppingexplore.com': 'Taylor Friend',
+        'colleague@shoppingexplore.com': 'Sam Colleague',
+      },
       createdAt: now,
       updatedAt: now,
       items: [
@@ -85,6 +92,13 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       imageUrl: 'tech',
       ownerId: 'guy@shoppingexplore.com',
       sharedWithEmails: const ['user@shoppingexplore.com', 'colleague@shoppingexplore.com'],
+      collaboratorDisplayNames: const {
+        'guy@shoppingexplore.com': 'Guy C',
+        'test@shoppingexplore.com': 'Guy C',
+        'user@shoppingexplore.com': 'Alex User',
+        'friend@shoppingexplore.com': 'Taylor Friend',
+        'colleague@shoppingexplore.com': 'Sam Colleague',
+      },
       createdAt: now,
       updatedAt: now,
       items: [
@@ -122,6 +136,13 @@ class InMemoryShoppingListLocalDataSource implements ShoppingListLocalDataSource
       imageUrl: 'party',
       ownerId: 'guy@shoppingexplore.com',
       sharedWithEmails: const ['user@shoppingexplore.com', 'friend@shoppingexplore.com'],
+      collaboratorDisplayNames: const {
+        'guy@shoppingexplore.com': 'Guy C',
+        'test@shoppingexplore.com': 'Guy C',
+        'user@shoppingexplore.com': 'Alex User',
+        'friend@shoppingexplore.com': 'Taylor Friend',
+        'colleague@shoppingexplore.com': 'Sam Colleague',
+      },
       createdAt: now,
       updatedAt: now,
       items: [

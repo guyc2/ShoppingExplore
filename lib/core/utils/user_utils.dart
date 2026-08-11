@@ -5,10 +5,11 @@ final Map<String, String> userRegistry = {
   'guy@shoppingexplore.com': 'Guy C',
   'guyc@shoppingexplore.com': 'Guy C',
   'guyc2@shoppingexplore.com': 'Guy C',
+  'test@shoppingexplore.com': 'Guy C',
   'user@shoppingexplore.com': 'Alex User',
   'friend@shoppingexplore.com': 'Taylor Friend',
   'admin@shoppingexplore.com': 'Admin Manager',
-  'colleague@shoppingexplore.com': 'Colleague',
+  'colleague@shoppingexplore.com': 'Sam Colleague',
 };
 
 /// Registers a user's display name dynamically at runtime (e.g., after login/signup).
