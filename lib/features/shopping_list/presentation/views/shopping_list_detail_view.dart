@@ -214,7 +214,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -343,7 +343,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
               ),
             ],
           ],
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
 
           // Full description
           if (list.description != null && list.description!.isNotEmpty) ...[
@@ -355,7 +355,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
           ],
 
           // Progress row
@@ -401,7 +401,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
 
           // Collaborators
           if (list.sharedWithEmails.isNotEmpty) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
             Wrap(
               spacing: 4,
               runSpacing: 4,

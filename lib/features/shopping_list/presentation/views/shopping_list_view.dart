@@ -233,26 +233,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
 
   PreferredSizeWidget _buildAppBar(
       BuildContext context, AppLocalizations? l10n) {
-    final colorScheme = Theme.of(context).colorScheme;
     return AppBar(
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.shopping_cart_checkout_rounded,
-            color: colorScheme.primary,
-            size: 26,
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              l10n?.appTitle ?? 'Shopping Explore',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
       centerTitle: true,
       elevation: 0,
       actions: [

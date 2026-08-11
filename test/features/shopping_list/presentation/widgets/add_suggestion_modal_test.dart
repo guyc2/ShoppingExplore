@@ -99,7 +99,7 @@ void main() {
     expect(savedSuggestion!.name, equals('Sony Headphones'));
   });
 
-  testWidgets('description TextField expands maxLines to 6 when focused', (tester) async {
+  testWidgets('description TextField expands maxLines to 7 when focused', (tester) async {
     final service = FakeImageStorageService(const Success(null));
 
     await tester.pumpWidget(createWidgetUnderTest(service));
@@ -117,6 +117,6 @@ void main() {
     await tester.pumpAndSettle();
 
     descTextField = tester.widget<TextField>(descFinder);
-    expect(descTextField.maxLines, equals(6));
+    expect(descTextField.maxLines, equals(7));
   });
 }

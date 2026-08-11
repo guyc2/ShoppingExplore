@@ -67,23 +67,6 @@ void main() {
       expect(find.text('Weekend BBQ Party'), findsOneWidget);
     });
 
-    testWidgets('displays shopping cart brand icon in AppBar', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ShoppingListView(
-            controller: controller,
-            imageStorageService: FakeImageStorageService(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Verify shopping cart brand icon is present
-      expect(find.byIcon(Icons.shopping_cart_checkout_rounded), findsOneWidget);
-    });
-
     testWidgets('tapping a list card navigates to detail view with items', (tester) async {
       await tester.pumpWidget(
         MaterialApp(

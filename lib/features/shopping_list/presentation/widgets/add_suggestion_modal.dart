@@ -312,7 +312,7 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
                   labelText: l10n?.description ?? 'Description',
                   border: const OutlineInputBorder(),
                 ),
-                maxLines: _descriptionFocusNode.hasFocus ? 6 : 2,
+                maxLines: _descriptionFocusNode.hasFocus ? 7 : 2,
                 onChanged: (_) => _autoSave(),
               ),
               const SizedBox(height: 12),
