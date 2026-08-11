@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/user_utils.dart';
 import '../../domain/entities/shopping_list.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 
@@ -245,8 +246,9 @@ class ShoppingListCard extends StatelessWidget {
           height: 26,
           child: Stack(
             children: List.generate(displayCount, (i) {
-              final initial = allEmails[i].isNotEmpty
-                  ? allEmails[i][0].toUpperCase()
+              final displayName = getDisplayNameForEmail(allEmails[i]);
+              final initial = displayName.isNotEmpty
+                  ? displayName[0].toUpperCase()
                   : '?';
               return Positioned(
                 left: i * 18.0,

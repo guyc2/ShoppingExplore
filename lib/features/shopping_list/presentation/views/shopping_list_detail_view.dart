@@ -129,10 +129,6 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(
-              list.title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
             centerTitle: true,
             elevation: 0,
             actions: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/user_utils.dart';
 import '../../domain/entities/shopping_session.dart';
 
 class ActiveShoppersBanner extends StatelessWidget {
@@ -70,7 +71,7 @@ class ActiveShoppersBanner extends StatelessWidget {
           const SizedBox(height: 8),
           ...activeSessions.map((session) {
             final email = session.userEmail;
-            final displayName = email.contains('@') ? email.split('@')[0] : email;
+            final displayName = getDisplayNameForEmail(email);
             final isMe = currentUserEmail != null &&
                 email.toLowerCase() == currentUserEmail!.toLowerCase();
             final locationText = session.locationName != null && session.locationName!.isNotEmpty

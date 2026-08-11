@@ -2,31 +2,34 @@ library;
 
 /// Helper functions for user display names and collaborator formatting.
 
-String getDisplayNameForEmail(String? email) {
-  if (email == null || email.trim().isEmpty) {
+/// Global registry of registered user display names mapped by email/id.
+final Map<String, String> userRegistry = {
+  'guy@shoppingexplore.com': 'Guy C',
+  'guyc@shoppingexplore.com': 'Guy C',
+  'guyc2@shoppingexplore.com': 'Guy C',
+  'user@shoppingexplore.com': 'Alex User',
+  'friend@shoppingexplore.com': 'Taylor Friend',
+  'admin@shoppingexplore.com': 'Admin Manager',
+  'colleague@shoppingexplore.com': 'Colleague',
+};
+
+/// Helper functions for user display names and collaborator formatting.
+String getDisplayNameForEmail(String? identifier) {
+  if (identifier == null || identifier.trim().isEmpty) {
     return '';
   }
-  final cleanEmail = email.trim().toLowerCase();
+  final clean = identifier.trim();
 
-  // Known mapping for demo/debug accounts
-  if (cleanEmail == 'guy@shoppingexplore.com' || cleanEmail == 'guyc@shoppingexplore.com' || cleanEmail == 'guyc2@shoppingexplore.com') {
-    return 'Guy C';
-  }
-  if (cleanEmail == 'user@shoppingexplore.com') {
-    return 'Alex User';
-  }
-  if (cleanEmail == 'friend@shoppingexplore.com') {
-    return 'Taylor Friend';
-  }
-  if (cleanEmail == 'admin@shoppingexplore.com') {
-    return 'Admin Manager';
-  }
-  if (cleanEmail == 'colleague@shoppingexplore.com') {
-    return 'Colleague';
+  // If it's already a display name (doesn't contain '@'), return it directly
+  if (!clean.contains('@')) {
+    return clean;
   }
 
-  // Fallback: format name part before @
-  final namePart = email.split('@').first;
-  final parts = namePart.replaceAll(RegExp(r'[._-]'), ' ').split(' ');
-  return parts.map((p) => p.isNotEmpty ? '${p[0].toUpperCase()}${p.substring(1)}' : '').join(' ').trim();
+  final cleanEmail = clean.toLowerCase();
+  if (userRegistry.containsKey(cleanEmail)) {
+    return userRegistry[cleanEmail]!;
+  }
+
+  // Return the original string as-is without splitting or parsing email text
+  return clean;
 }

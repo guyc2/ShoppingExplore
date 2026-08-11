@@ -367,12 +367,10 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final displayName = _getDisplayName();
-    final totalItems =
-        lists.fold<int>(0, (sum, l) => sum + l.items.length);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -382,7 +380,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
             colorScheme.secondary.withValues(alpha: 0.06),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: colorScheme.primary.withValues(alpha: 0.15),
         ),
@@ -390,32 +388,14 @@ class _ShoppingListViewState extends State<ShoppingListView> {
       child: Row(
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  displayName.isNotEmpty
-                      ? '${l10n?.welcomeBack ?? 'Welcome back'},'
-                      : l10n?.welcomeGuest ?? 'Welcome!',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                if (displayName.isNotEmpty)
-                  Text(
-                    displayName,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                const SizedBox(height: 6),
-                Text(
-                  '${lists.length} ${l10n?.listsCount ?? 'lists'} · $totalItems ${l10n?.itemsCount ?? 'items'}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
+            child: Text(
+              displayName.isNotEmpty
+                  ? displayName
+                  : (l10n?.welcomeGuest ?? 'Welcome!'),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (widget.authController != null &&
@@ -423,8 +403,8 @@ class _ShoppingListViewState extends State<ShoppingListView> {
             GestureDetector(
               onTap: () => _openAccountProfile(context, lists),
               child: Container(
-                width: 56,
-                height: 56,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
@@ -436,8 +416,8 @@ class _ShoppingListViewState extends State<ShoppingListView> {
                   boxShadow: [
                     BoxShadow(
                       color: colorScheme.primary.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -447,7 +427,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
                       ? displayName[0].toUpperCase()
                       : '?',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onPrimary,
                   ),
