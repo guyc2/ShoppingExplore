@@ -51,6 +51,19 @@ class _ShoppingListViewState extends State<ShoppingListView> {
       widget.controller.loadShoppingLists();
       widget.authController?.checkAuthStatus();
     });
+    widget.controller.onRouteToEditList = (list) {
+      if (mounted) {
+        _openEditListModal(context, list);
+      }
+    };
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller.onRouteToEditList != null) {
+      widget.controller.onRouteToEditList = null;
+    }
+    super.dispose();
   }
 
   void _openListDetail(BuildContext context, ShoppingList list) {

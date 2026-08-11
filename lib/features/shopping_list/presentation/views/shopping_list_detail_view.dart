@@ -157,6 +157,11 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
                 ),
               ),
               IconButton(
+                icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary),
+                tooltip: l10n?.editListInfo ?? 'Edit List Info',
+                onPressed: () => widget.controller.requestEditList(list),
+              ),
+              IconButton(
                 icon: Icon(Icons.share, color: theme.colorScheme.primary),
                 tooltip: l10n?.shareList ?? 'Share List',
                 onPressed: () => _openShareModal(context, list),

@@ -31,6 +31,11 @@ void main() {
 
     // Default state: collapsed (image not visible)
     expect(find.byType(Image), findsNothing);
+
+    // Expand the card first
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
     final toggleIcon = find.byIcon(Icons.image_outlined);
     expect(toggleIcon, findsOneWidget);
 
@@ -67,7 +72,11 @@ void main() {
     // Default state: collapsed
     expect(find.byType(Image), findsNothing);
 
-    // Tap to expand
+    // Expand the card first
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    // Tap to expand image
     await tester.tap(find.byIcon(Icons.image_outlined));
     await tester.pumpAndSettle();
 
@@ -91,6 +100,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(Image), findsNothing);
+
+    // Expand the card
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
     expect(find.byIcon(Icons.image_outlined), findsNothing);
     expect(find.byIcon(Icons.image), findsNothing);
   });

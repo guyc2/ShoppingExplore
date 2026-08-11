@@ -84,6 +84,45 @@ class ShoppingItemTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+              InkWell(
+                onTap: onUpdateQuantity != null
+                    ? () {
+                        QuantityPickerModal.show(
+                          context,
+                          initialQuantity: item.quantity,
+                          onQuantitySelected: onUpdateQuantity!,
+                        );
+                      }
+                    : null,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        item.quantity.toStringAsFixed(item.quantity.truncateToDouble() == item.quantity ? 0 : 1),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Icon(
+                        Icons.unfold_more,
+                        size: 16,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
               if (isRemovedInShoppingMode && onRestore != null)
                 IconButton(
                   icon: Icon(
@@ -124,27 +163,6 @@ class ShoppingItemTile extends StatelessWidget {
         ),
       );
     }
-
-    final qtyStr = item.quantity.toStringAsFixed(item.quantity.truncateToDouble() == item.quantity ? 0 : 1);
-    badges.add(
-      InkWell(
-        onTap: onUpdateQuantity != null
-            ? () {
-                QuantityPickerModal.show(
-                  context,
-                  initialQuantity: item.quantity,
-                  onQuantitySelected: onUpdateQuantity!,
-                );
-              }
-            : null,
-        borderRadius: BorderRadius.circular(16),
-        child: _BadgePill(
-          label: 'x$qtyStr ▾',
-          color: colorScheme.primaryContainer,
-          textColor: colorScheme.onPrimaryContainer,
-        ),
-      ),
-    );
 
     if (item.priority != Priority.low) {
       final isHigh = item.priority == Priority.high;

@@ -36,6 +36,9 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
 
   StreamSubscription<Result<List<ShoppingList>>>? _listsSubscription;
   StreamSubscription<Result<ShoppingList>>? _listSubscription;
+  
+  /// Callback to orchestrate navigation to the Edit List view/modal
+  void Function(ShoppingList list)? onRouteToEditList;
 
   ShoppingListController({
     required this.getShoppingLists,
@@ -429,6 +432,15 @@ class ShoppingListController extends ValueNotifier<ShoppingListState> {
       await endShoppingSession(listId, userEmail);
     }
     notifyListeners();
+  }
+
+  void requestEditList(ShoppingList list) {
+    AppLogger.d('Requesting route to edit list: ${list.title}', tag: 'ShoppingListController');
+    if (onRouteToEditList != null) {
+      onRouteToEditList!(list);
+    } else {
+      AppLogger.w('onRouteToEditList callback is not registered', tag: 'ShoppingListController');
+    }
   }
 }
 

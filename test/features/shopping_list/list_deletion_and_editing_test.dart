@@ -227,6 +227,12 @@ void main() {
 
       expect(find.text('Organic Milk'), findsOneWidget);
 
+      // Expand the suggestion card
+      final expandIcon = find.byIcon(Icons.add);
+      expect(expandIcon, findsOneWidget);
+      await tester.tap(expandIcon);
+      await tester.pumpAndSettle();
+
       // Delete suggestion
       final deleteIcon = find.byIcon(Icons.delete_outline);
       expect(deleteIcon, findsOneWidget);

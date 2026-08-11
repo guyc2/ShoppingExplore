@@ -16,7 +16,7 @@ void main() {
       updatedAt: now,
     );
 
-    testWidgets('renders title and rich priority/quantity badges', (tester) async {
+    testWidgets('renders title, priority badge, and inline quantity control', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -31,7 +31,7 @@ void main() {
       );
 
       expect(find.text('Organic Bananas'), findsOneWidget);
-      expect(find.textContaining('x2'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget); // quantity text
       expect(find.text('High'), findsOneWidget);
       expect(find.byType(Checkbox), findsOneWidget);
     });

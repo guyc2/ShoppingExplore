@@ -24,7 +24,28 @@ class ProductSuggestionCard extends StatefulWidget {
 }
 
 class _ProductSuggestionCardState extends State<ProductSuggestionCard> {
+  bool _isExpanded = false;
   bool _isImageExpanded = false;
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus && _isExpanded) {
+        setState(() {
+          _isExpanded = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _launchUrl(BuildContext context, String urlString) async {
     final uri = Uri.tryParse(urlString);
@@ -87,71 +108,93 @@ class _ProductSuggestionCardState extends State<ProductSuggestionCard> {
     final hasProsCons = suggestion.pros.isNotEmpty || suggestion.cons.isNotEmpty;
     final hasPurchaseInfo = suggestion.purchaseLocation != null || suggestion.purchaseUrl != null || suggestion.price != null;
 
-    return Card(
-      elevation: 2,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (hasImage && _isImageExpanded)
-            _buildImageWidget(suggestion.imageUrl!, theme),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        suggestion.name,
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    if (widget.onToggleFavorite != null)
-                      IconButton(
-                        icon: Icon(
-                          suggestion.isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
-                          color: suggestion.isFavorite ? Colors.amber.shade700 : theme.colorScheme.outline,
-                          size: 26,
+    return Focus(
+      focusNode: _focusNode,
+      child: Card(
+        elevation: 2,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (hasImage && _isImageExpanded && _isExpanded)
+              _buildImageWidget(suggestion.imageUrl!, theme),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          suggestion.name,
+                          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        onPressed: widget.onToggleFavorite,
-                        tooltip: suggestion.isFavorite ? 'Remove Favorite' : 'Mark as Favorite',
                       ),
-                    if (hasImage)
+                      if (widget.onToggleFavorite != null)
+                        IconButton(
+                          icon: Icon(
+                            suggestion.isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
+                            color: suggestion.isFavorite ? Colors.amber.shade700 : theme.colorScheme.outline,
+                            size: 26,
+                          ),
+                          onPressed: widget.onToggleFavorite,
+                          tooltip: suggestion.isFavorite ? 'Remove Favorite' : 'Mark as Favorite',
+                        ),
                       IconButton(
                         icon: Icon(
-                          _isImageExpanded ? Icons.image : Icons.image_outlined,
+                          _isExpanded ? Icons.remove : Icons.add,
                           color: theme.colorScheme.primary,
                         ),
                         onPressed: () {
                           setState(() {
-                            _isImageExpanded = !_isImageExpanded;
+                            _isExpanded = !_isExpanded;
+                            if (_isExpanded) {
+                              _focusNode.requestFocus();
+                            } else {
+                              _focusNode.unfocus();
+                            }
                           });
                         },
-                        tooltip: _isImageExpanded
-                            ? (l10n?.collapseImage ?? 'Collapse Image')
-                            : (l10n?.expandImage ?? 'Expand Image'),
+                        tooltip: _isExpanded ? 'Collapse' : 'Expand',
                       ),
-                    if (widget.onEdit != null)
-                      IconButton(
-                        icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary),
-                        onPressed: widget.onEdit,
-                        tooltip: l10n?.editSuggestion ?? 'Edit',
-                      ),
-                    if (widget.onDelete != null)
-                      IconButton(
-                        icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
-                        onPressed: widget.onDelete,
-                        tooltip: l10n?.deleteSuggestion ?? 'Delete Suggestion',
-                      ),
-                  ],
-                ),
+                      if (_isExpanded && hasImage)
+                        IconButton(
+                          icon: Icon(
+                            _isImageExpanded ? Icons.image : Icons.image_outlined,
+                            color: theme.colorScheme.primary,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isImageExpanded = !_isImageExpanded;
+                            });
+                          },
+                          tooltip: _isImageExpanded
+                              ? (l10n?.collapseImage ?? 'Collapse Image')
+                              : (l10n?.expandImage ?? 'Expand Image'),
+                        ),
+                      if (_isExpanded && widget.onEdit != null)
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary),
+                          onPressed: widget.onEdit,
+                          tooltip: l10n?.editSuggestion ?? 'Edit',
+                        ),
+                      if (_isExpanded && widget.onDelete != null)
+                        IconButton(
+                          icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+                          onPressed: widget.onDelete,
+                          tooltip: l10n?.deleteSuggestion ?? 'Delete Suggestion',
+                        ),
+                    ],
+                  ),
+                  if (_isExpanded) ...[
                 if (suggestion.isFavorite) ...[
                   const SizedBox(height: 6),
                   Container(
@@ -289,10 +332,12 @@ class _ProductSuggestionCardState extends State<ProductSuggestionCard> {
                     ),
                   ],
                 ],
-              ],
+                  ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
