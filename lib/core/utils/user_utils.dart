@@ -13,6 +13,13 @@ final Map<String, String> userRegistry = {
   'colleague@shoppingexplore.com': 'Colleague',
 };
 
+/// Registers a user's display name dynamically at runtime (e.g., after login/signup).
+void registerUserDisplayName(String email, String displayName) {
+  if (email.trim().isNotEmpty && displayName.trim().isNotEmpty) {
+    userRegistry[email.trim().toLowerCase()] = displayName.trim();
+  }
+}
+
 /// Helper functions for user display names and collaborator formatting.
 String getDisplayNameForEmail(String? identifier) {
   if (identifier == null || identifier.trim().isEmpty) {
@@ -20,7 +27,7 @@ String getDisplayNameForEmail(String? identifier) {
   }
   final clean = identifier.trim();
 
-  // If it's already a display name (doesn't contain '@'), return it directly
+  // If the identifier doesn't contain '@', it might already be a display name
   if (!clean.contains('@')) {
     return clean;
   }
@@ -30,6 +37,7 @@ String getDisplayNameForEmail(String? identifier) {
     return userRegistry[cleanEmail]!;
   }
 
-  // Return the original string as-is without splitting or parsing email text
-  return clean;
+  // NEVER return the email address or part of it, as per strict user instructions.
+  // Fallback to a generic name for unknown collaborators.
+  return 'Collaborator';
 }

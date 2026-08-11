@@ -8,6 +8,7 @@ import '../../domain/usecases/register_usecase.dart';
 import '../../domain/usecases/restore_persistent_session_usecase.dart';
 import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../../domain/usecases/update_user_profile_usecase.dart';
+import '../../../../core/utils/user_utils.dart';
 
 abstract class AuthState {
   const AuthState();
@@ -65,6 +66,7 @@ class AuthController extends ChangeNotifier {
       final user = result.value;
       if (user != null) {
         AppLogger.i('Authenticated as: ${user.email}', tag: 'AuthController');
+        registerUserDisplayName(user.email, user.displayName);
         _setState(Authenticated(user));
       } else if (restorePersistentSessionUseCase != null) {
         AppLogger.i('Attempting to restore persistent session...', tag: 'AuthController');
@@ -72,6 +74,7 @@ class AuthController extends ChangeNotifier {
         if (restoreResult.isSuccess && restoreResult.value != null) {
           final restoredUser = restoreResult.value!;
           AppLogger.i('Restored persistent session as: ${restoredUser.email}', tag: 'AuthController');
+          registerUserDisplayName(restoredUser.email, restoredUser.displayName);
           _setState(Authenticated(restoredUser));
         } else {
           AppLogger.i('No persistent session found', tag: 'AuthController');
@@ -98,6 +101,7 @@ class AuthController extends ChangeNotifier {
     if (result.isSuccess) {
       final user = result.value;
       AppLogger.i('Login successful: ${user.email}', tag: 'AuthController');
+      registerUserDisplayName(user.email, user.displayName);
       _setState(Authenticated(user));
       return true;
     } else {
@@ -124,6 +128,7 @@ class AuthController extends ChangeNotifier {
     if (result.isSuccess) {
       final user = result.value;
       AppLogger.i('Registration successful: ${user.email}', tag: 'AuthController');
+      registerUserDisplayName(user.email, user.displayName);
       _setState(Authenticated(user));
       return true;
     } else {
@@ -144,6 +149,7 @@ class AuthController extends ChangeNotifier {
     if (result.isSuccess) {
       final user = result.value;
       AppLogger.i('Google Sign-In successful: ${user.email}', tag: 'AuthController');
+      registerUserDisplayName(user.email, user.displayName);
       _setState(Authenticated(user));
       return true;
     } else {
@@ -169,6 +175,7 @@ class AuthController extends ChangeNotifier {
     if (result.isSuccess) {
       final updatedUser = result.value;
       AppLogger.i('User profile updated successfully: ${updatedUser.displayName}', tag: 'AuthController');
+      registerUserDisplayName(updatedUser.email, updatedUser.displayName);
       _setState(Authenticated(updatedUser));
       return true;
     } else {
