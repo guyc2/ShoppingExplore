@@ -6,6 +6,7 @@ import 'package:shopping_explore/features/shopping_list/domain/entities/shopping
 import 'package:shopping_explore/features/shopping_list/presentation/controllers/shopping_list_controller.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/controllers/shopping_list_state.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/views/shopping_item_detail_page.dart';
+import 'package:shopping_explore/features/shopping_list/presentation/widgets/add_suggestion_modal.dart';
 import 'package:shopping_explore/features/shopping_list/presentation/widgets/product_suggestion_card.dart';
 import 'package:shopping_explore/l10n/generated/app_localizations.dart';
 import 'package:shopping_explore/core/services/image_storage_service.dart';
@@ -101,7 +102,7 @@ void main() {
       await tester.tap(fab);
       await tester.pumpAndSettle();
 
-      expect(find.text('Save Suggestion'), findsOneWidget);
+      expect(find.byType(AddSuggestionModal), findsOneWidget);
     });
   });
 }

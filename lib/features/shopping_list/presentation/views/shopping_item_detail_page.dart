@@ -82,15 +82,22 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
     );
   }
 
-  void _openAddSuggestionModal() {
+  void _openAddSuggestionModal([ProductSuggestion? initialSuggestion]) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       builder: (_) => AddSuggestionModal(
+        initialSuggestion: initialSuggestion,
         imageStorageService: widget.imageStorageService,
         onSave: (suggestion) {
-          final updatedSuggestions = List<ProductSuggestion>.from(item.suggestions)..add(suggestion);
+          final updatedSuggestions = List<ProductSuggestion>.from(item.suggestions);
+          final idx = updatedSuggestions.indexWhere((s) => s.id == suggestion.id);
+          if (idx >= 0) {
+            updatedSuggestions[idx] = suggestion;
+          } else {
+            updatedSuggestions.add(suggestion);
+          }
           final updatedItem = item.copyWith(suggestions: updatedSuggestions);
           setState(() {
             item = updatedItem;
@@ -178,29 +185,7 @@ class _ShoppingItemDetailPageState extends State<ShoppingItemDetailPage> {
                         });
                         widget.controller.updateItem(widget.listId, updatedItem);
                       },
-                      onEdit: () {
-                        showModalBottomSheet<void>(
-                          context: context,
-                          isScrollControlled: true,
-                          useSafeArea: true,
-                          builder: (context) => AddSuggestionModal(
-                            imageStorageService: widget.imageStorageService,
-                            initialSuggestion: suggestion,
-                            onSave: (updatedSuggestion) {
-                              final updatedSuggestions = List<ProductSuggestion>.from(item.suggestions);
-                              final idx = updatedSuggestions.indexWhere((x) => x.id == updatedSuggestion.id);
-                              if (idx >= 0) {
-                                updatedSuggestions[idx] = updatedSuggestion;
-                              }
-                              final updatedItem = item.copyWith(suggestions: updatedSuggestions);
-                              setState(() {
-                                item = updatedItem;
-                              });
-                              widget.controller.updateItem(widget.listId, updatedItem);
-                            },
-                          ),
-                        );
-                      },
+                      onEdit: () => _openAddSuggestionModal(suggestion),
                       onDelete: () => _deleteSuggestion(suggestion.id),
                     ),
                   );

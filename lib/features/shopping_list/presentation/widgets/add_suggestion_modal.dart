@@ -32,6 +32,8 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
   final _urlController = TextEditingController();
   final _priceController = TextEditingController();
   
+  final _descriptionFocusNode = FocusNode();
+  late final String _suggestionId;
   late final ImageStorageService _storageService;
   bool _isPickingImage = false;
   String _currency = '₪';
@@ -40,6 +42,11 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
   void initState() {
     super.initState();
     _storageService = widget.imageStorageService;
+    _suggestionId = widget.initialSuggestion?.id ?? const Uuid().v4();
+    _descriptionFocusNode.addListener(() {
+      if (mounted) setState(() {});
+    });
+
     if (widget.initialSuggestion != null) {
       final s = widget.initialSuggestion!;
       _nameController.text = s.name;
@@ -58,43 +65,55 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
     }
   }
 
-  void _submit() {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) return;
+  @override
+  void dispose() {
+    _descriptionFocusNode.dispose();
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _imageUrlController.dispose();
+    _prosController.dispose();
+    _consController.dispose();
+    _storeController.dispose();
+    _urlController.dispose();
+    _priceController.dispose();
+    super.dispose();
+  }
 
-    final pros = _prosController.text
-        .split(',')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
-    
-    final cons = _consController.text
-        .split(',')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
+  void _autoSave() {
+    try {
+      final name = _nameController.text.trim();
+      if (name.isEmpty) return;
 
-    final suggestion = ProductSuggestion(
-      id: widget.initialSuggestion?.id ?? const Uuid().v4(),
-      name: name,
-      description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
-      imageUrl: _imageUrlController.text.trim().isEmpty ? null : _imageUrlController.text.trim(),
-      pros: pros,
-      cons: cons,
-      purchaseLocation: _storeController.text.trim().isEmpty ? null : _storeController.text.trim(),
-      purchaseUrl: _urlController.text.trim().isEmpty ? null : _urlController.text.trim(),
-      price: double.tryParse(_priceController.text.trim()),
-      currency: _currency,
-    );
+      final pros = _prosController.text
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+      
+      final cons = _consController.text
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
 
-    if (widget.initialSuggestion == null) {
-      AppLogger.i('Created new product suggestion: ${suggestion.name}', tag: 'AddSuggestionModal');
-    } else {
-      AppLogger.i('Updated product suggestion: ${suggestion.name}', tag: 'AddSuggestionModal');
+      final suggestion = ProductSuggestion(
+        id: _suggestionId,
+        name: name,
+        description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
+        imageUrl: _imageUrlController.text.trim().isEmpty ? null : _imageUrlController.text.trim(),
+        pros: pros,
+        cons: cons,
+        purchaseLocation: _storeController.text.trim().isEmpty ? null : _storeController.text.trim(),
+        purchaseUrl: _urlController.text.trim().isEmpty ? null : _urlController.text.trim(),
+        price: double.tryParse(_priceController.text.trim()),
+        currency: _currency,
+      );
+
+      AppLogger.i('Auto-saved product suggestion: ${suggestion.name}', tag: 'AddSuggestionModal');
+      widget.onSave(suggestion);
+    } catch (e, stackTrace) {
+      AppLogger.e('Failed to auto-save product suggestion', error: e.toString(), stackTrace: stackTrace, tag: 'AddSuggestionModal');
     }
-    
-    widget.onSave(suggestion);
-    Navigator.pop(context);
   }
 
   Widget _buildImageSection(AppLocalizations? l10n) {
@@ -125,6 +144,7 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
                   setState(() {
                     _imageUrlController.clear();
                   });
+                  _autoSave();
                 },
               ),
             ],
@@ -183,7 +203,10 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
           ),
           keyboardType: TextInputType.url,
           textDirection: TextDirection.ltr,
-          onChanged: (_) => setState(() {}),
+          onChanged: (_) {
+            setState(() {});
+            _autoSave();
+          },
         ),
       ],
     );
@@ -229,6 +252,7 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
           setState(() {
             _imageUrlController.text = path;
           });
+          _autoSave();
         }
       } else {
         AppLogger.e('Failed to pick image', error: result.error.message, tag: 'AddSuggestionModal');
@@ -263,122 +287,125 @@ class _AddSuggestionModalState extends State<AddSuggestionModal> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: l10n?.nameExample ?? 'Name (e.g. Nike Pegasus)',
-                border: const OutlineInputBorder(),
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
-              autofocus: !isEditing,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: l10n?.description ?? 'Description',
-                border: const OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: l10n?.nameExample ?? 'Name (e.g. Nike Pegasus)',
+                  border: const OutlineInputBorder(),
+                ),
+                autofocus: !isEditing,
+                onChanged: (_) => _autoSave(),
               ),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 12),
-            _buildImageSection(l10n),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _prosController,
-                    decoration: InputDecoration(
-                      labelText: l10n?.prosComma ?? 'Pros (comma separated)',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.add_circle_outline, color: Colors.green),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _descriptionController,
+                focusNode: _descriptionFocusNode,
+                decoration: InputDecoration(
+                  labelText: l10n?.description ?? 'Description',
+                  border: const OutlineInputBorder(),
+                ),
+                maxLines: _descriptionFocusNode.hasFocus ? 6 : 2,
+                onChanged: (_) => _autoSave(),
+              ),
+              const SizedBox(height: 12),
+              _buildImageSection(l10n),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _prosController,
+                      decoration: InputDecoration(
+                        labelText: l10n?.prosComma ?? 'Pros (comma separated)',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.add_circle_outline, color: Colors.green),
+                      ),
+                      onChanged: (_) => _autoSave(),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: _consController,
-                    decoration: InputDecoration(
-                      labelText: l10n?.consComma ?? 'Cons (comma separated)',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.remove_circle_outline, color: Theme.of(context).colorScheme.error),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _consController,
+                      decoration: InputDecoration(
+                        labelText: l10n?.consComma ?? 'Cons (comma separated)',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.remove_circle_outline, color: Theme.of(context).colorScheme.error),
+                      ),
+                      onChanged: (_) => _autoSave(),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: _storeController,
-                    decoration: InputDecoration(
-                      labelText: l10n?.storeName ?? 'Store Name',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.store_outlined),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: _storeController,
+                      decoration: InputDecoration(
+                        labelText: l10n?.storeName ?? 'Store Name',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.store_outlined),
+                      ),
+                      onChanged: (_) => _autoSave(),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 1,
-                  child: TextField(
-                    controller: _priceController,
-                    decoration: InputDecoration(
-                      labelText: l10n?.price ?? 'Price',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _currency,
-                          items: const [
-                            DropdownMenuItem(value: '₪', child: Text(' ₪ ')),
-                            DropdownMenuItem(value: '\$', child: Text(' \$ ')),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) setState(() => _currency = val);
-                          },
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      controller: _priceController,
+                      decoration: InputDecoration(
+                        labelText: l10n?.price ?? 'Price',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _currency,
+                            items: const [
+                              DropdownMenuItem(value: '₪', child: Text(' ₪ ')),
+                              DropdownMenuItem(value: '\$', child: Text(' \$ ')),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) {
+                                setState(() => _currency = val);
+                                _autoSave();
+                              }
+                            },
+                          ),
                         ),
                       ),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      onChanged: (_) => _autoSave(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _urlController,
+                decoration: InputDecoration(
+                  labelText: l10n?.productPageLink ?? 'Product Page Link',
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.open_in_new),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _urlController,
-              decoration: InputDecoration(
-                labelText: l10n?.productPageLink ?? 'Product Page Link',
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.open_in_new),
+                keyboardType: TextInputType.url,
+                textDirection: TextDirection.ltr,
+                onChanged: (_) => _autoSave(),
               ),
-              keyboardType: TextInputType.url,
-              textDirection: TextDirection.ltr,
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _submit,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(l10n?.saveSuggestion ?? 'Save Suggestion'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
