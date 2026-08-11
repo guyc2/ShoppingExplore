@@ -35,12 +35,21 @@ class ShoppingListDetailView extends StatefulWidget {
 }
 
 class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
+  late final ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     AppLogger.i('Opening detail view for list ${widget.listId}',
         tag: 'ShoppingListDetailView');
     widget.controller.subscribeToShoppingList(widget.listId);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   ShoppingList? _findList(ShoppingListState state) {
@@ -448,6 +457,8 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
       final markedItems = list.items.where((i) => i.isCompleted).toList();
 
       return ListView(
+        key: PageStorageKey<String>('shopping_list_items_${widget.listId}'),
+        controller: _scrollController,
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           Padding(
@@ -462,6 +473,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
           ),
           ...unmarkedItems.map(
             (item) => ShoppingItemTile(
+              key: ValueKey('item_${item.id}'),
               item: item,
               onToggle: () => widget.controller.toggleItem(list.id, item),
               onDelete: () => _removeItem(item.id),
@@ -486,6 +498,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
             ),
             ...markedItems.map(
               (item) => ShoppingItemTile(
+                key: ValueKey('item_${item.id}'),
                 item: item,
                 onToggle: () => widget.controller.toggleItem(list.id, item),
                 onDelete: () => _removeItem(item.id),
@@ -507,6 +520,8 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
         list.items.where((i) => removedIds.contains(i.id)).toList();
 
     return ListView(
+      key: PageStorageKey<String>('shopping_list_items_${widget.listId}_mode'),
+      controller: _scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
         Padding(
@@ -521,6 +536,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
         ),
         ...activeItems.map(
           (item) => ShoppingItemTile(
+            key: ValueKey('item_${item.id}'),
             item: item,
             onToggle: () => widget.controller.toggleItem(list.id, item),
             onDelete: () => _removeItem(item.id),
@@ -545,6 +561,7 @@ class _ShoppingListDetailViewState extends State<ShoppingListDetailView> {
           ),
           ...removedItems.map(
             (item) => ShoppingItemTile(
+              key: ValueKey('item_${item.id}'),
               item: item,
               isRemovedInShoppingMode: true,
               onToggle: () {},
