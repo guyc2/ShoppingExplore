@@ -48,3 +48,6 @@ sequenceDiagram
 > [!important] Branching & GitFlow Policy
 > Never develop directly on the `main` branch. Every feature or sprint must be developed on an isolated feature branch (e.g., `feature/<name>` or `feature/<name>-sprint-<number>`). After tests and PR review pass, feature branches are merged into the `develop` branch. Merging `develop` into `main` is strictly reserved for the user or explicit user instruction.
 
+## iOS validation gate
+Changes affecting iOS dependencies or project configuration must follow [[ios_build_and_deployment|iOS Build and Deployment]]. The gate requires successful SwiftPM resolution, an unsigned release build, no CocoaPods fallback or generated Pod artifacts, static analysis, and the Flutter test suite. Physical-device deployment additionally requires valid Apple signing and a connected, trusted iPhone.
+

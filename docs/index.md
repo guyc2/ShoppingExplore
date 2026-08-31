@@ -55,6 +55,7 @@ graph TD
 - [[storage|Storage Module]] — Centralized media uploading capabilities using Firebase Storage.
 - [[shopping_list|Shopping List Module]] — Stylish multi-list dashboard with greeting banner, responsive card grid (`ShoppingListCard`), Shopping Cart brand icon, `CreateShoppingListModal`, `ShoppingListDetailView` with metadata header and 2-section Active Shopping Mode checklist, real-time reactive sync streams (`watchShoppingLists`, `watchShoppingList`) with automatic live sync, collaborative sharing, item assignment, product suggestion images (camera/gallery integration via local storage), and CRUD use cases.
 - [[workflow|Development & Sprint Workflow]] — Mandatory architecture and maintenance governance, sprint planning, multi-agent code reviews, testing subagent rules, and execution gates.
+- [[ios_build_and_deployment|iOS Build and Deployment]] — Swift Package Manager dependency setup, unsigned build validation, signing prerequisites, and deployment to a physical iPhone.
 
 ## Feature Implementation Plans
 - [[plans/advanced_shopping_list_plan|Advanced Shopping List Plan]] — Implementation plan for the Advanced Shopping List feature framework including Sprint 4 Collaborative Sharing & Authentication.

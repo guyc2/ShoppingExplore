@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -43,7 +45,6 @@ build/
 **/ios/Flutter/Generated.xcconfig
 **/ios/Flutter/app.flt
 **/ios/Runner.xcodeproj/project.xcworkspace
-**/ios/Runner.xcworkspace
 **/ios/Podfile.lock
 
 # Obsidian related
