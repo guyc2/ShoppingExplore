@@ -13,6 +13,7 @@ aliases: [Core, Infrastructure]
 - [core/utils/](../lib/core/utils) — Shared extensions, formatters, and [core/utils/logger.dart](../lib/core/utils/logger.dart) centralized logging interface.
 - [core/services/](../lib/core/services) — Core device services including `ImageStorageService` (and its `LocalImageStorageServiceImpl` implementation) for picking and compressing local images using `image_picker`.
 - [l10n/](../lib/l10n) & [l10n.yaml](../l10n.yaml) — Internationalization (i18n) and RTL directionality support via `AppLocalizations` (`flutter_localizations` & `intl`), providing localized strings for Hebrew (`'he'`) and English (`'en'`).
+- [Android launcher icon](../android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png) and [iOS AppIcon set](../ios/Runner/Assets.xcassets/AppIcon.appiconset) — Cross-platform application branding assets.
 - [.agents/skills/review-pr/](../.agents/skills/review-pr/SKILL.md) — PR review skill for security, migration risk, and test coverage auditing.
 - [.agents/skills/logging/](../.agents/skills/logging/SKILL.md) — Centralized logging instructions and usage guidelines.
 
@@ -31,3 +32,6 @@ flowchart TD
 **Notes / gotchas** —
 > [!info] Architectural Boundary & Skills
 > Core infrastructure must remain independent of feature-specific business logic. Project skills (such as `review-pr`, `local-pc-environment`, `shopping-explore-guidelines`) are maintained under `.agents/skills/` and registered via `.agents/skills.json`.
+
+> [!info] Application Branding Assets
+> The 1024×1024 RGB Android launcher icon at `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png` is the canonical source for the matching iOS AppIcon set. Generate every iOS size directly from that source, preserve `Contents.json`, and ensure all generated PNGs are square and contain no alpha channel.

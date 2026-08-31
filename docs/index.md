@@ -49,7 +49,7 @@ graph TD
 ```
 
 ## Module Notes Directory
-- [[core|Core Infrastructure]] — Shared network client, theme tokens, error definitions, localization (`l10n`, RTL support), image storage services (`image_picker`, `path_provider`), and utility helpers.
+- [[core|Core Infrastructure]] — Shared network client, theme tokens, error definitions, localization (`l10n`, RTL support), image storage services (`image_picker`, `path_provider`), cross-platform application branding assets, and utility helpers.
 - [[auth|Authentication Module]] — User authentication domain entities, login/registration usecases, local/remote data sources seeded with Debug User **Guy C**, Account & Profile modal with live statistics, and UI view controllers wired at the composition root (`app.dart`).
 - [[catalog|Catalog Module]] — Product catalog business entities, data sources, repositories, and UI view controllers.
 - [[storage|Storage Module]] — Centralized media uploading capabilities using Firebase Storage.
